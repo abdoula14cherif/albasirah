@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Inscription — Al Basîrah</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(160deg,#FAFFFE,#F4FBFF);padding:2rem 1rem;}
+.auth-card{background:var(--white);border-radius:var(--r-xl);border:1.5px solid var(--line);box-shadow:0 8px 40px rgba(0,0,0,.1);padding:2.5rem 2rem;width:100%;max-width:420px;}
+.auth-title{font-size:1.4rem;font-weight:900;color:var(--txt);text-align:center;margin-bottom:.3rem;}
+.auth-sub{font-size:.83rem;font-weight:600;color:var(--muted);text-align:center;margin-bottom:1.8rem;}
+.form-group{margin-bottom:1.1rem;}
+.form-label{font-size:.78rem;font-weight:800;color:var(--sub);display:block;margin-bottom:.4rem;}
+.form-input{width:100%;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:600;color:var(--txt);background:var(--bg);border:1.5px solid var(--line);border-radius:var(--r-md);padding:.65rem 1rem;outline:none;transition:border-color .18s;}
+.form-input:focus{border-color:var(--g1);background:var(--white);box-shadow:0 0 0 3px rgba(29,185,84,.08);}
+.auth-btn{width:100%;padding:.75rem;font-size:.92rem;font-weight:800;margin-top:.4rem;}
+.auth-link{text-align:center;margin-top:1.1rem;font-size:.8rem;font-weight:600;color:var(--muted);}
+.auth-link a{color:var(--g1);font-weight:800;}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="auth-card">
+  <div style="text-align:center;margin-bottom:1.5rem">
+    <div style="width:52px;height:52px;border-radius:15px;background:linear-gradient(135deg,#1DB954,#2196F3);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem">
+      <span style="font-family:'Noto Naskh Arabic',serif;color:#fff;font-weight:700;font-size:1.4rem">ب</span>
+    </div>
+    <div style="font-family:'Noto Naskh Arabic',serif;font-size:1.1rem;font-weight:700;color:var(--g2)">البصيرة</div>
+  </div>
+  <h1 class="auth-title">Créer un compte</h1>
+  <p class="auth-sub">Rejoignez Al Basîrah et accédez à tout le contenu</p>
+  <form onsubmit="handleSignup(event)">
+    <div class="form-group">
+      <label class="form-label">Prénom &amp; Nom</label>
+      <input type="text" class="form-input" id="reg-name" placeholder="Votre nom" required/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Adresse email</label>
+      <input type="email" class="form-input" id="reg-email" placeholder="votre@email.com" required/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe</label>
+      <input type="password" class="form-input" id="reg-pwd" placeholder="Minimum 8 caractères" minlength="8" required/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Pays</label>
+      <select class="form-input" id="reg-country">
+        <option value="">Sélectionner…</option>
+        <option>Cameroun</option><option>Sénégal</option><option>Côte d'Ivoire</option>
+        <option>Mali</option><option>Guinée</option><option>Burkina Faso</option>
+        <option>France</option><option>Belgique</option><option>Maroc</option>
+        <option>Algérie</option><option>Tunisie</option><option>Autre</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-green auth-btn">✅ Créer mon compte</button>
+  </form>
+  <div class="auth-link">Déjà un compte ? <a href="connexion.html">Se connecter →</a></div>
+  <div class="auth-link" style="margin-top:.5rem"><a href="index.html" style="color:var(--muted)">← Retour à l'accueil</a></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+<script>
+async function handleSignup(e) {
+  e.preventDefault();
+  const email = document.getElementById('reg-email').value;
+  const pwd = document.getElementById('reg-pwd').value;
+  const name = document.getElementById('reg-name').value;
+  const btn = e.target.querySelector('button[type=submit]');
+  btn.textContent = '⏳ Création…'; btn.disabled = true;
+  try {
+    const db = getDB();
+    if (db) {
+      const { data, error } = await db.auth.signUp({ email, password: pwd, options: { data: { full_name: name } } });
+      if (error) throw error;
+      showToast('✅ Compte créé ! Vérifiez votre email.');
+      setTimeout(() => location.href = 'connexion.html', 1500);
+    } else {
+      showToast('✅ Compte créé (mode démo) !');
+      setTimeout(() => location.href = 'index.html', 800);
+    }
+  } catch(err) {
+    showToast('❌ ' + (err.message || 'Erreur'));
+    btn.textContent = '✅ Créer mon compte'; btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
