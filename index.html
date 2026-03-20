@@ -1,1 +1,1022 @@
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Al Basîrah — البصيرة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ══════════ DESIGN TOKENS ══════════
+   WhatsApp  : #25D366 / #128C7E / #075E54
+   Telegram  : #2AABEE / #229ED9 / #0088CC
+   TikTok    : #FE2C55 / #25F4EE / #010101
+   Mix accent: bright vivid palette
+═══════════════════════════════════════ */
+:root{
+  /* WhatsApp greens */
+  --wg1:#25D366; --wg2:#128C7E; --wg3:#075E54;
+  /* Telegram blues */
+  --tb1:#2AABEE; --tb2:#229ED9; --tb3:#0088CC;
+  /* TikTok colors */
+  --tt1:#FE2C55; --tt2:#25F4EE; --tt3:#010101;
+  /* UI */
+  --bg:#F0FFF8;
+  --bg2:#EBF8FF;
+  --bg3:#FFF0F3;
+  --white:#FFFFFF;
+  --dark:#050F1A;
+  --txt:#06151E;
+  --soft:#1A3A4A;
+  --muted:#5A8A9F;
+  --border:rgba(42,171,238,0.15);
+  --r1:26px; --r2:18px; --r3:12px; --r4:8px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#F0FFF8}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--wg1),var(--tb1));border-radius:3px}
+
+/* ══ ANIMATED BG ══ */
+.bg-mesh{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.mesh-orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.25;animation:meshFloat 12s ease-in-out infinite}
+.mo1{width:600px;height:600px;background:radial-gradient(circle,var(--wg1),transparent 70%);top:-200px;left:-150px;animation-delay:0s}
+.mo2{width:450px;height:450px;background:radial-gradient(circle,var(--tb1),transparent 70%);top:20%;right:-100px;animation-delay:-4s}
+.mo3{width:380px;height:380px;background:radial-gradient(circle,var(--tt2),transparent 70%);bottom:10%;left:20%;animation-delay:-8s}
+.mo4{width:280px;height:280px;background:radial-gradient(circle,var(--tt1),transparent 70%);bottom:30%;right:10%;animation-delay:-2s}
+@keyframes meshFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(25px,-35px) scale(1.06)}66%{transform:translate(-18px,22px) scale(.96)}}
+
+/* ══ NAVBAR ══ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  height:66px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 5vw;
+  background:rgba(255,255,255,.9);
+  backdrop-filter:blur(24px);
+  border-bottom:2px solid rgba(37,211,102,.2);
+  box-shadow:0 4px 30px rgba(37,211,102,.1);
+  animation:navIn .6s ease both;
+}
+@keyframes navIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+
+.nav-brand{display:flex;align-items:center;gap:.85rem;text-decoration:none}
+.brand-icon{
+  width:42px;height:42px;border-radius:13px;
+  background:linear-gradient(135deg,var(--wg1),var(--tb1));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Noto Naskh Arabic',serif;font-size:1.25rem;font-weight:700;color:white;
+  box-shadow:0 5px 18px rgba(37,211,102,.4);
+  animation:iconPulse 3s ease-in-out infinite;
+}
+@keyframes iconPulse{0%,100%{box-shadow:0 5px 18px rgba(37,211,102,.4)}50%{box-shadow:0 5px 28px rgba(42,171,238,.55)}}
+.brand-name{display:flex;flex-direction:column;line-height:1.1}
+.brand-ar{font-family:'Noto Naskh Arabic',serif;font-size:1rem;font-weight:700;background:linear-gradient(90deg,var(--wg1),var(--tb1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.brand-fr{font-size:.58rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+
+.nav-menu{display:flex;gap:.15rem;list-style:none}
+.nav-menu a{
+  font-size:.82rem;font-weight:700;color:var(--soft);
+  text-decoration:none;padding:.45rem .95rem;border-radius:var(--r4);
+  transition:all .2s;display:flex;align-items:center;gap:.35rem;
+}
+.nav-menu a:hover,.nav-menu a.active{background:rgba(37,211,102,.1);color:var(--wg2)}
+
+.nav-actions{display:flex;gap:.6rem;align-items:center}
+.nav-search{
+  display:flex;align-items:center;gap:.5rem;
+  background:rgba(42,171,238,.08);border:1.5px solid rgba(42,171,238,.2);
+  border-radius:22px;padding:.38rem 1rem;transition:all .2s;
+}
+.nav-search:focus-within{border-color:var(--tb1);background:white;box-shadow:0 0 0 3px rgba(42,171,238,.1)}
+.nav-search input{border:none;background:none;font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:600;color:var(--txt);width:150px;outline:none}
+.nav-search input::placeholder{color:var(--muted)}
+.nav-search svg{width:14px;height:14px;color:var(--muted)}
+.btn-login{font-size:.78rem;font-weight:800;color:var(--tb2);background:rgba(42,171,238,.1);border:1.5px solid rgba(42,171,238,.25);border-radius:var(--r3);padding:.45rem 1.1rem;cursor:pointer;transition:all .2s}
+.btn-login:hover{background:rgba(42,171,238,.18)}
+.btn-signup{font-size:.78rem;font-weight:800;color:white;background:linear-gradient(135deg,var(--wg1),var(--tb1));border:none;border-radius:var(--r3);padding:.45rem 1.2rem;cursor:pointer;box-shadow:0 4px 16px rgba(37,211,102,.3);transition:all .2s}
+.btn-signup:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(37,211,102,.4)}
+
+/* ══ HERO ══ */
+.hero{
+  min-height:100vh;display:flex;align-items:center;
+  padding:90px 5vw 60px;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(160deg,rgba(37,211,102,.06) 0%,rgba(42,171,238,.06) 40%,rgba(37,244,238,.06) 70%,rgba(254,44,85,.04) 100%);
+}
+
+/* Islamic pattern */
+.hero-pattern{
+  position:absolute;inset:0;opacity:.03;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cpath d='M50 0L100 50L50 100L0 50Z' fill='none' stroke='%2325D366' stroke-width='1.2'/%3E%3Cpath d='M50 18L82 50L50 82L18 50Z' fill='none' stroke='%232AABEE' stroke-width='.8'/%3E%3Ccircle cx='50' cy='50' r='8' fill='none' stroke='%2325F4EE' stroke-width='.6'/%3E%3C/svg%3E");
+}
+
+.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;max-width:1300px;margin:0 auto;width:100%}
+
+/* Left */
+.hero-left{}
+.hero-pill{
+  display:inline-flex;align-items:center;gap:.6rem;
+  background:linear-gradient(135deg,rgba(37,211,102,.12),rgba(42,171,238,.1));
+  border:2px solid rgba(37,211,102,.25);border-radius:100px;
+  padding:.38rem 1.1rem;font-size:.74rem;font-weight:800;color:var(--wg2);
+  margin-bottom:1.6rem;animation:fUp .5s .1s ease both;
+}
+.pill-live{display:flex;align-items:center;gap:.4rem;background:rgba(254,44,85,.1);border:1.5px solid rgba(254,44,85,.25);border-radius:100px;padding:.2rem .7rem;font-size:.65rem;font-weight:800;color:var(--tt1)}
+.live-blink{width:7px;height:7px;border-radius:50%;background:var(--tt1);animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.bismillah{font-family:'Noto Naskh Arabic',serif;font-size:clamp(1.2rem,2vw,1.6rem);font-weight:700;background:linear-gradient(90deg,var(--wg2),var(--tb2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1rem;animation:fUp .5s .18s ease both}
+
+.hero-h1{font-size:clamp(2.8rem,6vw,5.2rem);font-weight:900;line-height:1.0;color:var(--txt);margin-bottom:.7rem;animation:fUp .5s .25s ease both}
+.hero-h1 .g-green{background:linear-gradient(120deg,var(--wg1),var(--wg2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:gradMove 4s linear infinite}
+.hero-h1 .g-blue{background:linear-gradient(120deg,var(--tb1),var(--tt2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic}
+@keyframes gradMove{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+
+.hero-ar-sub{font-family:'Noto Naskh Arabic',serif;font-size:1rem;font-weight:600;color:var(--tb2);margin-bottom:1.3rem;animation:fUp .5s .32s ease both}
+.hero-desc{font-size:.96rem;font-weight:600;color:var(--soft);line-height:1.85;max-width:500px;margin-bottom:2.2rem;animation:fUp .5s .38s ease both}
+
+.hero-btns{display:flex;gap:.85rem;flex-wrap:wrap;animation:fUp .5s .45s ease both}
+.hbtn{display:flex;align-items:center;gap:.55rem;font-family:'Nunito',sans-serif;font-size:.86rem;font-weight:800;border:none;border-radius:14px;padding:.82rem 1.8rem;cursor:pointer;transition:all .22s;letter-spacing:.01em}
+.hbtn-wg{background:linear-gradient(135deg,var(--wg1),var(--wg2));color:white;box-shadow:0 6px 22px rgba(37,211,102,.35)}
+.hbtn-wg:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(37,211,102,.48)}
+.hbtn-tb{background:linear-gradient(135deg,var(--tb1),var(--tb3));color:white;box-shadow:0 6px 22px rgba(42,171,238,.32)}
+.hbtn-tb:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(42,171,238,.45)}
+.hbtn-tt{background:linear-gradient(135deg,var(--tt1),#FF5F7E);color:white;box-shadow:0 6px 22px rgba(254,44,85,.28)}
+.hbtn-tt:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(254,44,85,.4)}
+
+/* Hero stats mini */
+.hero-stats{display:flex;gap:1.8rem;margin-top:2rem;animation:fUp .5s .52s ease both}
+.hstat{text-align:center}
+.hstat-n{font-size:1.5rem;font-weight:900;display:block;line-height:1}
+.hstat-n.wg{background:linear-gradient(135deg,var(--wg1),var(--wg2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hstat-n.tb{background:linear-gradient(135deg,var(--tb1),var(--tt2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hstat-n.tt{background:linear-gradient(135deg,var(--tt1),var(--tt2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hstat-l{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:.2rem;display:block}
+
+/* Right panel */
+.hero-right{display:flex;flex-direction:column;gap:1rem;animation:fUp .7s .3s ease both}
+
+.hero-panel{background:white;border-radius:var(--r1);padding:1.4rem;box-shadow:0 6px 32px rgba(0,0,0,.07);border:2px solid transparent;transition:all .3s}
+.hero-panel:hover{transform:translateY(-4px)}
+.hp-live{border-color:rgba(254,44,85,.25);box-shadow:0 6px 32px rgba(254,44,85,.08)}
+.hp-live:hover{box-shadow:0 12px 48px rgba(254,44,85,.15)}
+.hp-book{border-color:rgba(37,211,102,.2)}
+.hp-book:hover{box-shadow:0 12px 48px rgba(37,211,102,.12)}
+.hp-audio{border-color:rgba(42,171,238,.2)}
+.hp-audio:hover{box-shadow:0 12px 48px rgba(42,171,238,.12)}
+.hp-tiktok{border-color:rgba(37,244,238,.25)}
+.hp-tiktok:hover{box-shadow:0 12px 48px rgba(37,244,238,.12)}
+
+.hp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
+.hp-title{font-size:.82rem;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:.45rem}
+.hp-badge{font-size:.65rem;font-weight:800;padding:.18rem .6rem;border-radius:20px}
+.badge-live{background:rgba(254,44,85,.1);color:var(--tt1);display:flex;align-items:center;gap:.3rem}
+.badge-new{background:rgba(37,211,102,.1);color:var(--wg2)}
+.badge-count{background:rgba(42,171,238,.1);color:var(--tb2)}
+
+.hp-scholar{display:flex;align-items:center;gap:.8rem}
+.scholar-av-sm{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Noto Naskh Arabic',serif;font-size:1.1rem;font-weight:700;color:white;flex-shrink:0}
+.av-wg{background:linear-gradient(135deg,var(--wg1),var(--wg2))}
+.av-tb{background:linear-gradient(135deg,var(--tb1),var(--tb3))}
+.av-tt{background:linear-gradient(135deg,var(--tt1),#FF5F7E)}
+.av-tq{background:linear-gradient(135deg,var(--tt2),var(--wg1))}
+
+.scholar-name-sm{font-family:'Noto Naskh Arabic',serif;font-size:.9rem;font-weight:700;color:var(--txt)}
+.scholar-sub-sm{font-size:.7rem;font-weight:600;color:var(--muted)}
+
+.hp-bar{height:4px;border-radius:2px;margin-top:.7rem;overflow:hidden;background:rgba(0,0,0,.05)}
+.hp-bar-fill{height:100%;border-radius:2px;animation:barGrow 2s ease both}
+@keyframes barGrow{from{width:0}to{width:var(--w,60%)}}
+
+/* ══ STATS BAR ══ */
+.statsbar{background:white;border-top:3px solid transparent;border-image:linear-gradient(90deg,var(--wg1),var(--tb1),var(--tt2),var(--tt1)) 1;box-shadow:0 4px 28px rgba(0,0,0,.05)}
+.statsbar-inner{max-width:1300px;margin:0 auto;display:flex;flex-wrap:wrap}
+.si{flex:1;min-width:130px;padding:1.9rem 1rem;text-align:center;position:relative;cursor:default}
+.si+.si::before{content:'';position:absolute;left:0;top:22%;bottom:22%;width:1.5px;background:rgba(42,171,238,.12)}
+.si-after{position:absolute;bottom:0;left:15%;right:15%;height:2.5px;border-radius:2px;transform:scaleX(0);transform-origin:center;transition:transform .35s ease}
+.si:hover .si-after{transform:scaleX(1)}
+.si:nth-child(1) .si-after{background:linear-gradient(90deg,var(--wg1),var(--wg2))}
+.si:nth-child(2) .si-after{background:linear-gradient(90deg,var(--tb1),var(--tt2))}
+.si:nth-child(3) .si-after{background:linear-gradient(90deg,var(--tt1),#FF5F7E)}
+.si:nth-child(4) .si-after{background:linear-gradient(90deg,var(--tt2),var(--tb1))}
+.si:nth-child(5) .si-after{background:linear-gradient(90deg,var(--wg1),var(--tt2))}
+.si-n{font-size:clamp(1.8rem,2.8vw,2.4rem);font-weight:900;line-height:1;display:block}
+.si:nth-child(1) .si-n{background:linear-gradient(135deg,var(--wg1),var(--wg2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.si:nth-child(2) .si-n{background:linear-gradient(135deg,var(--tb1),var(--tt2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.si:nth-child(3) .si-n{background:linear-gradient(135deg,var(--tt1),var(--tt2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.si:nth-child(4) .si-n{background:linear-gradient(135deg,var(--tb2),var(--wg1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.si:nth-child(5) .si-n{background:linear-gradient(135deg,var(--wg1),var(--tb1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.si-l{font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:.4rem;display:block}
+
+/* ══ SECTION HEADER ══ */
+.sec{padding:5rem 5vw}
+.sec-wrap{max-width:1300px;margin:0 auto}
+.sec-top{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2.8rem}
+.sec-label{font-size:.68rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;display:block;margin-bottom:.55rem}
+.lb-wg{color:var(--wg1)} .lb-tb{color:var(--tb1)} .lb-tt{color:var(--tt1)} .lb-tq{color:var(--tt2)}
+.sec-h2{font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:900;color:var(--txt);line-height:1.15}
+.sec-h2 span{font-style:italic}
+.sec-h2 .cl-wg{background:linear-gradient(135deg,var(--wg1),var(--wg2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sec-h2 .cl-tb{background:linear-gradient(135deg,var(--tb1),var(--tt2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sec-h2 .cl-tt{background:linear-gradient(135deg,var(--tt1),#FF5F7E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sec-h2 .cl-tq{background:linear-gradient(135deg,var(--tt2),var(--tb1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sec-lnk{font-size:.82rem;font-weight:800;text-decoration:none;display:flex;align-items:center;gap:.35rem;transition:gap .2s;color:var(--tb1)}
+.sec-lnk:hover{gap:.65rem}
+
+/* ══ SCHOLARS SECTION ══ */
+/* Category selector */
+.sch-cats{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:2rem}
+.sch-cat-btn{
+  font-size:.78rem;font-weight:800;
+  padding:.5rem 1.2rem;border-radius:100px;
+  border:2px solid transparent;cursor:pointer;transition:all .25s;
+  background:white;color:var(--muted);
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
+}
+.sch-cat-btn:hover{border-color:rgba(37,211,102,.3);color:var(--wg2)}
+.sch-cat-btn.active-wg{background:linear-gradient(135deg,var(--wg1),var(--wg2));color:white;box-shadow:0 4px 18px rgba(37,211,102,.3);border-color:transparent}
+.sch-cat-btn.active-tb{background:linear-gradient(135deg,var(--tb1),var(--tb3));color:white;box-shadow:0 4px 18px rgba(42,171,238,.3);border-color:transparent}
+.sch-cat-btn.active-tt{background:linear-gradient(135deg,var(--tt1),#FF5F7E);color:white;box-shadow:0 4px 18px rgba(254,44,85,.28);border-color:transparent}
+
+/* Scholars grid */
+.scholars-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.4rem}
+
+.sc-card{
+  background:white;border-radius:var(--r1);
+  border:2px solid transparent;padding:1.8rem 1.4rem 1.4rem;
+  text-align:center;cursor:pointer;
+  box-shadow:0 4px 22px rgba(0,0,0,.06);
+  transition:all .3s;position:relative;overflow:hidden;
+}
+.sc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transform:scaleX(0);transition:transform .4s ease;border-radius:var(--r1) var(--r1) 0 0}
+.sc-card:hover{transform:translateY(-7px)}
+/* Color per index */
+.scc-0{} .scc-0::before{background:linear-gradient(90deg,var(--wg1),var(--wg2))} .scc-0:hover{border-color:rgba(37,211,102,.25);box-shadow:0 14px 44px rgba(37,211,102,.15)}
+.scc-1::before{background:linear-gradient(90deg,var(--tb1),var(--tt2))} .scc-1:hover{border-color:rgba(42,171,238,.25);box-shadow:0 14px 44px rgba(42,171,238,.15)}
+.scc-2::before{background:linear-gradient(90deg,var(--tt1),#FF5F7E)} .scc-2:hover{border-color:rgba(254,44,85,.22);box-shadow:0 14px 44px rgba(254,44,85,.12)}
+.scc-3::before{background:linear-gradient(90deg,var(--tt2),var(--tb1))} .scc-3:hover{border-color:rgba(37,244,238,.3);box-shadow:0 14px 44px rgba(37,244,238,.12)}
+.scc-4::before{background:linear-gradient(90deg,var(--wg2),var(--tt2))} .scc-4:hover{border-color:rgba(37,211,102,.2);box-shadow:0 14px 44px rgba(37,211,102,.1)}
+.scc-5::before{background:linear-gradient(90deg,var(--tb2),var(--wg1))} .scc-5:hover{border-color:rgba(42,171,238,.2);box-shadow:0 14px 44px rgba(42,171,238,.1)}
+.scc-6::before{background:linear-gradient(90deg,var(--tt1),var(--tt2))} .scc-6:hover{border-color:rgba(254,44,85,.18);box-shadow:0 14px 44px rgba(254,44,85,.1)}
+.scc-7::before{background:linear-gradient(90deg,var(--wg1),var(--tb1))} .scc-7:hover{border-color:rgba(37,211,102,.22);box-shadow:0 14px 44px rgba(37,211,102,.1)}
+.sc-card:hover::before{transform:scaleX(1)}
+
+/* Live dot on scholar */
+.sc-live-dot{
+  position:absolute;top:.9rem;right:.9rem;
+  display:flex;align-items:center;gap:.3rem;
+  font-size:.62rem;font-weight:800;color:var(--tt1);
+  background:rgba(254,44,85,.1);border:1px solid rgba(254,44,85,.2);
+  border-radius:20px;padding:.15rem .55rem;
+}
+.sc-live-blink{width:6px;height:6px;border-radius:50%;background:var(--tt1);animation:blink 1.2s infinite}
+
+.sc-av{
+  width:80px;height:80px;border-radius:50%;
+  margin:0 auto 1.1rem;display:flex;align-items:center;justify-content:center;
+  font-family:'Noto Naskh Arabic',serif;font-size:2rem;font-weight:700;color:white;
+  position:relative;
+}
+.sc-av::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid transparent;animation:avRing 3s ease-in-out infinite}
+.scc-0 .sc-av{background:linear-gradient(135deg,var(--wg1),var(--wg2));box-shadow:0 6px 20px rgba(37,211,102,.35)}
+.scc-0 .sc-av::after{border-color:rgba(37,211,102,.3)}
+.scc-1 .sc-av{background:linear-gradient(135deg,var(--tb1),var(--tb3));box-shadow:0 6px 20px rgba(42,171,238,.35)}
+.scc-1 .sc-av::after{border-color:rgba(42,171,238,.3)}
+.scc-2 .sc-av{background:linear-gradient(135deg,var(--tt1),#FF5F7E);box-shadow:0 6px 20px rgba(254,44,85,.3)}
+.scc-2 .sc-av::after{border-color:rgba(254,44,85,.25)}
+.scc-3 .sc-av{background:linear-gradient(135deg,var(--tt2),var(--tb1));box-shadow:0 6px 20px rgba(37,244,238,.3)}
+.scc-3 .sc-av::after{border-color:rgba(37,244,238,.25)}
+.scc-4 .sc-av{background:linear-gradient(135deg,var(--wg2),var(--tt2));box-shadow:0 6px 20px rgba(18,140,126,.3)}
+.scc-4 .sc-av::after{border-color:rgba(18,140,126,.25)}
+.scc-5 .sc-av{background:linear-gradient(135deg,var(--tb2),var(--wg1));box-shadow:0 6px 20px rgba(34,158,217,.3)}
+.scc-5 .sc-av::after{border-color:rgba(34,158,217,.25)}
+.scc-6 .sc-av{background:linear-gradient(135deg,var(--tt1),var(--tt2));box-shadow:0 6px 20px rgba(254,44,85,.25)}
+.scc-6 .sc-av::after{border-color:rgba(254,44,85,.2)}
+.scc-7 .sc-av{background:linear-gradient(135deg,var(--wg1),var(--tb1));box-shadow:0 6px 20px rgba(37,211,102,.25)}
+.scc-7 .sc-av::after{border-color:rgba(37,211,102,.2)}
+
+@keyframes avRing{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.05);opacity:1}}
+
+.sc-nar{font-family:'Noto Naskh Arabic',serif;font-size:1rem;font-weight:700;color:var(--txt);margin-bottom:.2rem}
+.sc-nfr{font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:.4rem}
+.sc-country{font-size:.7rem;font-weight:700;color:var(--muted);margin-bottom:.9rem}
+.sc-tags{display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center;margin-bottom:.9rem}
+.sc-tag{font-size:.62rem;font-weight:800;padding:.18rem .6rem;border-radius:20px}
+.tag-wg{background:rgba(37,211,102,.1);color:var(--wg2)}
+.tag-tb{background:rgba(42,171,238,.1);color:var(--tb2)}
+.tag-tt{background:rgba(254,44,85,.1);color:var(--tt1)}
+.tag-tq{background:rgba(37,244,238,.12);color:#00B5A8}
+.sc-counts{display:flex;gap:.5rem;justify-content:center;margin-bottom:.9rem}
+.sc-cnt{font-size:.68rem;font-weight:800;padding:.2rem .7rem;border-radius:20px}
+.cnt-wg{background:rgba(37,211,102,.1);color:var(--wg2)}
+.cnt-tb{background:rgba(42,171,238,.1);color:var(--tb2)}
+.cnt-tt{background:rgba(254,44,85,.08);color:var(--tt1)}
+.sc-btn{
+  width:100%;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;
+  border:none;border-radius:var(--r3);padding:.6rem;cursor:pointer;
+  background:linear-gradient(135deg,rgba(37,211,102,.1),rgba(42,171,238,.1));
+  color:var(--wg2);transition:all .25s;
+  border:1.5px solid rgba(37,211,102,.2);
+}
+.sc-btn:hover{background:linear-gradient(135deg,var(--wg1),var(--tb1));color:white;border-color:transparent;box-shadow:0 4px 16px rgba(37,211,102,.25)}
+
+/* Skeleton */
+.skel{background:linear-gradient(90deg,#E8FFF3 25%,#D0F5E4 50%,#E8FFF3 75%);background-size:200% 100%;animation:sksh 1.3s infinite;border-radius:var(--r1)}
+@keyframes sksh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-sc{height:260px}
+
+/* ══ LIVE SECTION ══ */
+.live-sec{background:linear-gradient(135deg,#FFF0F5 0%,#F0F8FF 100%)}
+.live-hero{
+  background:white;border-radius:var(--r1);
+  border:2px solid rgba(254,44,85,.2);
+  box-shadow:0 8px 48px rgba(254,44,85,.08);
+  overflow:hidden;display:grid;grid-template-columns:1fr auto;align-items:center;
+  position:relative;
+}
+.live-hero::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--tt1),var(--tt2))}
+.lh-body{padding:2.8rem}
+.live-badge{display:inline-flex;align-items:center;gap:.45rem;font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--tt1);background:rgba(254,44,85,.08);border:1.5px solid rgba(254,44,85,.2);border-radius:100px;padding:.28rem .9rem;margin-bottom:1rem}
+.ldot{width:8px;height:8px;border-radius:50%;background:var(--tt1);animation:blink 1.3s infinite}
+.live-ttl{font-size:clamp(1.15rem,2.2vw,1.75rem);font-weight:900;color:var(--txt);margin-bottom:.55rem;line-height:1.3}
+.live-info{font-size:.83rem;font-weight:600;color:var(--muted)}
+.live-vw{font-size:.8rem;font-weight:800;color:var(--wg1);margin-top:.35rem}
+.lh-act{padding:2.5rem;display:flex;flex-direction:column;gap:.75rem;align-items:flex-end}
+
+.upcoming-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.1rem;margin-top:1.5rem}
+.upc-card{background:white;border-radius:var(--r2);border:2px solid rgba(42,171,238,.12);padding:1.3rem 1.5rem;display:flex;align-items:center;gap:1.1rem;cursor:pointer;box-shadow:0 2px 14px rgba(0,0,0,.05);transition:all .25s}
+.upc-card:hover{transform:translateY(-3px);border-color:rgba(42,171,238,.28);box-shadow:0 8px 28px rgba(42,171,238,.1)}
+.upc-date{min-width:52px;height:56px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.ud-wg{background:linear-gradient(135deg,rgba(37,211,102,.12),rgba(18,140,126,.1))}
+.ud-tb{background:linear-gradient(135deg,rgba(42,171,238,.12),rgba(0,136,204,.08))}
+.ud-tt{background:linear-gradient(135deg,rgba(254,44,85,.1),rgba(255,95,126,.08))}
+.upc-day{font-size:1.45rem;font-weight:900;line-height:1}
+.ud-wg .upc-day{color:var(--wg2)} .ud-tb .upc-day{color:var(--tb2)} .ud-tt .upc-day{color:var(--tt1)}
+.upc-mon{font-size:.58rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.ud-wg .upc-mon{color:var(--wg2)} .ud-tb .upc-mon{color:var(--tb2)} .ud-tt .upc-mon{color:var(--tt1)}
+.upc-info{flex:1}
+.upc-ttl{font-size:.88rem;font-weight:800;color:var(--txt);line-height:1.38}
+.upc-sch{font-size:.74rem;font-weight:600;color:var(--muted);margin-top:.2rem}
+.upc-time{font-size:.7rem;font-weight:800;color:var(--tb2);margin-top:.28rem}
+.notif-btn{width:34px;height:34px;border-radius:10px;border:1.5px solid rgba(42,171,238,.2);background:rgba(42,171,238,.06);display:flex;align-items:center;justify-content:center;font-size:.85rem;cursor:pointer;flex-shrink:0;transition:all .2s}
+.notif-btn:hover{background:rgba(42,171,238,.15);transform:scale(1.1)}
+
+/* ══ LIBRARY TABS ══ */
+.lib-wrap{background:white;border-radius:var(--r1);box-shadow:0 4px 28px rgba(0,0,0,.06);overflow:hidden;border:2px solid rgba(37,211,102,.1)}
+.lib-tabs{display:flex;padding:0 1.5rem;border-bottom:2px solid rgba(37,211,102,.1);gap:.3rem;overflow-x:auto}
+.lib-tab{font-size:.82rem;font-weight:800;color:var(--muted);background:none;border:none;padding:1.1rem 1.3rem;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .25s;display:flex;align-items:center;gap:.45rem;white-space:nowrap;border-radius:var(--r4) var(--r4) 0 0}
+.lib-tab:hover:not(.active){color:var(--soft);background:rgba(37,211,102,.04)}
+.lib-tab.active.lt-wg{color:var(--wg2);border-bottom-color:var(--wg1);background:rgba(37,211,102,.07)}
+.lib-tab.active.lt-tb{color:var(--tb2);border-bottom-color:var(--tb1);background:rgba(42,171,238,.07)}
+.lib-tab.active.lt-tt{color:var(--tt1);border-bottom-color:var(--tt1);background:rgba(254,44,85,.07)}
+.lib-panel{display:none;padding:2rem;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.3rem}
+.lib-panel.active{display:grid;animation:fUp .35s ease both}
+.lib-card{background:var(--bg);border:2px solid rgba(37,211,102,.1);border-radius:var(--r2);padding:1.4rem;cursor:pointer;transition:all .25s}
+.lib-card:hover{transform:translateY(-4px);border-color:rgba(37,211,102,.3);box-shadow:0 8px 24px rgba(37,211,102,.1);background:white}
+.lib-card.audio-card:hover{border-color:rgba(42,171,238,.3);box-shadow:0 8px 24px rgba(42,171,238,.1)}
+.lib-card.video-card:hover{border-color:rgba(254,44,85,.25);box-shadow:0 8px 24px rgba(254,44,85,.08)}
+.lc-type{font-size:.63rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:.2rem .65rem;border-radius:6px;display:inline-block;margin-bottom:.75rem}
+.lct-wg{background:rgba(37,211,102,.11);color:var(--wg2)}
+.lct-tb{background:rgba(42,171,238,.11);color:var(--tb2)}
+.lct-tt{background:rgba(254,44,85,.1);color:var(--tt1)}
+.lc-title{font-size:.93rem;font-weight:800;color:var(--txt);line-height:1.45;margin-bottom:.4rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lc-auth{font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.8rem}
+.lc-meta{display:flex;gap:.9rem;font-size:.7rem;font-weight:700;color:var(--muted);flex-wrap:wrap;margin-bottom:.9rem}
+.lc-actions{display:flex;gap:.6rem}
+.lc-btn{flex:1;font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:800;border:none;border-radius:var(--r3);padding:.55rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.35rem;transition:all .2s}
+.lc-btn-wg{background:linear-gradient(135deg,var(--wg1),var(--wg2));color:white;box-shadow:0 3px 12px rgba(37,211,102,.25)}
+.lc-btn-wg:hover{box-shadow:0 5px 18px rgba(37,211,102,.38);transform:translateY(-1px)}
+.lc-btn-tb{background:linear-gradient(135deg,var(--tb1),var(--tb3));color:white;box-shadow:0 3px 12px rgba(42,171,238,.22)}
+.lc-btn-tb:hover{box-shadow:0 5px 18px rgba(42,171,238,.35);transform:translateY(-1px)}
+.lc-btn-tt{background:linear-gradient(135deg,var(--tt1),#FF5F7E);color:white;box-shadow:0 3px 12px rgba(254,44,85,.22)}
+.lc-btn-tt:hover{box-shadow:0 5px 18px rgba(254,44,85,.35);transform:translateY(-1px)}
+.lc-btn-ghost{background:rgba(42,171,238,.08);color:var(--tb2);border:1.5px solid rgba(42,171,238,.2)}
+.lc-btn-ghost:hover{background:rgba(42,171,238,.16)}
+
+/* ══ CATEGORIES ══ */
+.cats-sec{background:linear-gradient(135deg,#F0FFF8,#EBF8FF)}
+.cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1.1rem}
+.cat-card{background:white;border-radius:var(--r2);padding:1.7rem 1rem;text-align:center;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.05);border:2px solid transparent;transition:all .25s}
+.cat-card:hover{transform:translateY(-5px)}
+.cat-card:nth-child(4n+1):hover{border-color:rgba(37,211,102,.3);box-shadow:0 12px 36px rgba(37,211,102,.14)}
+.cat-card:nth-child(4n+2):hover{border-color:rgba(42,171,238,.3);box-shadow:0 12px 36px rgba(42,171,238,.12)}
+.cat-card:nth-child(4n+3):hover{border-color:rgba(254,44,85,.25);box-shadow:0 12px 36px rgba(254,44,85,.1)}
+.cat-card:nth-child(4n):hover{border-color:rgba(37,244,238,.3);box-shadow:0 12px 36px rgba(37,244,238,.1)}
+.cat-ico{width:52px;height:52px;border-radius:14px;margin:0 auto .85rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+.ci-wg{background:linear-gradient(135deg,rgba(37,211,102,.13),rgba(18,140,126,.09))}
+.ci-tb{background:linear-gradient(135deg,rgba(42,171,238,.13),rgba(0,136,204,.08))}
+.ci-tt{background:linear-gradient(135deg,rgba(254,44,85,.1),rgba(255,95,126,.08))}
+.ci-tq{background:linear-gradient(135deg,rgba(37,244,238,.13),rgba(42,171,238,.08))}
+.cat-ar{font-family:'Noto Naskh Arabic',serif;font-size:.94rem;font-weight:700;color:var(--txt)}
+.cat-fr{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:.18rem}
+.cat-cnt{font-size:.68rem;font-weight:800;margin-top:.5rem;display:block}
+.ccn-wg{color:var(--wg2)} .ccn-tb{color:var(--tb2)} .ccn-tt{color:var(--tt1)} .ccn-tq{color:#00B5A8}
+
+/* ══ QUOTE ══ */
+.quote-sec{background:linear-gradient(135deg,var(--wg2) 0%,var(--tb2) 50%,var(--tt2) 100%);padding:5rem 10vw;text-align:center;position:relative;overflow:hidden}
+.quote-sec::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40 0L80 40L40 80L0 40Z' fill='none' stroke='white' stroke-width='.5' opacity='.07'/%3E%3C/svg%3E");animation:qbg 25s linear infinite}
+@keyframes qbg{0%{background-position:0 0}100%{background-position:80px 80px}}
+.q-ar{font-family:'Noto Naskh Arabic',serif;font-size:clamp(1.4rem,3vw,2.1rem);font-weight:700;color:white;line-height:2;margin-bottom:.9rem;position:relative;text-shadow:0 2px 16px rgba(0,0,0,.12)}
+.q-fr{font-size:clamp(1rem,1.9vw,1.3rem);font-style:italic;font-weight:700;color:rgba(255,255,255,.88);line-height:1.75;position:relative}
+.q-src{display:block;margin-top:1.2rem;font-size:.73rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+
+/* ══ FOOTER ══ */
+footer{background:var(--dark);padding:4rem 5vw 2rem}
+.foot-inner{max-width:1300px;margin:0 auto}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:3rem}
+.foot-brand-name{font-family:'Noto Naskh Arabic',serif;font-size:1.3rem;font-weight:700;background:linear-gradient(90deg,var(--wg1),var(--tb1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.foot-brand-sub{font-size:.6rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.3);display:block;margin-top:.3rem}
+.foot-desc{font-size:.8rem;font-weight:600;color:rgba(255,255,255,.38);line-height:1.8;margin-top:1rem;max-width:270px}
+/* Social icons */
+.foot-socials{display:flex;gap:.6rem;margin-top:1.2rem}
+.social-btn{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;cursor:pointer;border:none;transition:all .2s;font-weight:700}
+.soc-wg{background:rgba(37,211,102,.15);color:var(--wg1)}
+.soc-wg:hover{background:var(--wg1);color:white;transform:translateY(-2px)}
+.soc-tb{background:rgba(42,171,238,.15);color:var(--tb1)}
+.soc-tb:hover{background:var(--tb1);color:white;transform:translateY(-2px)}
+.soc-tt{background:rgba(254,44,85,.12);color:var(--tt1)}
+.soc-tt:hover{background:var(--tt1);color:white;transform:translateY(-2px)}
+.foot-col-title{font-size:.68rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--wg1);margin-bottom:1.1rem}
+.foot-links{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.foot-links a{font-size:.8rem;font-weight:600;color:rgba(255,255,255,.38);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:.4rem}
+.foot-links a:hover{color:var(--wg1)}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:1.5rem;margin-top:2.5rem;display:flex;justify-content:space-between;align-items:center;font-size:.7rem;color:rgba(255,255,255,.26);flex-wrap:wrap;gap:.5rem}
+
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:9999;background:white;border-radius:14px;border-left:5px solid var(--wg1);padding:.85rem 1.4rem;font-size:.83rem;font-weight:700;box-shadow:0 8px 28px rgba(0,0,0,.09);transform:translateX(130%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:300px}
+.toast.show{transform:translateX(0)}
+
+/* ══ ANIMS ══ */
+@keyframes fUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s ease}
+.reveal.vis{opacity:1;transform:none}
+.rd1{transition-delay:.1s} .rd2{transition-delay:.2s} .rd3{transition-delay:.3s}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:1000px){.hero-inner{grid-template-columns:1fr}.hero-right{display:grid;grid-template-columns:1fr 1fr;gap:1rem}}
+@media(max-width:760px){.nav-menu,.nav-search{display:none}.foot-grid{grid-template-columns:1fr 1fr}.lib-panel.active{grid-template-columns:1fr}.upcoming-grid{grid-template-columns:1fr}}
+@media(max-width:500px){.foot-grid{grid-template-columns:1fr}.hero-btns{flex-direction:column}.hero-right{grid-template-columns:1fr}.scholars-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- BG mesh -->
+<div class="bg-mesh">
+  <div class="mesh-orb mo1"></div>
+  <div class="mesh-orb mo2"></div>
+  <div class="mesh-orb mo3"></div>
+  <div class="mesh-orb mo4"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <a href="index.html" class="nav-brand">
+    <div class="brand-icon">ب</div>
+    <div class="brand-name">
+      <span class="brand-ar">البصيرة</span>
+      <span class="brand-fr">Al Basîrah</span>
+    </div>
+  </a>
+  <ul class="nav-menu">
+    <li><a href="index.html" class="active">🏠 Accueil</a></li>
+    <li><a href="savants.html">👨‍🏫 Savants</a></li>
+    <li><a href="bibliotheque.html">📚 Bibliothèque</a></li>
+    <li><a href="live.html">📡 En Direct</a></li>
+    <li><a href="categories.html">🏷️ Catégories</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div class="nav-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Rechercher un savant, cours…" onkeydown="if(event.key==='Enter')goSearch(this.value)"/>
+    </div>
+    <button class="btn-login">Connexion</button>
+    <button class="btn-signup">S'inscrire</button>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-pattern"></div>
+  <div class="hero-inner">
+
+    <!-- LEFT -->
+    <div class="hero-left">
+      <div class="hero-pill">
+        <span>🕌 Plateforme islamique salafi — مكتبة رقمية</span>
+        <div class="pill-live"><div class="live-blink"></div>LIVE</div>
+      </div>
+      <p class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <h1 class="hero-h1">
+        <span class="g-green">Al Basîrah</span><br>
+        <span class="g-blue">La Voie du Savoir</span>
+      </h1>
+      <p class="hero-ar-sub">مكتبة السلف الصالح الرقمية — علماء وأحاديث ودروس</p>
+      <p class="hero-desc">
+        Accédez aux cours, livres, vidéos et sessions en direct des grands savants salafis — anciens et contemporains — classés par discipline, avec les rapporteurs de hadiths.
+      </p>
+      <div class="hero-btns">
+        <button class="hbtn hbtn-wg" onclick="location.href='savants.html'">👨‍🏫 Découvrir les savants</button>
+        <button class="hbtn hbtn-tb" onclick="location.href='bibliotheque.html'">📚 Bibliothèque</button>
+        <button class="hbtn hbtn-tt" onclick="location.href='live.html'">📡 En Direct</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><span class="hstat-n wg" id="hs-scholars">120+</span><span class="hstat-l">Savants</span></div>
+        <div class="hstat"><span class="hstat-n tb" id="hs-content">5 000+</span><span class="hstat-l">Contenus</span></div>
+        <div class="hstat"><span class="hstat-n tt" id="hs-live">Live</span><span class="hstat-l">En direct</span></div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANELS -->
+    <div class="hero-right">
+      <!-- Live now -->
+      <div class="hero-panel hp-live">
+        <div class="hp-header">
+          <span class="hp-title">📡 En direct maintenant</span>
+          <span class="hp-badge badge-live"><div class="live-blink"></div>LIVE</span>
+        </div>
+        <div class="hp-scholar">
+          <div class="scholar-av-sm av-tt">ص</div>
+          <div>
+            <div class="scholar-name-sm">الشيخ صالح الفوزان</div>
+            <div class="scholar-sub-sm">Cheikh Sâlih Al-Fawzân · 1 340 auditeurs</div>
+          </div>
+        </div>
+        <div class="hp-bar"><div class="hp-bar-fill" style="background:linear-gradient(90deg,var(--tt1),var(--tt2));--w:65%"></div></div>
+      </div>
+
+      <!-- Last book -->
+      <div class="hero-panel hp-book">
+        <div class="hp-header">
+          <span class="hp-title">📗 Dernier livre ajouté</span>
+          <span class="hp-badge badge-new">NOUVEAU</span>
+        </div>
+        <div class="hp-scholar">
+          <div class="scholar-av-sm av-wg">ا</div>
+          <div>
+            <div class="scholar-name-sm">Kitâb At-Tawhid</div>
+            <div class="scholar-sub-sm">Ibn Abd Al-Wahhâb · Aqida · 120 pages</div>
+          </div>
+        </div>
+        <div class="hp-bar"><div class="hp-bar-fill" style="background:linear-gradient(90deg,var(--wg1),var(--wg2));--w:80%"></div></div>
+      </div>
+
+      <!-- Audio -->
+      <div class="hero-panel hp-audio">
+        <div class="hp-header">
+          <span class="hp-title">🎧 Cours populaire</span>
+          <span class="hp-badge badge-count" style="background:rgba(42,171,238,.1);color:var(--tb2)">48 ÉP.</span>
+        </div>
+        <div class="hp-scholar">
+          <div class="scholar-av-sm av-tb">ع</div>
+          <div>
+            <div class="scholar-name-sm">Sharh Al-'Aqida Al-Wâsitiyya</div>
+            <div class="scholar-sub-sm">Cheikh Ibn 'Outhaymine · 32h · 18 200 écoutes</div>
+          </div>
+        </div>
+        <div class="hp-bar"><div class="hp-bar-fill" style="background:linear-gradient(90deg,var(--tb1),var(--tt2));--w:72%"></div></div>
+      </div>
+
+      <!-- TikTok style video -->
+      <div class="hero-panel hp-tiktok">
+        <div class="hp-header">
+          <span class="hp-title">🎬 Vidéo tendance</span>
+          <span class="hp-badge" style="background:rgba(37,244,238,.1);color:#00B5A8">31K VUES</span>
+        </div>
+        <div class="hp-scholar">
+          <div class="scholar-av-sm av-tq">ن</div>
+          <div>
+            <div class="scholar-name-sm">Le statut de la prière en Islam</div>
+            <div class="scholar-sub-sm">Cheikh Ibn Bâz · HD · 45 min</div>
+          </div>
+        </div>
+        <div class="hp-bar"><div class="hp-bar-fill" style="background:linear-gradient(90deg,var(--tt2),var(--wg1));--w:90%"></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ STATS ══ -->
+<div class="statsbar reveal">
+  <div class="statsbar-inner">
+    <div class="si"><span class="si-n" id="st-books">1 200+</span><span class="si-l">Livres PDF</span><div class="si-after"></div></div>
+    <div class="si"><span class="si-n" id="st-audio">3 400+</span><span class="si-l">Cours Audio</span><div class="si-after"></div></div>
+    <div class="si"><span class="si-n" id="st-vids">850+</span><span class="si-l">Vidéos</span><div class="si-after"></div></div>
+    <div class="si"><span class="si-n" id="st-sch">120+</span><span class="si-l">Savants</span><div class="si-after"></div></div>
+    <div class="si"><span class="si-n">40K+</span><span class="si-l">Utilisateurs</span><div class="si-after"></div></div>
+  </div>
+</div>
+
+<!-- ══ SAVANTS ══ -->
+<section class="sec" id="savants-sec">
+  <div class="sec-wrap">
+    <div class="sec-top reveal">
+      <div>
+        <span class="sec-label lb-wg">✦ الشيوخ المباركون</span>
+        <h2 class="sec-h2">Nos <span class="cl-wg">Savants</span> & <span class="cl-tq">Rapporteurs</span></h2>
+      </div>
+      <a href="savants.html" class="sec-lnk">Voir tous →</a>
+    </div>
+
+    <!-- Category selector -->
+    <div class="sch-cats reveal rd1" id="sch-cats">
+      <button class="sch-cat-btn active-wg" onclick="filterScholars('all',this)">🌐 Tous</button>
+      <button class="sch-cat-btn" onclick="filterScholars('anciens',this)">📜 Savants anciens</button>
+      <button class="sch-cat-btn" onclick="filterScholars('contemporains',this)">🕌 Contemporains</button>
+      <button class="sch-cat-btn" onclick="filterScholars('hadith',this)">📿 Rapporteurs Hadith</button>
+      <button class="sch-cat-btn" onclick="filterScholars('fiqh',this)">⚖️ Fiqh</button>
+    </div>
+
+    <div id="scholars-grid" class="scholars-grid reveal rd2">
+      <div class="skel skel-sc"></div>
+      <div class="skel skel-sc"></div>
+      <div class="skel skel-sc"></div>
+      <div class="skel skel-sc"></div>
+      <div class="skel skel-sc"></div>
+      <div class="skel skel-sc"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ BIBLIOTHEQUE ══ -->
+<section class="sec" style="background:white" id="biblio">
+  <div class="sec-wrap">
+    <div class="sec-top reveal">
+      <div>
+        <span class="sec-label lb-tb">✦ المكتبة الرقمية</span>
+        <h2 class="sec-h2">Bibliothèque <span class="cl-tb">Numérique</span></h2>
+      </div>
+      <a href="bibliotheque.html" class="sec-lnk">Tout parcourir →</a>
+    </div>
+
+    <div class="lib-wrap reveal rd1">
+      <div class="lib-tabs">
+        <button class="lib-tab active lt-wg" onclick="libTab('livres','lt-wg',this)">📚 Livres PDF</button>
+        <button class="lib-tab lt-tb" onclick="libTab('audio','lt-tb',this)">🎧 Cours Audio</button>
+        <button class="lib-tab lt-tt" onclick="libTab('videos','lt-tt',this)">🎬 Vidéos</button>
+      </div>
+
+      <!-- LIVRES -->
+      <div id="lib-livres" class="lib-panel active">
+        <div class="lib-card"><span class="lc-type lct-wg">Aqida</span><p class="lc-title">Kitâb At-Tawhid — Le livre du monothéisme</p><p class="lc-auth">Cheikh Muhammad ibn Abd Al-Wahhâb</p><div class="lc-meta"><span>📄 120 p.</span><span>↓ 22.5K</span></div><div class="lc-actions"><button class="lc-btn lc-btn-wg">↓ Télécharger</button><button class="lc-btn lc-btn-ghost">👁 Aperçu</button></div></div>
+        <div class="lib-card"><span class="lc-type lct-wg">Hadith</span><p class="lc-title">Riyâd As-Sâlihîn — Les jardins des vertueux</p><p class="lc-auth">Imam An-Nawawi</p><div class="lc-meta"><span>📄 580 p.</span><span>↓ 21K</span></div><div class="lc-actions"><button class="lc-btn lc-btn-wg">↓ Télécharger</button><button class="lc-btn lc-btn-ghost">👁 Aperçu</button></div></div>
+        <div class="lib-card"><span class="lc-type lct-wg">Aqida</span><p class="lc-title">Al-'Aqida Al-Wâsitiyya</p><p class="lc-auth">Cheikh Al-Islam Ibn Taymiyya</p><div class="lc-meta"><span>📄 92 p.</span><span>↓ 14.6K</span></div><div class="lc-actions"><button class="lc-btn lc-btn-wg">↓ Télécharger</button><button class="lc-btn lc-btn-ghost">👁 Aperçu</button></div></div>
+        <div class="lib-card"><span class="lc-type lct-wg">Fiqh</span><p class="lc-title">Bulûgh Al-Marâm min Adillat Al-Ahkâm</p><p class="lc-auth">Ibn Hajar Al-Asqalâni</p><div class="lc-meta"><span>📄 410 p.</span><span>↓ 11.2K</span></div><div class="lc-actions"><button class="lc-btn lc-btn-wg">↓ Télécharger</button><button class="lc-btn lc-btn-ghost">👁 Aperçu</button></div></div>
+      </div>
+
+      <!-- AUDIO -->
+      <div id="lib-audio" class="lib-panel">
+        <div class="lib-card audio-card"><span class="lc-type lct-tb">Cours</span><p class="lc-title">Sharh Al-'Aqida Al-Wâsitiyya — Série complète</p><p class="lc-auth">Cheikh Ibn 'Outhaymine</p><div class="lc-meta"><span>🎵 35 ép.</span><span>▶ 18.2K</span></div><div class="lc-actions"><button class="lc-btn lc-btn-tb">▶ Écouter</button><button class="lc-btn lc-btn-ghost">↓</button></div></div>
+        <div class="lib-card audio-card"><span class="lc-type lct-tb">Tafsir</span><p class="lc-title">Tafsir de Sourat Al-Baqara</p><p class="lc-auth">Cheikh Al-Sa'di</p><div class="lc-meta"><span>🎵 22 ép. · 18h</span><span>▶ 8.7K</span></div><div class="lc-actions"><button class="lc-btn lc-btn-tb">▶ Écouter</button><button class="lc-btn lc-btn-ghost">↓</button></div></div>
+        <div class="lib-card audio-card"><span class="lc-type lct-tb">Tawhid</span><p class="lc-title">Explication du Livre du Tawhid</p><p class="lc-auth">Cheikh Ibn Bâz</p><div class="lc-meta"><span>🎵 48 ép. · 32h</span><span>▶ 18.2K</span></div><div class="lc-actions"><button class="lc-btn lc-btn-tb">▶ Écouter</button><button class="lc-btn lc-btn-ghost">↓</button></div></div>
+        <div class="lib-card audio-card"><span class="lc-type lct-tb">Hadith</span><p class="lc-title">Explication des 40 hadiths de An-Nawawi</p><p class="lc-auth">Cheikh Al-Albâni</p><div class="lc-meta"><span>🎵 40 ép. · 26h</span><span>▶ 14.3K</span></div><div class="lc-actions"><button class="lc-btn lc-btn-tb">▶ Écouter</button><button class="lc-btn lc-btn-ghost">↓</button></div></div>
+      </div>
+
+      <!-- VIDEOS -->
+      <div id="lib-videos" class="lib-panel">
+        <div class="lib-card video-card"><span class="lc-type lct-tt">Cours</span><p class="lc-title">Les conditions de la Shahada — Étude détaillée</p><p class="lc-auth">Cheikh Sâlih Al-Fawzân</p><div class="lc-meta"><span>⏱ 1h 24min</span><span>👁 22.1K</span></div><div class="lc-actions"><button class="lc-btn lc-btn-tt">▶ Regarder</button><button class="lc-btn lc-btn-ghost">↓</button></div></div>
+        <div class="lib-card video-card"><span class="lc-type lct-tt">Fiqh</span><p class="lc-title">Le statut de la prière en Islam</p><p class="lc-auth">Cheikh Ibn Bâz</p><div class="lc-meta"><span>⏱ 45 min</span><span>👁 31.2K</span></div><div class="lc-actions"><button class="lc-btn lc-btn-tt">▶ Regarder</button><button class="lc-btn lc-btn-ghost">↓</button></div></div>
+        <div class="lib-card video-card"><span class="lc-type lct-tt">Famille</span><p class="lc-title">Éduquer ses enfants selon l'Islam</p><p class="lc-auth">Cheikh Al-Fawzân</p><div class="lc-meta"><span>⏱ 1h 55min</span><span>👁 24.5K</span></div><div class="lc-actions"><button class="lc-btn lc-btn-tt">▶ Regarder</button><button class="lc-btn lc-btn-ghost">↓</button></div></div>
+        <div class="lib-card video-card"><span class="lc-type lct-tt">Manhaj</span><p class="lc-title">Réfutation du soufisme — preuves du Coran</p><p class="lc-auth">Cheikh Rabî' Al-Madkhali</p><div class="lc-meta"><span>⏱ 2h 30min</span><span>👁 11.8K</span></div><div class="lc-actions"><button class="lc-btn lc-btn-tt">▶ Regarder</button><button class="lc-btn lc-btn-ghost">↓</button></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ LIVE ══ -->
+<section class="sec live-sec" id="live-sec">
+  <div class="sec-wrap">
+    <div class="sec-top reveal">
+      <div>
+        <span class="sec-label lb-tt">✦ البث المباشر</span>
+        <h2 class="sec-h2">Sessions <span class="cl-tt">en Direct</span></h2>
+      </div>
+      <a href="live.html" class="sec-lnk" style="color:var(--tt1)">Voir le planning →</a>
+    </div>
+
+    <div class="live-hero reveal">
+      <div class="lh-body">
+        <div class="live-badge"><div class="ldot"></div>En Direct Maintenant</div>
+        <p class="live-ttl">Explication du Livre du Tawhid — Séance 14</p>
+        <p class="live-info">Cheikh Sâlih Al-Fawzân · Arabie Saoudite · Cours hebdomadaire</p>
+        <p class="live-vw">👁 1 340 auditeurs en ligne · ⏱ Débuté il y a 52 min</p>
+      </div>
+      <div class="lh-act">
+        <button class="hbtn hbtn-tt" style="padding:.75rem 1.6rem">▶ Rejoindre</button>
+        <button class="hbtn" style="background:rgba(42,171,238,.1);color:var(--tb2);box-shadow:none;padding:.75rem 1.6rem">🔔 Rappel</button>
+      </div>
+    </div>
+
+    <div class="upcoming-grid reveal rd1">
+      <div class="upc-card">
+        <div class="upc-date ud-wg"><span class="upc-day">22</span><span class="upc-mon">Mars</span></div>
+        <div class="upc-info">
+          <p class="upc-ttl">Les règles du Hadith — Débutants</p>
+          <p class="upc-sch">Cheikh Abdullah Al-Bukhâri</p>
+          <p class="upc-time">🕗 20h00 La Mecque · 19h00 Cameroun</p>
+        </div>
+        <button class="notif-btn" onclick="notif(this)">🔔</button>
+      </div>
+      <div class="upc-card">
+        <div class="upc-date ud-tb"><span class="upc-day">24</span><span class="upc-mon">Mars</span></div>
+        <div class="upc-info">
+          <p class="upc-ttl">Explication de Al-'Aqida Al-Wâsitiyya</p>
+          <p class="upc-sch">Cheikh Sâlih Al-Fawzân</p>
+          <p class="upc-time">🕗 21h00 La Mecque · 20h00 Cameroun</p>
+        </div>
+        <button class="notif-btn" onclick="notif(this)">🔔</button>
+      </div>
+      <div class="upc-card">
+        <div class="upc-date ud-tt"><span class="upc-day">27</span><span class="upc-mon">Mars</span></div>
+        <div class="upc-info">
+          <p class="upc-ttl">Fiqh de la Femme Musulmane — Q&A</p>
+          <p class="upc-sch">Cheikh Khâlid Al-Marzouqi</p>
+          <p class="upc-time">🕗 19h30 La Mecque · 18h30 Cameroun</p>
+        </div>
+        <button class="notif-btn" onclick="notif(this)">🔔</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CATEGORIES ══ -->
+<section class="sec cats-sec" id="categories">
+  <div class="sec-wrap">
+    <div class="sec-top reveal">
+      <div>
+        <span class="sec-label lb-tq">✦ التصنيفات</span>
+        <h2 class="sec-h2">Toutes les <span class="cl-tq">Catégories</span></h2>
+      </div>
+    </div>
+    <div class="cats-grid reveal rd1">
+      <div class="cat-card" onclick="location.href='bibliotheque.html?cat=aqida'"><div class="cat-ico ci-wg">☝️</div><p class="cat-ar">العقيدة</p><span class="cat-fr">Aqida</span><span class="cat-cnt ccn-wg">480 contenus</span></div>
+      <div class="cat-card" onclick="location.href='bibliotheque.html?cat=fiqh'"><div class="cat-ico ci-tb">⚖️</div><p class="cat-ar">الفقه</p><span class="cat-fr">Fiqh</span><span class="cat-cnt ccn-tb">620 contenus</span></div>
+      <div class="cat-card" onclick="location.href='bibliotheque.html?cat=tafsir'"><div class="cat-ico ci-tt">📖</div><p class="cat-ar">التفسير</p><span class="cat-fr">Tafsir</span><span class="cat-cnt ccn-tt">340 contenus</span></div>
+      <div class="cat-card" onclick="location.href='bibliotheque.html?cat=hadith'"><div class="cat-ico ci-tq">📜</div><p class="cat-ar">الحديث</p><span class="cat-fr">Hadith</span><span class="cat-cnt ccn-tq">510 contenus</span></div>
+      <div class="cat-card" onclick="location.href='bibliotheque.html?cat=tazkiya'"><div class="cat-ico ci-wg">🌿</div><p class="cat-ar">التزكية</p><span class="cat-fr">Tazkiya</span><span class="cat-cnt ccn-wg">290 contenus</span></div>
+      <div class="cat-card" onclick="location.href='bibliotheque.html?cat=manhaj'"><div class="cat-ico ci-tb">🛤️</div><p class="cat-ar">المنهج</p><span class="cat-fr">Manhaj</span><span class="cat-cnt ccn-tb">380 contenus</span></div>
+      <div class="cat-card" onclick="location.href='bibliotheque.html?cat=arabe'"><div class="cat-ico ci-tt">🔤</div><p class="cat-ar">اللغة العربية</p><span class="cat-fr">Langue Arabe</span><span class="cat-cnt ccn-tt">180 contenus</span></div>
+      <div class="cat-card" onclick="location.href='bibliotheque.html?cat=sira'"><div class="cat-ico ci-tq">⭐</div><p class="cat-ar">السيرة النبوية</p><span class="cat-fr">Sîra</span><span class="cat-cnt ccn-tq">160 contenus</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ QUOTE ══ -->
+<div class="quote-sec reveal">
+  <p class="q-ar">طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ</p>
+  <p class="q-fr">"La recherche du savoir est une obligation pour tout musulman."</p>
+  <span class="q-src">— Rapporté par Ibn Mâjah · رواه ابن ماجه</span>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="foot-inner">
+    <div class="foot-grid">
+      <div>
+        <p class="foot-brand-name">البصيرة</p>
+        <span class="foot-brand-sub">Al Basîrah — La Voie du Savoir</span>
+        <p class="foot-desc">Plateforme islamique dédiée aux livres, cours audio, vidéos et sessions en direct des savants bien guidés selon le manhaj salafi.</p>
+        <div class="foot-socials">
+          <button class="social-btn soc-wg" onclick="toast('📱 WhatsApp communauté')">WA</button>
+          <button class="social-btn soc-tb" onclick="toast('✈️ Canal Telegram')">TG</button>
+          <button class="social-btn soc-tt" onclick="toast('🎵 TikTok Al Basîrah')">TT</button>
+        </div>
+      </div>
+      <div>
+        <p class="foot-col-title">Bibliothèque</p>
+        <ul class="foot-links">
+          <li><a href="bibliotheque.html">📚 Livres PDF</a></li>
+          <li><a href="bibliotheque.html?type=audio">🎧 Cours Audio</a></li>
+          <li><a href="bibliotheque.html?type=video">🎬 Vidéos</a></li>
+          <li><a href="#">📋 Playlists</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-col-title">Savants</p>
+        <ul class="foot-links">
+          <li><a href="savants.html?cat=anciens">📜 Anciens</a></li>
+          <li><a href="savants.html?cat=contemporains">🕌 Contemporains</a></li>
+          <li><a href="savants.html?cat=hadith">📿 Rapporteurs Hadith</a></li>
+          <li><a href="savants.html">🌐 Tous les savants</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-col-title">Plateforme</p>
+        <ul class="foot-links">
+          <li><a href="#">ℹ️ À propos</a></li>
+          <li><a href="#">➕ Ajouter un contenu</a></li>
+          <li><a href="live.html">📡 Planning Live</a></li>
+          <li><a href="#">📩 Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2025 Al Basîrah — Tous droits réservés</span>
+      <span style="color:rgba(37,211,102,.4)">لنشر العلم الصحيح على منهج السلف الصالح</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ═══ SUPABASE ═══
+const SUPA_URL = 'https://mutdtyifvcrkiouudwhr.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11dGR0eWlmdmNya2lvdXVkd2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5ODEwODcsImV4cCI6MjA4OTU1NzA4N30.l08pEalpQ50QN4xVuDp5hyan7hwXprHOeCo0nrCA4vU';
+const { createClient } = supabase;
+const db = createClient(SUPA_URL, SUPA_KEY);
+
+// ═══ SCHOLARS DATA ═══
+// Données complètes avec catégories
+const SCHOLARS_DATA = [
+  // ── ANCIENS (Salaf)
+  {id:'ibn-taymiyya', name:'ابن تيمية', name_fr:"Ibn Taymiyya", country:'🇸🇾 Syrie', era:'661–728 H', initial:'ا', cat:'anciens', tags:['Aqida','Fiqh','Manhaj'], books:52, audios:0, videos:8, is_live:false, bio:"Grand savant du sunnisme, Cheikh Al-Islam."},
+  {id:'ibn-qayyim', name:'ابن القيم الجوزية', name_fr:"Ibn Al-Qayyim", country:'🇸🇾 Syrie', era:'691–751 H', initial:'ا', cat:'anciens', tags:['Aqida','Tazkiya'], books:38, audios:0, videos:5, is_live:false},
+  {id:'ibn-kathir', name:'ابن كثير', name_fr:"Ibn Kathir", country:'🇸🇾 Syrie', era:'701–774 H', initial:'ا', cat:'anciens', tags:['Tafsir','Sîra'], books:22, audios:0, videos:3, is_live:false},
+  {id:'nawawi', name:'الإمام النووي', name_fr:"Imam An-Nawawi", country:'🇸🇾 Syrie', era:'631–676 H', initial:'ن', cat:'hadith', tags:['Hadith','Fiqh'], books:30, audios:0, videos:4, is_live:false},
+  // ── CONTEMPORAINS
+  {id:'ibn-baz', name:'الشيخ ابن باز', name_fr:"Cheikh Ibn Bâz", country:'🇸🇦 Arabie Saoudite', era:'1910–1999', initial:'ا', cat:'contemporains', tags:['Aqida','Tawhid'], books:80, audios:420, videos:180, is_live:false},
+  {id:'ibn-uthaymin', name:'الشيخ ابن عثيمين', name_fr:"Cheikh Ibn 'Outhaymine", country:'🇸🇦 Arabie Saoudite', era:'1929–2001', initial:'ع', cat:'contemporains', tags:['Fiqh','Aqida'], books:95, audios:620, videos:210, is_live:false},
+  {id:'albani', name:'الشيخ الألباني', name_fr:"Cheikh Al-Albâni", country:'🇦🇱 Albanie/Syrie', era:'1914–1999', initial:'ن', cat:'hadith', tags:['Hadith','Manhaj'], books:60, audios:390, videos:95, is_live:false},
+  {id:'fawzan', name:'الشيخ صالح الفوزان', name_fr:"Cheikh Sâlih Al-Fawzân", country:'🇸🇦 Arabie Saoudite', era:'1933–', initial:'ص', cat:'contemporains', tags:['Fiqh','Aqida'], books:70, audios:340, videos:160, is_live:true},
+  {id:'rabi', name:'الشيخ ربيع المدخلي', name_fr:"Cheikh Rabî' Al-Madkhali", country:'🇸🇦 Arabie Saoudite', era:'1931–', initial:'ر', cat:'contemporains', tags:['Manhaj','Jarh'], books:45, audios:270, videos:120, is_live:false},
+  {id:'muqbil', name:'الشيخ مقبل الوادعي', name_fr:"Cheikh Mouqbil Al-Wâdi'î", country:'🇾🇪 Yémen', era:'1933–2001', initial:'م', cat:'hadith', tags:['Hadith','Manhaj'], books:28, audios:180, videos:60, is_live:false},
+  // ── RAPPORTEURS HADITH
+  {id:'bukhari', name:'الإمام البخاري', name_fr:"Imam Al-Bukhâri", country:'🇺🇿 Ouzbékistan', era:'194–256 H', initial:'ب', cat:'hadith', tags:['Hadith','Sahih'], books:15, audios:0, videos:2, is_live:false},
+  {id:'muslim', name:'الإمام مسلم', name_fr:"Imam Muslim", country:'🇮🇷 Iran', era:'204–261 H', initial:'م', cat:'hadith', tags:['Hadith','Sahih'], books:8, audios:0, videos:2, is_live:false},
+  {id:'abu-dawud', name:'أبو داود', name_fr:"Abû Dawûd", country:'🇮🇷 Iran', era:'202–275 H', initial:'د', cat:'hadith', tags:['Hadith','Sunan'], books:12, audios:0, videos:1, is_live:false},
+  {id:'tirmidhi', name:'الإمام الترمذي', name_fr:"Imam At-Tirmidhi", country:'🇹🇯 Tadjikistan', era:'209–279 H', initial:'ت', cat:'hadith', tags:['Hadith','Jâmi''], books:10, audios:0, videos:1, is_live:false},
+];
+
+let currentSchCat = 'all';
+
+// ═══ FILTER SCHOLARS ═══
+function filterScholars(cat, btn) {
+  currentSchCat = cat;
+  // Update btn styles
+  document.querySelectorAll('.sch-cat-btn').forEach(b => {
+    b.classList.remove('active-wg','active-tb','active-tt');
+  });
+  const colorMap = {all:'active-wg', anciens:'active-tb', contemporains:'active-wg', hadith:'active-tt', fiqh:'active-tb'};
+  btn.classList.add(colorMap[cat] || 'active-wg');
+
+  const filtered = cat === 'all' ? SCHOLARS_DATA :
+    cat === 'fiqh' ? SCHOLARS_DATA.filter(s => s.tags.includes('Fiqh')) :
+    SCHOLARS_DATA.filter(s => s.cat === cat);
+
+  renderScholars(filtered);
+}
+
+// ═══ RENDER SCHOLARS ═══
+function renderScholars(data) {
+  const grid = document.getElementById('scholars-grid');
+  if (!data.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)">Aucun savant dans cette catégorie</div>`;
+    return;
+  }
+  grid.innerHTML = data.map((s, i) => {
+    const cc = i % 8;
+    const liveDot = s.is_live ? `<div class="sc-live-dot"><div class="sc-live-blink"></div>LIVE</div>` : '';
+    const tagHtml = s.tags.slice(0,3).map((t,ti) => {
+      const tc = ['tag-wg','tag-tb','tag-tq'][ti % 3];
+      return `<span class="sc-tag ${tc}">${t}</span>`;
+    }).join('');
+    const countsHtml = `
+      ${s.books ? `<span class="sc-cnt cnt-wg">📚 ${s.books}</span>` : ''}
+      ${s.audios ? `<span class="sc-cnt cnt-tb">🎧 ${s.audios}</span>` : ''}
+      ${s.videos ? `<span class="sc-cnt cnt-tt">🎬 ${s.videos}</span>` : ''}
+    `;
+    return `<div class="sc-card scc-${cc}" onclick="goScholar('${s.id}')">
+      ${liveDot}
+      <div class="sc-av">${s.initial}</div>
+      <p class="sc-nar">${s.name}</p>
+      <p class="sc-nfr">${s.name_fr}</p>
+      <p class="sc-country">${s.country} · ${s.era}</p>
+      <div class="sc-tags">${tagHtml}</div>
+      <div class="sc-counts">${countsHtml}</div>
+      <button class="sc-btn">Voir ses cours →</button>
+    </div>`;
+  }).join('');
+}
+
+function goScholar(id) {
+  location.href = `savant.html?id=${id}`;
+}
+
+// ═══ LOAD FROM SUPABASE ═══
+async function loadScholarsFromDB() {
+  try {
+    const { data, error } = await db.from('scholars').select('*').limit(14);
+    if (data && data.length) {
+      renderScholarsFromDB(data);
+      return;
+    }
+  } catch {}
+  // Use fallback
+  renderScholars(SCHOLARS_DATA);
+}
+
+function renderScholarsFromDB(data) {
+  const adapted = data.map((s,i) => ({
+    id: s.id || i,
+    name: s.name || '—',
+    name_fr: s.name_fr || s.name || '—',
+    country: s.country || '—',
+    era: s.era || '',
+    initial: s.initial || (s.name||'?').slice(-1),
+    cat: s.category || 'contemporains',
+    tags: s.tags || [],
+    books: s.books_count || 0,
+    audios: s.audios_count || 0,
+    videos: s.videos_count || 0,
+    is_live: s.is_live || false,
+  }));
+  renderScholars(adapted);
+}
+
+// ═══ COUNTS FROM DB ═══
+async function loadCounts() {
+  const tables = [
+    {table:'books',   id:'st-books'},
+    {table:'audios',  id:'st-audio'},
+    {table:'videos',  id:'st-vids'},
+    {table:'scholars',id:'st-sch'},
+  ];
+  for (const t of tables) {
+    try {
+      const { count } = await db.from(t.table).select('*',{count:'exact',head:true});
+      if (count) document.getElementById(t.id).textContent = count + '+';
+    } catch {}
+  }
+}
+
+// ═══ LIBRARY TABS ═══
+function libTab(name, cls, btn) {
+  document.querySelectorAll('.lib-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.lib-tab').forEach(b => b.classList.remove('active','lt-wg','lt-tb','lt-tt'));
+  document.getElementById('lib-' + name).classList.add('active');
+  btn.classList.add('active', cls);
+}
+
+// ═══ NOTIF ═══
+function notif(btn) {
+  btn.textContent = '✅';
+  toast('✅ Rappel activé !');
+  setTimeout(() => btn.textContent = '🔔', 2800);
+}
+
+// ═══ SEARCH ═══
+function goSearch(q) {
+  if (q.trim()) location.href = `bibliotheque.html?q=${encodeURIComponent(q)}`;
+}
+
+// ═══ TOAST ═══
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ═══ SCROLL REVEAL ═══
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }});
+}, {threshold:.07});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ═══ COUNTER ANIMATION ═══
+function animCounters() {
+  document.querySelectorAll('.si-n').forEach(el => {
+    const raw = el.textContent;
+    const num = parseInt(raw.replace(/\D/g,''));
+    if (!num) return;
+    let cur = 0;
+    const step = num / 55;
+    const sfx = raw.replace(/[\d\s]/g,'');
+    const iv = setInterval(() => {
+      cur = Math.min(cur + step, num);
+      el.textContent = Math.round(cur).toLocaleString('fr') + sfx;
+      if (cur >= num) clearInterval(iv);
+    }, 22);
+  });
+}
+const cntObs = new IntersectionObserver(e => { if (e[0].isIntersecting) { animCounters(); cntObs.disconnect(); }}, {threshold:.4});
+cntObs.observe(document.querySelector('.statsbar'));
+
+// ═══ INIT ═══
+loadScholarsFromDB();
+loadCounts();
+</script>
+</body>
+</html>
