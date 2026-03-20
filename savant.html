@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Profil Savant — Al Basîrah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --wg1:#25D366;--wg2:#128C7E;--wg3:#075E54;
+  --tb1:#2AABEE;--tb2:#229ED9;--tb3:#0088CC;
+  --tt1:#FE2C55;--tt2:#25F4EE;--tt3:#010101;
+  --bg:#F0FFF8;--white:#FFFFFF;--dark:#050F1A;
+  --txt:#06151E;--soft:#1A3A4A;--muted:#5A8A9F;
+  --border:rgba(42,171,238,.15);
+  --r1:24px;--r2:18px;--r3:12px;--r4:8px;
+  --shadow:0 4px 24px rgba(0,0,0,.07);
+  --shadow-hover:0 12px 40px rgba(0,0,0,.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--wg1),var(--tb1));border-radius:3px}
+
+/* ═══ BG ═══ */
+.bg-fixed{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.bgo{position:absolute;border-radius:50%;filter:blur(90px);opacity:.18;animation:bgf 12s ease-in-out infinite}
+.bgo1{width:500px;height:500px;background:radial-gradient(circle,var(--wg1),transparent);top:-150px;left:-100px}
+.bgo2{width:400px;height:400px;background:radial-gradient(circle,var(--tb1),transparent);bottom:0;right:-100px;animation-delay:-5s}
+@keyframes bgf{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-25px)}}
+
+/* ═══ NAV ═══ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  height:64px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 5vw;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(22px);
+  border-bottom:2px solid rgba(37,211,102,.18);
+  box-shadow:0 3px 24px rgba(37,211,102,.08);
+}
+.nav-brand{display:flex;align-items:center;gap:.8rem;text-decoration:none}
+.brand-ico{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--wg1),var(--tb1));display:flex;align-items:center;justify-content:center;font-family:'Noto Naskh Arabic',serif;font-size:1.2rem;color:white;font-weight:700;box-shadow:0 4px 14px rgba(37,211,102,.35);animation:iconP 3s ease-in-out infinite}
+@keyframes iconP{0%,100%{box-shadow:0 4px 14px rgba(37,211,102,.35)}50%{box-shadow:0 4px 22px rgba(42,171,238,.5)}}
+.brand-txt{display:flex;flex-direction:column;line-height:1.1}
+.brand-ar{font-family:'Noto Naskh Arabic',serif;font-size:.95rem;font-weight:700;background:linear-gradient(90deg,var(--wg1),var(--tb1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.brand-fr{font-size:.58rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.nav-links{display:flex;gap:.15rem;list-style:none}
+.nav-links a{font-size:.8rem;font-weight:700;color:var(--soft);text-decoration:none;padding:.4rem .9rem;border-radius:var(--r4);transition:all .2s}
+.nav-links a:hover,.nav-links a.active{background:rgba(37,211,102,.1);color:var(--wg2)}
+.nav-btns{display:flex;gap:.6rem}
+.nv-btn{font-size:.78rem;font-weight:800;border-radius:var(--r3);padding:.45rem 1.1rem;cursor:pointer;border:none;transition:all .2s}
+.nv-ghost{background:rgba(42,171,238,.1);color:var(--tb2);border:1.5px solid rgba(42,171,238,.25)}
+.nv-solid{background:linear-gradient(135deg,var(--wg1),var(--tb1));color:white;box-shadow:0 4px 14px rgba(37,211,102,.28)}
+.nv-solid:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,211,102,.38)}
+
+/* ═══ BREADCRUMB ═══ */
+.crumb{padding:80px 5vw 0;max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:.5rem;font-size:.76rem;font-weight:700;color:var(--muted)}
+.crumb a{color:var(--tb1);text-decoration:none}
+.crumb a:hover{text-decoration:underline}
+
+/* ═══ SCHOLAR HERO ═══ */
+.sc-hero{
+  max-width:1280px;margin:1.5rem auto 0;padding:0 5vw;
+  display:grid;grid-template-columns:auto 1fr auto;
+  gap:2rem;align-items:center;
+  background:white;border-radius:var(--r1);
+  box-shadow:var(--shadow);border:2px solid rgba(37,211,102,.1);
+  padding:2rem 2.5rem;position:relative;overflow:hidden;
+  margin-left:5vw;margin-right:5vw;
+}
+.sc-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--wg1),var(--tb1),var(--tt2))}
+.sc-hero::after{content:'';position:absolute;bottom:0;right:0;width:200px;height:200px;background:radial-gradient(circle,rgba(37,211,102,.06),transparent);border-radius:50%;transform:translate(50%,50%)}
+
+/* Avatar big */
+.sc-av-wrap{position:relative;flex-shrink:0}
+.sc-av-big{
+  width:110px;height:110px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Noto Naskh Arabic',serif;font-size:3rem;font-weight:700;color:white;
+  background:linear-gradient(135deg,var(--wg1),var(--tb1));
+  box-shadow:0 8px 28px rgba(37,211,102,.35);
+  animation:avRing 3s ease-in-out infinite;
+}
+@keyframes avRing{0%,100%{box-shadow:0 8px 28px rgba(37,211,102,.35)}50%{box-shadow:0 8px 36px rgba(42,171,238,.45)}}
+.sc-live-pill{
+  position:absolute;bottom:2px;right:2px;
+  background:linear-gradient(135deg,var(--tt1),#FF5F7E);
+  color:white;font-size:.6rem;font-weight:800;
+  border-radius:20px;padding:.15rem .5rem;
+  border:2px solid white;
+  display:flex;align-items:center;gap:.3rem;
+}
+.ldot{width:6px;height:6px;border-radius:50%;background:white;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* Scholar info */
+.sc-info{min-width:0}
+.sc-name-ar{font-family:'Noto Naskh Arabic',serif;font-size:1.8rem;font-weight:700;color:var(--txt);line-height:1.2}
+.sc-name-fr{font-size:1rem;font-weight:700;color:var(--soft);margin-top:.2rem}
+.sc-meta-row{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:.8rem}
+.sc-meta-item{display:flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:700;color:var(--muted)}
+.sc-tags-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+.sc-tag{font-size:.65rem;font-weight:800;padding:.2rem .7rem;border-radius:20px}
+.tg-wg{background:rgba(37,211,102,.1);color:var(--wg2)}
+.tg-tb{background:rgba(42,171,238,.1);color:var(--tb2)}
+.tg-tt{background:rgba(254,44,85,.1);color:var(--tt1)}
+.tg-tq{background:rgba(37,244,238,.12);color:#00A89A}
+
+/* Stats right */
+.sc-stats-col{display:flex;flex-direction:column;gap:.8rem;align-items:flex-end;flex-shrink:0}
+.sc-stat-box{background:var(--bg);border-radius:var(--r2);padding:.8rem 1.2rem;text-align:center;min-width:90px;border:2px solid transparent;transition:all .25s;cursor:default}
+.sc-stat-box:hover{transform:scale(1.04)}
+.ssb-wg{border-color:rgba(37,211,102,.2)} .ssb-wg:hover{border-color:var(--wg1);box-shadow:0 4px 16px rgba(37,211,102,.15)}
+.ssb-tb{border-color:rgba(42,171,238,.2)} .ssb-tb:hover{border-color:var(--tb1);box-shadow:0 4px 16px rgba(42,171,238,.15)}
+.ssb-tt{border-color:rgba(254,44,85,.15)} .ssb-tt:hover{border-color:var(--tt1);box-shadow:0 4px 16px rgba(254,44,85,.1)}
+.sc-stat-n{font-size:1.5rem;font-weight:900;line-height:1;display:block}
+.ssb-wg .sc-stat-n{background:linear-gradient(135deg,var(--wg1),var(--wg2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ssb-tb .sc-stat-n{background:linear-gradient(135deg,var(--tb1),var(--tt2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ssb-tt .sc-stat-n{background:linear-gradient(135deg,var(--tt1),var(--tt2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sc-stat-l{font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:.2rem;display:block}
+
+/* Hero action buttons */
+.sc-hero-btns{grid-column:1/-1;display:flex;gap:.8rem;flex-wrap:wrap;padding-top:1.2rem;border-top:1px solid rgba(42,171,238,.1)}
+.hbtn{display:flex;align-items:center;gap:.5rem;font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:800;border:none;border-radius:var(--r3);padding:.7rem 1.5rem;cursor:pointer;transition:all .22s}
+.hbtn-wg{background:linear-gradient(135deg,var(--wg1),var(--wg2));color:white;box-shadow:0 4px 16px rgba(37,211,102,.3)}
+.hbtn-wg:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,211,102,.42)}
+.hbtn-tb{background:linear-gradient(135deg,var(--tb1),var(--tb3));color:white;box-shadow:0 4px 16px rgba(42,171,238,.28)}
+.hbtn-tb:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(42,171,238,.4)}
+.hbtn-tt{background:linear-gradient(135deg,var(--tt1),#FF5F7E);color:white;box-shadow:0 4px 16px rgba(254,44,85,.25)}
+.hbtn-tt:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(254,44,85,.38)}
+.hbtn-ghost{background:white;color:var(--soft);border:2px solid rgba(42,171,238,.2)}
+.hbtn-ghost:hover{border-color:var(--tb1);color:var(--tb2);transform:translateY(-2px)}
+.hbtn-fav{background:white;color:var(--tt1);border:2px solid rgba(254,44,85,.2)}
+.hbtn-fav:hover{background:rgba(254,44,85,.08);transform:translateY(-2px)}
+.hbtn-fav.active{background:linear-gradient(135deg,var(--tt1),#FF5F7E);color:white;border-color:transparent}
+
+/* ═══ MAIN CONTENT ═══ */
+.main-wrap{max-width:1280px;margin:2rem auto 5rem;padding:0 5vw;display:grid;grid-template-columns:1fr 300px;gap:2rem;align-items:start}
+
+/* ═══ CONTENT TABS ═══ */
+.content-tabs{background:white;border-radius:var(--r1);box-shadow:var(--shadow);border:2px solid rgba(37,211,102,.1);overflow:hidden}
+.ctabs-nav{display:flex;border-bottom:2px solid rgba(37,211,102,.1);padding:0 1.2rem;gap:.3rem;overflow-x:auto}
+.ctab{
+  font-size:.8rem;font-weight:800;color:var(--muted);background:none;border:none;
+  padding:1rem 1.1rem;cursor:pointer;border-bottom:3px solid transparent;
+  margin-bottom:-2px;transition:all .22s;display:flex;align-items:center;gap:.4rem;white-space:nowrap;
+  border-radius:var(--r4) var(--r4) 0 0;
+}
+.ctab:hover:not(.active){color:var(--soft);background:rgba(37,211,102,.04)}
+.ctab.active.ct-wg{color:var(--wg2);border-bottom-color:var(--wg1);background:rgba(37,211,102,.06)}
+.ctab.active.ct-tb{color:var(--tb2);border-bottom-color:var(--tb1);background:rgba(42,171,238,.06)}
+.ctab.active.ct-tt{color:var(--tt1);border-bottom-color:var(--tt1);background:rgba(254,44,85,.06)}
+.ctab.active.ct-tq{color:#00A89A;border-bottom-color:var(--tt2);background:rgba(37,244,238,.06)}
+.ctab-badge{font-size:.62rem;font-weight:800;padding:.12rem .45rem;border-radius:20px;background:rgba(42,171,238,.1);color:var(--tb2)}
+
+.cpanel{display:none;padding:1.5rem}
+.cpanel.active{display:block;animation:fUp .3s ease both}
+@keyframes fUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* Search within panel */
+.panel-search{
+  display:flex;align-items:center;gap:.6rem;
+  background:var(--bg);border:2px solid rgba(42,171,238,.15);
+  border-radius:var(--r2);padding:.55rem 1rem;margin-bottom:1.2rem;
+  transition:border-color .2s;
+}
+.panel-search:focus-within{border-color:var(--tb1);background:white}
+.panel-search input{border:none;background:none;font-family:'Nunito',sans-serif;font-size:.83rem;font-weight:600;color:var(--txt);width:100%;outline:none}
+.panel-search input::placeholder{color:var(--muted)}
+.ps-ico{font-size:.9rem;color:var(--muted)}
+
+/* ITEM CARDS in tabs */
+.items-list{display:flex;flex-direction:column;gap:.85rem}
+.icard{
+  background:var(--bg);border:2px solid transparent;border-radius:var(--r2);
+  padding:1.2rem 1.4rem;display:flex;align-items:flex-start;gap:1.1rem;
+  cursor:pointer;transition:all .25s;
+}
+.icard:hover{background:white;border-color:rgba(37,211,102,.2);box-shadow:0 6px 22px rgba(37,211,102,.08);transform:translateX(3px)}
+.icard.audio-item:hover{border-color:rgba(42,171,238,.25);box-shadow:0 6px 22px rgba(42,171,238,.08)}
+.icard.video-item:hover{border-color:rgba(254,44,85,.2);box-shadow:0 6px 22px rgba(254,44,85,.07)}
+.icard.book-item:hover{border-color:rgba(37,211,102,.25);box-shadow:0 6px 22px rgba(37,211,102,.1)}
+.ic-thumb{
+  width:56px;height:56px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;flex-shrink:0;
+}
+.th-wg{background:linear-gradient(135deg,rgba(37,211,102,.12),rgba(18,140,126,.08))}
+.th-tb{background:linear-gradient(135deg,rgba(42,171,238,.12),rgba(0,136,204,.08))}
+.th-tt{background:linear-gradient(135deg,rgba(254,44,85,.1),rgba(255,95,126,.07))}
+.ic-body{flex:1;min-width:0}
+.ic-top{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;flex-wrap:wrap}
+.ic-badge{font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:.15rem .55rem;border-radius:6px}
+.ib-wg{background:rgba(37,211,102,.1);color:var(--wg2)}
+.ib-tb{background:rgba(42,171,238,.1);color:var(--tb2)}
+.ib-tt{background:rgba(254,44,85,.09);color:var(--tt1)}
+.ib-new{background:linear-gradient(135deg,var(--tt2),var(--wg1));color:white}
+.ic-title{font-size:.9rem;font-weight:800;color:var(--txt);line-height:1.4;margin-bottom:.3rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ic-meta{display:flex;gap:.9rem;font-size:.7rem;font-weight:700;color:var(--muted);flex-wrap:wrap;margin-bottom:.75rem}
+.ic-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.ic-btn{
+  font-family:'Nunito',sans-serif;font-size:.74rem;font-weight:800;
+  border:none;border-radius:var(--r3);padding:.5rem 1.1rem;cursor:pointer;
+  display:flex;align-items:center;gap:.35rem;transition:all .2s;
+}
+.icb-wg{background:linear-gradient(135deg,var(--wg1),var(--wg2));color:white;box-shadow:0 3px 10px rgba(37,211,102,.25)}
+.icb-wg:hover{box-shadow:0 5px 16px rgba(37,211,102,.4);transform:translateY(-1px)}
+.icb-tb{background:linear-gradient(135deg,var(--tb1),var(--tb3));color:white;box-shadow:0 3px 10px rgba(42,171,238,.22)}
+.icb-tb:hover{box-shadow:0 5px 16px rgba(42,171,238,.35);transform:translateY(-1px)}
+.icb-tt{background:linear-gradient(135deg,var(--tt1),#FF5F7E);color:white;box-shadow:0 3px 10px rgba(254,44,85,.2)}
+.icb-tt:hover{box-shadow:0 5px 16px rgba(254,44,85,.33);transform:translateY(-1px)}
+.icb-ghost{background:rgba(42,171,238,.08);color:var(--tb2);border:1.5px solid rgba(42,171,238,.2)}
+.icb-ghost:hover{background:rgba(42,171,238,.16)}
+.icb-dl{background:rgba(37,211,102,.09);color:var(--wg2);border:1.5px solid rgba(37,211,102,.2)}
+.icb-dl:hover{background:rgba(37,211,102,.17)}
+.icb-fav{background:rgba(254,44,85,.07);color:var(--tt1);border:1.5px solid rgba(254,44,85,.18);min-width:36px;justify-content:center}
+.icb-fav:hover{background:rgba(254,44,85,.14)}
+.icb-fav.loved{background:var(--tt1);color:white;border-color:transparent}
+
+/* Progress bar (audio) */
+.audio-progress{margin-top:.6rem;display:none}
+.icard.playing .audio-progress{display:block}
+.ap-mini-bar{height:4px;background:rgba(42,171,238,.15);border-radius:2px;overflow:hidden;cursor:pointer;position:relative}
+.ap-mini-fill{height:100%;background:linear-gradient(90deg,var(--tb1),var(--tt2));border-radius:2px;width:0%;transition:width .5s linear}
+.ap-mini-times{display:flex;justify-content:space-between;font-size:.62rem;font-weight:700;color:var(--muted);margin-top:.3rem}
+
+/* Playing indicator */
+.icard.playing{border-color:rgba(42,171,238,.3) !important;background:white !important;box-shadow:0 6px 24px rgba(42,171,238,.12) !important}
+.playing-waves{display:none;gap:2px;align-items:center;height:14px}
+.icard.playing .playing-waves{display:flex}
+.wave-bar{width:3px;border-radius:2px;background:linear-gradient(var(--tb1),var(--tt2));animation:wave .8s ease-in-out infinite}
+.wave-bar:nth-child(1){height:6px;animation-delay:0s}
+.wave-bar:nth-child(2){height:12px;animation-delay:.15s}
+.wave-bar:nth-child(3){height:8px;animation-delay:.3s}
+.wave-bar:nth-child(4){height:14px;animation-delay:.45s}
+.wave-bar:nth-child(5){height:6px;animation-delay:.6s}
+@keyframes wave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.5)}}
+
+/* ═══ LIVE PANEL ═══ */
+.live-panel{background:linear-gradient(135deg,rgba(254,44,85,.05),rgba(37,244,238,.04));border:2px solid rgba(254,44,85,.18);border-radius:var(--r2);padding:1.5rem;margin-bottom:1.2rem}
+.live-panel-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(254,44,85,.1);border:1.5px solid rgba(254,44,85,.2);border-radius:100px;padding:.22rem .75rem;font-size:.68rem;font-weight:800;color:var(--tt1);margin-bottom:.9rem}
+.live-panel-title{font-size:.96rem;font-weight:800;color:var(--txt);margin-bottom:.4rem;line-height:1.4}
+.live-panel-sub{font-size:.76rem;font-weight:600;color:var(--muted);margin-bottom:1rem}
+.live-panel-btns{display:flex;gap:.6rem;flex-wrap:wrap}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{display:flex;flex-direction:column;gap:1.2rem;position:sticky;top:80px}
+
+.side-box{background:white;border-radius:var(--r2);box-shadow:var(--shadow);border:2px solid rgba(42,171,238,.1);overflow:hidden}
+.side-head{padding:.9rem 1.3rem;font-size:.72rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;border-bottom:2px solid rgba(42,171,238,.08);display:flex;align-items:center;gap:.5rem}
+.sh-wg{background:linear-gradient(135deg,rgba(37,211,102,.07),rgba(18,140,126,.04));color:var(--wg2)}
+.sh-tb{background:linear-gradient(135deg,rgba(42,171,238,.07),rgba(0,136,204,.04));color:var(--tb2)}
+.sh-tt{background:linear-gradient(135deg,rgba(254,44,85,.06),transparent);color:var(--tt1)}
+.side-body{padding:1rem 1.3rem;display:flex;flex-direction:column;gap:.65rem}
+
+/* Bio */
+.bio-text{font-size:.82rem;font-weight:600;color:var(--soft);line-height:1.8}
+
+/* Related scholars */
+.rel-scholar{display:flex;align-items:center;gap:.8rem;padding:.55rem .4rem;border-radius:var(--r3);cursor:pointer;transition:background .2s}
+.rel-scholar:hover{background:rgba(37,211,102,.06)}
+.rel-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Noto Naskh Arabic',serif;font-size:1rem;font-weight:700;color:white;flex-shrink:0}
+.ra-wg{background:linear-gradient(135deg,var(--wg1),var(--wg2))}
+.ra-tb{background:linear-gradient(135deg,var(--tb1),var(--tb3))}
+.ra-tt{background:linear-gradient(135deg,var(--tt1),#FF5F7E)}
+.ra-tq{background:linear-gradient(135deg,var(--tt2),var(--tb1))}
+.rel-name{font-family:'Noto Naskh Arabic',serif;font-size:.85rem;font-weight:700;color:var(--txt)}
+.rel-sub{font-size:.68rem;font-weight:600;color:var(--muted)}
+
+/* Share buttons */
+.share-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem}
+.share-btn{font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:800;border:none;border-radius:var(--r3);padding:.6rem .5rem;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:.25rem}
+.share-btn span:first-child{font-size:1rem}
+.sb-wg{background:rgba(37,211,102,.1);color:var(--wg2)}
+.sb-wg:hover{background:var(--wg1);color:white;transform:translateY(-2px)}
+.sb-tb{background:rgba(42,171,238,.1);color:var(--tb2)}
+.sb-tb:hover{background:var(--tb1);color:white;transform:translateY(-2px)}
+.sb-tt{background:rgba(254,44,85,.08);color:var(--tt1)}
+.sb-tt:hover{background:var(--tt1);color:white;transform:translateY(-2px)}
+
+/* ═══ AUDIO PLAYER BOTTOM ═══ */
+.audio-player{
+  position:fixed;bottom:0;left:0;right:0;z-index:888;
+  background:rgba(255,255,255,.97);backdrop-filter:blur(24px);
+  border-top:2px solid rgba(37,211,102,.2);
+  box-shadow:0 -6px 36px rgba(37,211,102,.1);
+  padding:.75rem 5vw;display:flex;align-items:center;gap:1.5rem;
+  transform:translateY(100%);transition:transform .42s cubic-bezier(.34,1.56,.64,1);
+}
+.audio-player.open{transform:translateY(0)}
+.ap-cover{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--tb1),var(--tt2));display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.ap-info{flex:1;min-width:0}
+.ap-title{font-size:.84rem;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-author{font-size:.7rem;font-weight:600;color:var(--muted);margin-top:.1rem}
+.ap-controls{display:flex;align-items:center;gap:.8rem}
+.ap-cbtn{width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .2s;background:rgba(42,171,238,.1);color:var(--tb2)}
+.ap-cbtn:hover{background:rgba(42,171,238,.2);transform:scale(1.1)}
+.ap-play{width:44px;height:44px;background:linear-gradient(135deg,var(--wg1),var(--tb1));color:white;font-size:1.1rem;box-shadow:0 4px 14px rgba(37,211,102,.3)}
+.ap-play:hover{box-shadow:0 6px 20px rgba(37,211,102,.45);transform:scale(1.08)}
+.ap-prog{flex:1;display:flex;flex-direction:column;gap:.3rem;max-width:320px}
+.ap-track{height:5px;background:rgba(42,171,238,.12);border-radius:3px;cursor:pointer;position:relative}
+.ap-track:hover .ap-fill{filter:brightness(1.1)}
+.ap-fill{height:100%;background:linear-gradient(90deg,var(--wg1),var(--tb1));border-radius:3px;width:0%;transition:width .2s}
+.ap-times{display:flex;justify-content:space-between;font-size:.62rem;font-weight:700;color:var(--muted)}
+.ap-vol{display:flex;align-items:center;gap:.5rem}
+.ap-vol-ico{font-size:.9rem;color:var(--muted);cursor:pointer}
+.ap-vol-bar{width:70px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;cursor:pointer;position:relative}
+.ap-vol-fill{height:100%;background:linear-gradient(90deg,var(--wg1),var(--tb1));border-radius:2px;width:80%}
+.ap-close{width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,.04);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.85rem;transition:all .2s;flex-shrink:0}
+.ap-close:hover{background:rgba(254,44,85,.08);color:var(--tt1)}
+
+/* ═══ VIDEO MODAL ═══ */
+.modal-ov{
+  position:fixed;inset:0;z-index:9000;
+  background:rgba(5,15,26,.88);backdrop-filter:blur(14px);
+  display:none;align-items:center;justify-content:center;padding:1.5rem;
+}
+.modal-ov.open{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-box{
+  background:white;border-radius:var(--r1);
+  width:100%;max-width:800px;overflow:hidden;
+  animation:mUp .35s ease both;
+  box-shadow:0 24px 80px rgba(0,0,0,.3);
+}
+@keyframes mUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+.modal-hd{padding:1.1rem 1.7rem;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid rgba(37,211,102,.1);background:linear-gradient(135deg,rgba(37,211,102,.04),rgba(42,171,238,.03))}
+.modal-hd-title{font-size:.96rem;font-weight:800;color:var(--txt);flex:1;min-width:0;margin-right:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.modal-close{width:32px;height:32px;border-radius:50%;border:none;background:rgba(0,0,0,.05);cursor:pointer;font-size:.95rem;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.modal-close:hover{background:rgba(254,44,85,.08);color:var(--tt1);transform:rotate(90deg)}
+.modal-body{padding:1.4rem 1.7rem}
+.video-screen{
+  width:100%;aspect-ratio:16/9;
+  background:linear-gradient(135deg,var(--dark),#0A2540);
+  border-radius:var(--r2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1rem;margin-bottom:1.1rem;position:relative;overflow:hidden;
+  cursor:pointer;
+}
+.video-screen::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(37,244,238,.08),transparent 60%)}
+.vs-play{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.18);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:1.8rem;border:3px solid rgba(255,255,255,.3);transition:all .25s;z-index:1}
+.video-screen:hover .vs-play{background:rgba(37,211,102,.35);border-color:var(--wg1);transform:scale(1.1)}
+.vs-label{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.6);z-index:1}
+.modal-meta{display:flex;gap:1.2rem;flex-wrap:wrap;margin-bottom:.9rem}
+.modal-meta span{font-size:.78rem;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:.3rem}
+.modal-desc{font-size:.83rem;font-weight:600;color:var(--soft);line-height:1.75;margin-bottom:1.1rem;padding:1rem;background:var(--bg);border-radius:var(--r3)}
+.modal-actions{display:flex;gap:.7rem;flex-wrap:wrap}
+
+/* ═══ PDF MODAL ═══ */
+.pdf-modal-box{max-width:600px}
+.pdf-preview{width:100%;height:280px;background:linear-gradient(135deg,#EBF8FF,#E8FFF3);border-radius:var(--r2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;margin-bottom:1.1rem;cursor:pointer}
+.pdf-preview:hover .pdf-open-ico{transform:scale(1.1)}
+.pdf-open-ico{font-size:4rem;transition:transform .25s}
+.pdf-pages{font-size:.85rem;font-weight:700;color:var(--muted)}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:5.5rem;right:2rem;z-index:9999;background:white;border-radius:14px;border-left:5px solid var(--wg1);padding:.85rem 1.4rem;font-size:.82rem;font-weight:700;box-shadow:0 8px 28px rgba(0,0,0,.1);transform:translateX(130%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:300px}
+.toast.show{transform:translateX(0)}
+.toast.tb{border-left-color:var(--tb1)}
+.toast.tt{border-left-color:var(--tt1)}
+
+/* ═══ EMPTY ═══ */
+.empty-state{text-align:center;padding:3.5rem 1.5rem;color:var(--muted)}
+.empty-state .es-ico{font-size:3rem;display:block;margin-bottom:.8rem}
+.empty-state h4{font-size:.95rem;font-weight:800;color:var(--soft);margin-bottom:.4rem}
+.empty-state p{font-size:.8rem;font-weight:600}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:960px){
+  .main-wrap{grid-template-columns:1fr}
+  .sidebar{position:static}
+  .sc-hero{grid-template-columns:auto 1fr;padding:1.5rem}
+  .sc-stats-col{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;grid-column:1/-1}
+}
+@media(max-width:640px){
+  .nav-links,.nv-ghost{display:none}
+  .sc-hero{grid-template-columns:1fr;text-align:center}
+  .sc-av-wrap{margin:0 auto}
+  .sc-meta-row,.sc-tags-row{justify-content:center}
+  .sc-hero-btns{justify-content:center}
+  .ap-vol,.ap-prog{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="bg-fixed"><div class="bgo bgo1"></div><div class="bgo bgo2"></div></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- VIDEO MODAL -->
+<div class="modal-ov" id="video-modal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <p class="modal-hd-title" id="vm-title">—</p>
+      <button class="modal-close" onclick="closeModal('video-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="video-screen" id="vm-screen" onclick="startVideo()">
+        <div class="vs-play">▶</div>
+        <span class="vs-label" id="vm-duration">—</span>
+      </div>
+      <div class="modal-meta" id="vm-meta"></div>
+      <div class="modal-desc" id="vm-desc"></div>
+      <div class="modal-actions" id="vm-actions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PDF MODAL -->
+<div class="modal-ov" id="pdf-modal">
+  <div class="modal-box pdf-modal-box">
+    <div class="modal-hd">
+      <p class="modal-hd-title" id="pm-title">—</p>
+      <button class="modal-close" onclick="closeModal('pdf-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="pdf-preview" onclick="downloadPDF()">
+        <span class="pdf-open-ico">📄</span>
+        <span class="pdf-pages" id="pm-pages">— pages · Cliquer pour ouvrir</span>
+      </div>
+      <div class="modal-meta" id="pm-meta"></div>
+      <div class="modal-desc" id="pm-desc"></div>
+      <div class="modal-actions" id="pm-actions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AUDIO PLAYER -->
+<div class="audio-player" id="audio-player">
+  <div class="ap-cover" id="ap-cover">🎧</div>
+  <div class="ap-info">
+    <div class="ap-title" id="ap-title">—</div>
+    <div class="ap-author" id="ap-author">—</div>
+  </div>
+  <div class="ap-controls">
+    <button class="ap-cbtn" onclick="apStep(-15)" title="-15s">⏮</button>
+    <button class="ap-cbtn" onclick="apPrev()" title="Précédent">⏪</button>
+    <button class="ap-cbtn ap-play" id="ap-play-btn" onclick="apToggle()">▶</button>
+    <button class="ap-cbtn" onclick="apNext()" title="Suivant">⏩</button>
+    <button class="ap-cbtn" onclick="apStep(15)" title="+15s">⏭</button>
+  </div>
+  <div class="ap-prog">
+    <div class="ap-track" id="ap-track" onclick="apSeek(event)">
+      <div class="ap-fill" id="ap-fill"></div>
+    </div>
+    <div class="ap-times"><span id="ap-cur">0:00</span><span id="ap-dur">0:00</span></div>
+  </div>
+  <div class="ap-vol">
+    <span class="ap-vol-ico" onclick="apMute()">🔊</span>
+    <div class="ap-vol-bar" onclick="apVolume(event,this)"><div class="ap-vol-fill" id="ap-vol-fill"></div></div>
+  </div>
+  <button class="ap-close" onclick="closePlayer()">✕</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-brand">
+    <div class="brand-ico">ب</div>
+    <div class="brand-txt">
+      <span class="brand-ar">البصيرة</span>
+      <span class="brand-fr">Al Basîrah</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">🏠 Accueil</a></li>
+    <li><a href="savants.html" class="active">👨‍🏫 Savants</a></li>
+    <li><a href="bibliotheque.html">📚 Bibliothèque</a></li>
+    <li><a href="live.html">📡 En Direct</a></li>
+  </ul>
+  <div class="nav-btns">
+    <button class="nv-btn nv-ghost">Connexion</button>
+    <button class="nv-btn nv-solid">S'inscrire</button>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="crumb">
+  <a href="index.html">🏠 Accueil</a>
+  <span>›</span>
+  <a href="savants.html">👨‍🏫 Savants</a>
+  <span>›</span>
+  <span id="crumb-name">—</span>
+</div>
+
+<!-- SCHOLAR HERO -->
+<div class="sc-hero" id="sc-hero">
+  <div class="sc-av-wrap">
+    <div class="sc-av-big" id="sc-av">ا</div>
+    <div class="sc-live-pill" id="sc-live-pill" style="display:none">
+      <div class="ldot"></div>LIVE
+    </div>
+  </div>
+
+  <div class="sc-info">
+    <p class="sc-name-ar" id="sc-name-ar">—</p>
+    <p class="sc-name-fr" id="sc-name-fr">—</p>
+    <div class="sc-meta-row" id="sc-meta-row"></div>
+    <div class="sc-tags-row" id="sc-tags-row"></div>
+  </div>
+
+  <div class="sc-stats-col" id="sc-stats-col"></div>
+
+  <div class="sc-hero-btns" id="sc-hero-btns">
+    <button class="hbtn hbtn-wg" id="btn-follow" onclick="toggleFollow()">➕ Suivre</button>
+    <button class="hbtn hbtn-tb" onclick="scrollToAudio()">🎧 Écouter ses cours</button>
+    <button class="hbtn hbtn-tb" onclick="scrollToBooks()">📚 Voir ses livres</button>
+    <button class="hbtn hbtn-tt" id="btn-live-join" style="display:none" onclick="joinLive()">📡 Rejoindre le Live</button>
+    <button class="hbtn hbtn-fav" id="btn-fav" onclick="toggleFavScholar()">🤍 Favoris</button>
+    <button class="hbtn hbtn-ghost" onclick="shareScholar()">🔗 Partager</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-wrap">
+
+  <!-- CONTENT TABS -->
+  <div class="content-tabs">
+    <div class="ctabs-nav">
+      <button class="ctab active ct-tt" id="tab-live-btn" onclick="switchTab('live','ct-tt',this)" style="display:none">
+        📡 En Direct <span class="ctab-badge" style="background:rgba(254,44,85,.1);color:var(--tt1)">LIVE</span>
+      </button>
+      <button class="ctab active ct-wg" id="tab-books-btn" onclick="switchTab('books','ct-wg',this)">
+        📚 Livres <span class="ctab-badge" id="tb-books-cnt">0</span>
+      </button>
+      <button class="ctab ct-tb" onclick="switchTab('audio','ct-tb',this)">
+        🎧 Audio <span class="ctab-badge" id="tb-audio-cnt">0</span>
+      </button>
+      <button class="ctab ct-tt" onclick="switchTab('videos','ct-tt',this)">
+        🎬 Vidéos <span class="ctab-badge" id="tb-vids-cnt">0</span>
+      </button>
+      <button class="ctab ct-tq" onclick="switchTab('bio','ct-tq',this)">
+        📖 Biographie
+      </button>
+    </div>
+
+    <!-- LIVE PANEL -->
+    <div id="panel-live" class="cpanel" style="display:none">
+      <div class="live-panel" id="live-panel-box">
+        <div class="live-panel-badge"><div class="ldot" style="background:var(--tt1)"></div>EN DIRECT MAINTENANT</div>
+        <p class="live-panel-title" id="live-title">Cours en cours</p>
+        <p class="live-panel-sub" id="live-sub">Auditeurs en ligne</p>
+        <div class="live-panel-btns">
+          <button class="ic-btn icb-tt" onclick="joinLive()">▶ Rejoindre maintenant</button>
+          <button class="ic-btn icb-ghost" onclick="notifLive()">🔔 Rappel prochain cours</button>
+          <button class="ic-btn icb-dl" onclick="shareScholar()">🔗 Partager</button>
+        </div>
+      </div>
+      <div class="empty-state"><span class="es-ico">📅</span><h4>Prochains cours en direct</h4><p>Activez les notifications pour être prévenu</p></div>
+    </div>
+
+    <!-- BOOKS PANEL -->
+    <div id="panel-books" class="cpanel active">
+      <div class="panel-search">
+        <span class="ps-ico">🔍</span>
+        <input type="text" placeholder="Rechercher un livre…" oninput="filterItems('books',this.value)"/>
+      </div>
+      <div class="items-list" id="list-books">
+        <div style="text-align:center;padding:2rem;color:var(--muted)">⏳ Chargement…</div>
+      </div>
+    </div>
+
+    <!-- AUDIO PANEL -->
+    <div id="panel-audio" class="cpanel">
+      <div class="panel-search">
+        <span class="ps-ico">🔍</span>
+        <input type="text" placeholder="Rechercher un cours audio…" oninput="filterItems('audio',this.value)"/>
+      </div>
+      <div class="items-list" id="list-audio">
+        <div style="text-align:center;padding:2rem;color:var(--muted)">⏳ Chargement…</div>
+      </div>
+    </div>
+
+    <!-- VIDEOS PANEL -->
+    <div id="panel-videos" class="cpanel">
+      <div class="panel-search">
+        <span class="ps-ico">🔍</span>
+        <input type="text" placeholder="Rechercher une vidéo…" oninput="filterItems('videos',this.value)"/>
+      </div>
+      <div class="items-list" id="list-videos">
+        <div style="text-align:center;padding:2rem;color:var(--muted)">⏳ Chargement…</div>
+      </div>
+    </div>
+
+    <!-- BIO PANEL -->
+    <div id="panel-bio" class="cpanel">
+      <div class="bio-text" id="bio-full">
+        <p>Biographie en cours de chargement…</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- Bio courte -->
+    <div class="side-box">
+      <div class="side-head sh-wg">📖 À propos</div>
+      <div class="side-body">
+        <p class="bio-text" id="bio-short">—</p>
+      </div>
+    </div>
+
+    <!-- Partager -->
+    <div class="side-box">
+      <div class="side-head sh-tb">🔗 Partager</div>
+      <div class="side-body">
+        <p style="font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:.6rem">Partagez ce savant sur :</p>
+        <div class="share-row">
+          <button class="share-btn sb-wg" onclick="share('whatsapp')">
+            <span>💬</span><span>WhatsApp</span>
+          </button>
+          <button class="share-btn sb-tb" onclick="share('telegram')">
+            <span>✈️</span><span>Telegram</span>
+          </button>
+          <button class="share-btn sb-tt" onclick="share('copy')">
+            <span>🔗</span><span>Copier</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Savants similaires -->
+    <div class="side-box">
+      <div class="side-head sh-tb">👨‍🏫 Savants similaires</div>
+      <div class="side-body" id="related-scholars"></div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="side-box">
+      <div class="side-head sh-tt">🔔 Notifications</div>
+      <div class="side-body">
+        <p style="font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:.8rem">Recevoir les nouvelles publications :</p>
+        <button class="hbtn hbtn-wg" style="width:100%;justify-content:center" id="notif-btn" onclick="toggleNotif()">
+          🔔 Activer les notifications
+        </button>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   SUPABASE
+═══════════════════════════════════════ */
+const SUPA_URL = 'https://mutdtyifvcrkiouudwhr.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11dGR0eWlmdmNya2lvdXVkd2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5ODEwODcsImV4cCI6MjA4OTU1NzA4N30.l08pEalpQ50QN4xVuDp5hyan7hwXprHOeCo0nrCA4vU';
+const { createClient } = supabase;
+const db = createClient(SUPA_URL, SUPA_KEY);
+
+/* ═══════════════════════════════════════
+   SCHOLARS DATABASE (fallback)
+═══════════════════════════════════════ */
+const SCHOLARS = {
+  'ibn-baz':{
+    id:'ibn-baz',name:'الشيخ عبد العزيز بن باز',name_fr:"Cheikh 'Abd Al-'Aziz Ibn Bâz",
+    country:'🇸🇦 Arabie Saoudite',era:'1910–1999',initial:'ا',
+    cat:'contemporains',is_live:false,
+    tags:['Aqida','Tawhid','Fiqh','Hadith'],
+    books:80,audios:420,videos:180,
+    bio:`Cheikh 'Abd Al-'Aziz ibn 'Abdillah ibn Bâz (rahimahullâh) est l'un des plus grands savants du XXème siècle. Né en 1910 à Riyad, il perdit la vue à l'âge de 18 ans mais continua ses études avec une ardeur remarquable. Il fut Grand Mufti d'Arabie Saoudite de 1993 jusqu'à sa mort en 1999. Ses écrits, fatâwas et cours constituent un trésor immense pour les musulmans du monde entier.`,
+    live_title:null, live_viewers:0,
+    related:['ibn-uthaymin','fawzan','albani'],
+  },
+  'ibn-uthaymin':{
+    id:'ibn-uthaymin',name:'الشيخ ابن عثيمين',name_fr:"Cheikh Muhammad Ibn 'Outhaymine",
+    country:'🇸🇦 Arabie Saoudite',era:'1929–2001',initial:'ع',
+    cat:'contemporains',is_live:false,
+    tags:['Fiqh','Aqida','Usul'],
+    books:95,audios:620,videos:210,
+    bio:`Cheikh Muhammad ibn Sâlih Al-'Outhaymine (rahimahullâh) est né en 1929 à 'Ounayzah. Élève de Cheikh ibn Bâz et de Cheikh 'Abd Ar-Rahmân As-Sa'di, il devint l'un des fuqahâ les plus respectés du siècle. Son œuvre est considérable : plus de 80 ouvrages publiés et des milliers d'heures d'enseignement enregistrées.`,
+    live_title:null, live_viewers:0,
+    related:['ibn-baz','fawzan','rabi'],
+  },
+  'albani':{
+    id:'albani',name:'الشيخ الألباني',name_fr:"Cheikh Muhammad Nâsir Ad-Dîn Al-Albâni",
+    country:'🇦🇱 Albanie / Syrie',era:'1914–1999',initial:'ن',
+    cat:'hadith',is_live:false,
+    tags:['Hadith','Manhaj','Fiqh'],
+    books:60,audios:390,videos:95,
+    bio:`Cheikh Muhammad Nâsir Ad-Dîn Al-Albâni (rahimahullâh) est le plus grand spécialiste des sciences du hadîth du XXème siècle. Né en Albanie en 1914, il émigra en Syrie avec sa famille. Autodidacte en hadîth, il consacra sa vie à authentifier et affaiblir les hadiths, laissant un héritage scientifique incomparable.`,
+    live_title:null, live_viewers:0,
+    related:['ibn-baz','muqbil','bukhari'],
+  },
+  'fawzan':{
+    id:'fawzan',name:'الشيخ صالح الفوزان',name_fr:"Cheikh Sâlih ibn Fawzân Al-Fawzân",
+    country:'🇸🇦 Arabie Saoudite',era:'1933–',initial:'ص',
+    cat:'contemporains',is_live:true,
+    live_title:"Explication du Livre du Tawhid — Séance 14",
+    live_viewers:1340,
+    tags:['Fiqh','Aqida','Manhaj'],
+    books:70,audios:340,videos:160,
+    bio:`Cheikh Sâlih ibn Fawzân Al-Fawzân (hafidhahullâh) est membre du Conseil des Grands Savants d'Arabie Saoudite. Né en 1933, il est l'un des savants les plus actifs de notre époque. Ses ouvrages pédagogiques sur la Fiqh et l'Aqida sont utilisés dans de nombreuses universités islamiques.`,
+    related:['ibn-baz','ibn-uthaymin','rabi'],
+  },
+  'rabi':{
+    id:'rabi',name:'الشيخ ربيع المدخلي',name_fr:"Cheikh Rabî' ibn Hâdi Al-Madkhali",
+    country:'🇸🇦 Arabie Saoudite',era:'1931–',initial:'ر',
+    cat:'contemporains',is_live:false,
+    tags:['Manhaj','Jarh','Aqida'],
+    books:45,audios:270,videos:120,
+    bio:`Cheikh Rabî' ibn Hâdi 'Oumayr Al-Madkhali (hafidhahullâh) est professeur à l'Université Islamique de Médine. Spécialiste du jarh wa-ta'dîl et de la critique des déviants, il est une référence incontournable du manhaj salafi contemporain.`,
+    live_title:null, live_viewers:0,
+    related:['fawzan','ibn-baz','muqbil'],
+  },
+  'muqbil':{
+    id:'muqbil',name:'الشيخ مقبل الوادعي',name_fr:"Cheikh Mouqbil ibn Hâdi Al-Wâdi'î",
+    country:'🇾🇪 Yémen',era:'1933–2001',initial:'م',
+    cat:'hadith',is_live:false,
+    tags:['Hadith','Manhaj','Enseignement'],
+    books:28,audios:180,videos:60,
+    bio:`Cheikh Mouqbil ibn Hâdi Al-Wâdi'î (rahimahullâh) est le fondateur de Dâr Al-Hadîth à Dammâj au Yémen. Il forma des milliers d'étudiants venus du monde entier. Son école est une référence pour l'enseignement du hadîth selon la méthode des Salaf.`,
+    live_title:null, live_viewers:0,
+    related:['albani','rabi','ibn-baz'],
+  },
+  'bukhari':{
+    id:'bukhari',name:'الإمام البخاري',name_fr:"Imam Al-Bukhâri",
+    country:'🇺🇿 Boukhara (Ouzbékistan)',era:'194–256 H',initial:'ب',
+    cat:'hadith',is_live:false,
+    tags:['Hadith','Sahih','Rijal'],
+    books:15,audios:0,videos:2,
+    bio:`Muhammad ibn Ismâ'îl Al-Bukhâri (rahimahullâh), né en 194 H à Boukhara, est l'auteur du Sahîh Al-Bukhâri, considéré comme le recueil de hadîth le plus authentique après le Coran. Il parcourut le monde islamique pendant 16 ans pour collecter les hadiths, les soumettant à une critique rigoureuse.`,
+    live_title:null, live_viewers:0,
+    related:['muslim','abu-dawud','tirmidhi'],
+  },
+  'muslim':{
+    id:'muslim',name:'الإمام مسلم',name_fr:"Imam Muslim",
+    country:'🇮🇷 Nichapour (Iran)',era:'204–261 H',initial:'م',
+    cat:'hadith',is_live:false,
+    tags:['Hadith','Sahih','Rijal'],
+    books:8,audios:0,videos:2,
+    bio:`Muslim ibn Al-Hajjâj Al-Qushayri An-Naysabûri (rahimahullâh), né en 204 H à Nichapour, est l'auteur du Sahîh Muslim, deuxième recueil de hadîths le plus authentique. Élève de l'Imam Al-Bukhâri, il compila environ 300 000 hadiths et en sélectionna environ 7 500 pour son Sahîh.`,
+    live_title:null, live_viewers:0,
+    related:['bukhari','abu-dawud','nawawi'],
+  },
+};
+
+/* ═══ CONTENT DATA (fallback) ═══ */
+const CONTENT = {
+  'ibn-baz': {
+    books:[
+      {id:1,title:"Majmû' Fatâwâ Cheikh Ibn Bâz — 30 volumes",cat:"Fatwas",pages:8500,dl:32000,emoji:"📗",desc:"Recueil complet des fatâwas du Cheikh Ibn Bâz en 30 volumes.",new:false},
+      {id:2,title:"At-Tahqîq wa-l-Îdhâh li-kathîr min masâil Al-Hajj wa-l-'Umra",cat:"Fiqh",pages:180,dl:14200,emoji:"📘",desc:"Clarification détaillée des règles du Hajj et de la 'Umra.",new:false},
+      {id:3,title:"Wujûb Al-'Amal bi-Sunnat Ar-Rasul",cat:"Aqida",pages:64,dl:11800,emoji:"📙",desc:"L'obligation d'agir selon la Sounna du Prophète ﷺ.",new:true},
+      {id:4,title:"Ad-Da'wa ila Allah",cat:"Da'wa",pages:92,dl:9600,emoji:"📗",desc:"L'appel vers Allah, ses règles et ses méthodes selon le Coran et la Sounna.",new:false},
+    ],
+    audio:[
+      {id:101,title:"Explication du Kitâb At-Tawhid — Série complète",cat:"Tawhid",eps:48,dur:"32h",plays:18200,emoji:"🎙️",desc:"Explication approfondie du Livre du Tawhid de Muhammad ibn Abd Al-Wahhab."},
+      {id:102,title:"Sharh Al-'Aqida Al-Wâsitiyya",cat:"Aqida",eps:35,dur:"28h",plays:14600,emoji:"🎧",desc:"Commentaire complet de l'Aqida Wasitiyya d'Ibn Taymiyya."},
+      {id:103,title:"Fatâwâ Nur 'ala Ad-Darb — Série radio",cat:"Fatwas",eps:120,dur:"80h",plays:22400,emoji:"📻",desc:"Questions-réponses diffusées sur la radio saoudienne, des centaines de sujets abordés."},
+      {id:104,title:"At-Tahdhîr min Al-Bid'a",cat:"Manhaj",eps:8,dur:"6h",plays:8900,emoji:"🎙️",desc:"Mise en garde contre les innovations religieuses avec preuves et exemples."},
+      {id:105,title:"Ar-Rahîq Al-Makhtûm — Commentaire de la Sîra",cat:"Sîra",eps:30,dur:"22h",plays:16800,emoji:"🎧",desc:"Commentaire de la biographie du Prophète ﷺ par Cheikh Ibn Bâz."},
+    ],
+    videos:[
+      {id:201,title:"Le statut de la prière en Islam — Conférence complète",cat:"Fiqh",dur:"45min",views:31200,emoji:"🎬",desc:"L'importance et les obligations de la salât, deuxième pilier de l'Islam."},
+      {id:202,title:"Questions-Réponses sur l'Aqida contemporaine",cat:"Aqida",dur:"58min",views:9400,emoji:"📹",desc:"Session de questions-réponses sur des problématiques de croyance contemporaines."},
+      {id:203,title:"Les signes de la fin des temps",cat:"Aqida",dur:"1h 12min",views:24600,emoji:"🎥",desc:"Étude des grands et petits signes de la fin des temps à la lumière des textes."},
+      {id:204,title:"L'Islam et les défis du XXème siècle",cat:"Da'wa",dur:"1h 30min",views:13800,emoji:"🎬",desc:"Comment les musulmans doivent-ils répondre aux défis contemporains ?"},
+    ],
+  },
+  'fawzan': {
+    books:[
+      {id:1,title:"Al-Mulakhkhas Al-Fiqhi — Précis de jurisprudence",cat:"Fiqh",pages:620,dl:28000,emoji:"📗",desc:"Manuel de fiqh complet en 2 volumes, utilisé dans de nombreuses universités islamiques.",new:false},
+      {id:2,title:"I'ânatu Al-Mustafîd bi-Sharh Kitâb At-Tawhîd",cat:"Tawhid",pages:380,dl:19400,emoji:"📘",desc:"Aide au chercheur dans l'explication du Livre du Tawhid.",new:true},
+      {id:3,title:"Al-'Aqida fi Allah",cat:"Aqida",pages:140,dl:12600,emoji:"📙",desc:"La croyance en Allah : attributs, noms et règles de la foi.",new:false},
+    ],
+    audio:[
+      {id:101,title:"Sharh Al-Kâfiyya Ash-Shâfiyya fi 'Ilm Al-Kalâm",cat:"Aqida",eps:20,dur:"15h",plays:8400,emoji:"🎙️",desc:"Explication du poème doctrinal d'Ibn Al-Qayyim sur la science de la théologie."},
+      {id:102,title:"Sharh Al-'Aqida Al-Wâsitiyya — Cours complet",cat:"Aqida",eps:28,dur:"21h",plays:11800,emoji:"🎧",desc:"Commentaire de l'Aqida Wasitiyya selon la méthode des Salaf."},
+      {id:103,title:"At-Tawhid wa Ahkâmuhu — Le monothéisme et ses règles",cat:"Tawhid",eps:15,dur:"10h",plays:9200,emoji:"📻",desc:"Cours sur les catégories du Tawhid et leurs implications pratiques."},
+    ],
+    videos:[
+      {id:201,title:"Les conditions de la Shahada — Étude détaillée",cat:"Aqida",dur:"1h 24min",views:22100,emoji:"🎬",desc:"Les sept conditions de la déclaration de foi et leur compréhension correcte."},
+      {id:202,title:"Le manhaj salafi face aux fitnas contemporaines",cat:"Manhaj",dur:"1h 40min",views:17200,emoji:"📹",desc:"Comment rester ferme sur le manhaj face aux épreuves du temps présent."},
+      {id:203,title:"Éduquer ses enfants selon l'Islam authentique",cat:"Famille",dur:"1h 55min",views:24500,emoji:"🎥",desc:"Conseils pratiques tirés du Coran et de la Sounna pour l'éducation islamique des enfants."},
+    ],
+  },
+};
+
+/* Défaut pour tous les autres savants */
+function getDefaultContent(scholar) {
+  return {
+    books:[
+      {id:1,title:`Œuvres complètes — ${scholar.name_fr}`,cat:"Divers",pages:800,dl:8000,emoji:"📗",desc:`Recueil complet des œuvres de ${scholar.name_fr}.`,new:false},
+      {id:2,title:"Recueil de fatâwas et réponses",cat:"Fatwas",pages:320,dl:5600,emoji:"📘",desc:"Questions et réponses sur divers sujets islamiques.",new:false},
+    ],
+    audio:[
+      {id:101,title:`Cours d'Aqida — Série de ${scholar.name_fr}`,cat:"Aqida",eps:20,dur:"15h",plays:6400,emoji:"🎙️",desc:"Série de cours sur les fondements de la croyance islamique."},
+      {id:102,title:"Conférences et leçons diverses",cat:"Cours",eps:12,dur:"9h",plays:4200,emoji:"🎧",desc:"Diverses conférences et leçons sur plusieurs sujets islamiques."},
+    ],
+    videos:[
+      {id:201,title:`Conférence principale — ${scholar.name_fr}`,cat:"Cours",dur:"1h 15min",views:8200,emoji:"🎬",desc:"Conférence sur les fondements de la foi islamique authentique."},
+    ],
+  };
+}
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let state = {
+  scholar: null,
+  followed: false,
+  favorited: JSON.parse(localStorage.getItem('ab_fav_scholars') || '{}'),
+  notifs: JSON.parse(localStorage.getItem('ab_notifs') || '{}'),
+  currentAudio: null,
+  audioPlaying: false,
+  audioProgress: 0,
+  audioDuration: 1920,
+  audioTimer: null,
+  content: null,
+};
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+async function init() {
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id') || 'fawzan'; // default
+
+  // Try DB first
+  let scholar = null;
+  try {
+    const { data } = await db.from('scholars').select('*').eq('id', id).single();
+    if (data) scholar = adaptDBScholar(data);
+  } catch {}
+
+  // Fallback
+  if (!scholar) scholar = SCHOLARS[id] || SCHOLARS['fawzan'];
+  state.scholar = scholar;
+
+  // Load content
+  try {
+    const [books, audios, videos] = await Promise.all([
+      db.from('books').select('*').eq('scholar_id', id),
+      db.from('audios').select('*').eq('scholar_id', id),
+      db.from('videos').select('*').eq('scholar_id', id),
+    ]);
+    const hasDB = (books.data?.length || audios.data?.length || videos.data?.length);
+    if (hasDB) {
+      state.content = { books: books.data||[], audio: audios.data||[], videos: videos.data||[] };
+    } else {
+      state.content = CONTENT[id] || getDefaultContent(scholar);
+    }
+  } catch {
+    state.content = CONTENT[id] || getDefaultContent(scholar);
+  }
+
+  renderScholar();
+  renderContent();
+}
+
+function adaptDBScholar(d) {
+  return {
+    id: d.id,
+    name: d.name || d.name_ar || '—',
+    name_fr: d.name_fr || d.name || '—',
+    country: d.country || '—',
+    era: d.era || '',
+    initial: d.initial || (d.name||'?').slice(-1),
+    cat: d.category || 'contemporains',
+    is_live: d.is_live || false,
+    live_title: d.live_title || null,
+    live_viewers: d.live_viewers || 0,
+    tags: d.tags || [],
+    books: d.books_count || 0,
+    audios: d.audios_count || 0,
+    videos: d.videos_count || 0,
+    bio: d.bio || '',
+    related: d.related || [],
+  };
+}
+
+/* ═══════════════════════════════════════
+   RENDER SCHOLAR
+═══════════════════════════════════════ */
+function renderScholar() {
+  const s = state.scholar;
+  document.title = `${s.name_fr} — Al Basîrah`;
+  document.getElementById('crumb-name').textContent = s.name_fr;
+
+  // Avatar
+  const av = document.getElementById('sc-av');
+  av.textContent = s.initial;
+  const avColors = ['linear-gradient(135deg,#25D366,#128C7E)','linear-gradient(135deg,#2AABEE,#0088CC)','linear-gradient(135deg,#FE2C55,#FF5F7E)','linear-gradient(135deg,#25F4EE,#2AABEE)'];
+  const ci = Object.keys(SCHOLARS).indexOf(s.id) % 4;
+  av.style.background = avColors[ci];
+
+  // Live
+  if (s.is_live) {
+    document.getElementById('sc-live-pill').style.display = 'flex';
+    document.getElementById('btn-live-join').style.display = 'flex';
+    // Live tab
+    document.getElementById('tab-live-btn').style.display = 'flex';
+    document.getElementById('panel-live').style.display = 'block';
+    document.getElementById('live-title').textContent = s.live_title || 'Cours en direct';
+    document.getElementById('live-sub').textContent = `👁 ${s.live_viewers || 0} auditeurs en ligne`;
+  }
+
+  // Names
+  document.getElementById('sc-name-ar').textContent = s.name;
+  document.getElementById('sc-name-fr').textContent = s.name_fr;
+
+  // Meta
+  document.getElementById('sc-meta-row').innerHTML = `
+    <span class="sc-meta-item">📍 ${s.country}</span>
+    <span class="sc-meta-item">🕰️ ${s.era}</span>
+    <span class="sc-meta-item">🏷️ ${s.cat === 'anciens' ? 'Savant ancien' : s.cat === 'hadith' ? 'Rapporteur Hadith' : 'Contemporain'}</span>
+  `;
+
+  // Tags
+  const tagColors = ['tg-wg','tg-tb','tg-tq','tg-tt'];
+  document.getElementById('sc-tags-row').innerHTML = (s.tags||[]).map((t,i) =>
+    `<span class="sc-tag ${tagColors[i%4]}">${t}</span>`
+  ).join('');
+
+  // Stats
+  document.getElementById('sc-stats-col').innerHTML = `
+    <div class="sc-stat-box ssb-wg"><span class="sc-stat-n">${s.books||0}</span><span class="sc-stat-l">📚 Livres</span></div>
+    <div class="sc-stat-box ssb-tb"><span class="sc-stat-n">${s.audios||0}</span><span class="sc-stat-l">🎧 Audios</span></div>
+    <div class="sc-stat-box ssb-tt"><span class="sc-stat-n">${s.videos||0}</span><span class="sc-stat-l">🎬 Vidéos</span></div>
+  `;
+
+  // Tab counts
+  document.getElementById('tb-books-cnt').textContent = state.content.books.length;
+  document.getElementById('tb-audio-cnt').textContent = state.content.audio.length;
+  document.getElementById('tb-vids-cnt').textContent  = state.content.videos.length;
+
+  // Bio
+  const bioTxt = s.bio || `Biographie de ${s.name_fr} non disponible pour le moment.`;
+  document.getElementById('bio-short').textContent = bioTxt.substring(0,200) + (bioTxt.length>200?'…':'');
+  document.getElementById('bio-full').innerHTML = `<p style="font-size:.88rem;line-height:1.9;color:var(--soft);font-weight:600">${bioTxt}</p>`;
+
+  // Fav button
+  if (state.favorited[s.id]) {
+    const fb = document.getElementById('btn-fav');
+    fb.textContent = '❤️ Favoris'; fb.classList.add('active');
+  }
+
+  // Related
+  renderRelated(s.related || []);
+}
+
+function renderRelated(ids) {
+  const container = document.getElementById('related-scholars');
+  const avC = ['ra-wg','ra-tb','ra-tt','ra-tq'];
+  container.innerHTML = ids.slice(0,4).map((id,i) => {
+    const sc = SCHOLARS[id]; if (!sc) return '';
+    return `<div class="rel-scholar" onclick="location.href='savant.html?id=${id}'">
+      <div class="rel-av ${avC[i%4]}">${sc.initial}</div>
+      <div><div class="rel-name">${sc.name_fr.split(' ').slice(0,4).join(' ')}</div>
+      <div class="rel-sub">${sc.tags[0]||''} · ${sc.era}</div></div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════
+   RENDER CONTENT
+═══════════════════════════════════════ */
+function renderContent() {
+  renderBooks(state.content.books);
+  renderAudio(state.content.audio);
+  renderVideos(state.content.videos);
+}
+
+function renderBooks(data) {
+  const el = document.getElementById('list-books');
+  if (!data.length) { el.innerHTML = emptyState('📚','Aucun livre disponible','Les livres seront ajoutés prochainement'); return; }
+  el.innerHTML = data.map(b => `
+    <div class="icard book-item" data-id="${b.id}">
+      <div class="ic-thumb th-wg">${b.emoji||'📗'}</div>
+      <div class="ic-body">
+        <div class="ic-top">
+          <span class="ic-badge ib-wg">${b.cat||'Livre'}</span>
+          ${b.new?'<span class="ic-badge ib-new">NOUVEAU</span>':''}
+        </div>
+        <p class="ic-title">${b.title||'—'}</p>
+        <div class="ic-meta">
+          <span>📄 ${b.pages||'—'} pages</span>
+          <span>↓ ${fmtNum(b.dl||b.downloads||0)} téléch.</span>
+        </div>
+        <div class="ic-actions">
+          <button class="ic-btn icb-wg" onclick="downloadBook(${b.id},'${esc(b.title)}')">↓ Télécharger PDF</button>
+          <button class="ic-btn icb-ghost" onclick="previewBook(${b.id},'${esc(b.title)}','${esc(b.desc||'')}',${b.pages||0},${b.dl||0})">👁 Aperçu</button>
+          <button class="ic-btn icb-fav" id="fav-b-${b.id}" onclick="toggleFavItem('b',${b.id},this)" title="Favoris">🤍</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderAudio(data) {
+  const el = document.getElementById('list-audio');
+  if (!data.length) { el.innerHTML = emptyState('🎧','Aucun cours audio','Les audios seront ajoutés prochainement'); return; }
+  el.innerHTML = data.map((a,i) => `
+    <div class="icard audio-item" id="acard-${a.id}" data-id="${a.id}">
+      <div class="ic-thumb th-tb">${a.emoji||'🎧'}</div>
+      <div class="ic-body">
+        <div class="ic-top">
+          <span class="ic-badge ib-tb">${a.cat||'Audio'}</span>
+          <div class="playing-waves"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+        </div>
+        <p class="ic-title">${a.title||'—'}</p>
+        <div class="ic-meta">
+          <span>🎵 ${a.eps||a.episodes||'—'} épisodes</span>
+          <span>⏱ ${a.dur||a.duration||'—'}</span>
+          <span>▶ ${fmtNum(a.plays||0)} écoutes</span>
+        </div>
+        <div class="ic-actions">
+          <button class="ic-btn icb-tb" id="play-btn-${a.id}" onclick="playAudio(${a.id},'${esc(a.title)}','${esc(state.scholar.name_fr)}','${esc(a.dur||a.duration||'')}',this)">▶ Écouter</button>
+          <button class="ic-btn icb-dl" onclick="downloadAudio(${a.id},'${esc(a.title)}')">↓ Télécharger</button>
+          <button class="ic-btn icb-ghost" onclick="shareContent('${esc(a.title)}')">🔗</button>
+          <button class="ic-btn icb-fav" id="fav-a-${a.id}" onclick="toggleFavItem('a',${a.id},this)">🤍</button>
+        </div>
+        <div class="audio-progress" id="aprog-${a.id}">
+          <div class="ap-mini-bar" onclick="apMiniSeek(event,this,${a.id})">
+            <div class="ap-mini-fill" id="apfill-${a.id}"></div>
+          </div>
+          <div class="ap-mini-times">
+            <span id="apcur-${a.id}">0:00</span>
+            <span>${a.dur||a.duration||'—'}</span>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderVideos(data) {
+  const el = document.getElementById('list-videos');
+  if (!data.length) { el.innerHTML = emptyState('🎬','Aucune vidéo disponible','Les vidéos seront ajoutées prochainement'); return; }
+  el.innerHTML = data.map(v => `
+    <div class="icard video-item" data-id="${v.id}">
+      <div class="ic-thumb th-tt">${v.emoji||'🎬'}</div>
+      <div class="ic-body">
+        <div class="ic-top">
+          <span class="ic-badge ib-tt">${v.cat||'Vidéo'}</span>
+        </div>
+        <p class="ic-title">${v.title||'—'}</p>
+        <div class="ic-meta">
+          <span>⏱ ${v.dur||v.duration||'—'}</span>
+          <span>👁 ${fmtNum(v.views||0)} vues</span>
+        </div>
+        <div class="ic-actions">
+          <button class="ic-btn icb-tt" onclick="openVideo('${esc(v.title)}','${esc(state.scholar.name_fr)}','${esc(v.dur||v.duration||'')}',${v.views||0},'${esc(v.desc||v.description||'')}')">▶ Regarder</button>
+          <button class="ic-btn icb-dl" onclick="downloadVideo('${esc(v.title)}')">↓ Télécharger</button>
+          <button class="ic-btn icb-ghost" onclick="shareContent('${esc(v.title)}')">🔗 Partager</button>
+          <button class="ic-btn icb-fav" id="fav-v-${v.id}" onclick="toggleFavItem('v',${v.id},this)">🤍</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function emptyState(ico, title, sub) {
+  return `<div class="empty-state"><span class="es-ico">${ico}</span><h4>${title}</h4><p>${sub}</p></div>`;
+}
+
+/* ═══════════════════════════════════════
+   SEARCH FILTER
+═══════════════════════════════════════ */
+function filterItems(type, query) {
+  const q = query.toLowerCase();
+  const listId = type === 'books' ? 'list-books' : type === 'audio' ? 'list-audio' : 'list-videos';
+  document.querySelectorAll(`#${listId} .icard`).forEach(card => {
+    const title = card.querySelector('.ic-title')?.textContent?.toLowerCase() || '';
+    card.style.display = title.includes(q) ? '' : 'none';
+  });
+}
+
+/* ═══════════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════════ */
+function switchTab(name, cls, btn) {
+  document.querySelectorAll('.cpanel').forEach(p => { p.classList.remove('active'); p.style.display=''; });
+  document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active','ct-wg','ct-tb','ct-tt','ct-tq'));
+  const panel = document.getElementById('panel-'+name);
+  panel.classList.add('active');
+  panel.style.display = 'block';
+  btn.classList.add('active', cls);
+}
+
+/* ═══════════════════════════════════════
+   AUDIO PLAYER
+═══════════════════════════════════════ */
+let currentAudioId = null;
+
+function playAudio(id, title, author, dur, btn) {
+  // Stop old
+  if (currentAudioId && currentAudioId !== id) {
+    stopAudio(currentAudioId);
+  }
+
+  const card = document.getElementById('acard-'+id);
+  const isPlaying = card && card.classList.contains('playing');
+
+  if (isPlaying) {
+    // Pause
+    state.audioPlaying = false;
+    clearInterval(state.audioTimer);
+    card.classList.remove('playing');
+    btn.textContent = '▶ Écouter';
+    document.getElementById('ap-play-btn').textContent = '▶';
+    showToast('⏸ Pause', 'tb');
+    return;
+  }
+
+  currentAudioId = id;
+  state.audioPlaying = true;
+
+  // UI card
+  if (card) card.classList.add('playing');
+  if (btn) btn.textContent = '⏸ Pause';
+
+  // Player bar
+  document.getElementById('ap-title').textContent = title.substring(0,55);
+  document.getElementById('ap-author').textContent = author;
+  document.getElementById('ap-dur').textContent = dur || '—';
+  document.getElementById('ap-play-btn').textContent = '⏸';
+  document.getElementById('audio-player').classList.add('open');
+
+  showToast('▶ Lecture : ' + title.substring(0,35) + '…', 'tb');
+  startProgress(id);
+}
+
+function startProgress(id) {
+  clearInterval(state.audioTimer);
+  state.audioDuration = 1920;
+  let sec = state.audioProgress || 0;
+
+  state.audioTimer = setInterval(() => {
+    if (!state.audioPlaying) return;
+    sec++;
+    state.audioProgress = sec;
+    const pct = (sec / state.audioDuration * 100).toFixed(2);
+
+    // Main bar
+    document.getElementById('ap-fill').style.width = pct + '%';
+    document.getElementById('ap-cur').textContent = fmtTime(sec);
+
+    // Mini bar in card
+    const mf = document.getElementById('apfill-'+id);
+    const mc = document.getElementById('apcur-'+id);
+    if (mf) mf.style.width = pct + '%';
+    if (mc) mc.textContent = fmtTime(sec);
+
+    if (sec >= state.audioDuration) {
+      clearInterval(state.audioTimer);
+      showToast('✅ Lecture terminée !', 'wg');
+      stopAudio(id);
+    }
+  }, 1000);
+}
+
+function stopAudio(id) {
+  const card = document.getElementById('acard-'+id);
+  const btn = document.getElementById('play-btn-'+id);
+  if (card) card.classList.remove('playing');
+  if (btn) btn.textContent = '▶ Écouter';
+  state.audioPlaying = false;
+  clearInterval(state.audioTimer);
+}
+
+function apToggle() {
+  state.audioPlaying = !state.audioPlaying;
+  document.getElementById('ap-play-btn').textContent = state.audioPlaying ? '⏸' : '▶';
+  const card = currentAudioId ? document.getElementById('acard-'+currentAudioId) : null;
+  if (card) card.classList.toggle('playing', state.audioPlaying);
+  showToast(state.audioPlaying ? '▶ Reprise' : '⏸ Pause', 'tb');
+}
+
+function apStep(s) {
+  state.audioProgress = Math.max(0, Math.min(state.audioDuration, (state.audioProgress||0) + s));
+  const pct = (state.audioProgress / state.audioDuration * 100).toFixed(2);
+  document.getElementById('ap-fill').style.width = pct + '%';
+  document.getElementById('ap-cur').textContent = fmtTime(state.audioProgress);
+  showToast((s > 0 ? '+' : '') + s + 's', 'tb');
+}
+
+function apPrev() {
+  state.audioProgress = 0;
+  document.getElementById('ap-fill').style.width = '0%';
+  document.getElementById('ap-cur').textContent = '0:00';
+  showToast('⏮ Début', 'tb');
+}
+
+function apNext() {
+  clearInterval(state.audioTimer);
+  stopAudio(currentAudioId);
+  document.getElementById('audio-player').classList.remove('open');
+  showToast('⏩ Épisode suivant', 'tb');
+}
+
+function apSeek(e) {
+  const bar = document.getElementById('ap-track');
+  const pct = e.offsetX / bar.offsetWidth;
+  state.audioProgress = Math.floor(pct * state.audioDuration);
+  document.getElementById('ap-fill').style.width = (pct * 100).toFixed(2) + '%';
+  document.getElementById('ap-cur').textContent = fmtTime(state.audioProgress);
+}
+
+function apMiniSeek(e, bar, id) {
+  const pct = e.offsetX / bar.offsetWidth;
+  state.audioProgress = Math.floor(pct * state.audioDuration);
+  document.getElementById('ap-fill').style.width = (pct * 100).toFixed(2) + '%';
+  if (document.getElementById('apfill-'+id)) document.getElementById('apfill-'+id).style.width = (pct*100).toFixed(2)+'%';
+  document.getElementById('ap-cur').textContent = fmtTime(state.audioProgress);
+}
+
+function apMute() {
+  const ico = document.querySelector('.ap-vol-ico');
+  ico.textContent = ico.textContent === '🔊' ? '🔇' : '🔊';
+  showToast(ico.textContent === '🔇' ? '🔇 Son coupé' : '🔊 Son activé', 'tb');
+}
+
+function apVolume(e, bar) {
+  const pct = Math.max(0, Math.min(1, e.offsetX / bar.offsetWidth));
+  document.getElementById('ap-vol-fill').style.width = (pct * 100) + '%';
+}
+
+function closePlayer() {
+  clearInterval(state.audioTimer);
+  state.audioPlaying = false;
+  if (currentAudioId) stopAudio(currentAudioId);
+  document.getElementById('audio-player').classList.remove('open');
+}
+
+/* ═══════════════════════════════════════
+   VIDEO MODAL
+═══════════════════════════════════════ */
+function openVideo(title, author, dur, views, desc) {
+  document.getElementById('vm-title').textContent = title;
+  document.getElementById('vm-duration').textContent = dur;
+  document.getElementById('vm-meta').innerHTML = `
+    <span>👨‍🏫 ${author}</span>
+    <span>⏱ ${dur}</span>
+    <span>👁 ${fmtNum(views)} vues</span>`;
+  document.getElementById('vm-desc').textContent = desc || 'Description non disponible.';
+  document.getElementById('vm-actions').innerHTML = `
+    <button class="ic-btn icb-tb" onclick="startVideo()">▶ Lancer la vidéo</button>
+    <button class="ic-btn icb-dl" onclick="downloadVideo('${esc(title)}')">↓ Télécharger</button>
+    <button class="ic-btn icb-ghost" onclick="shareContent('${esc(title)}')">🔗 Partager</button>`;
+  document.getElementById('video-modal').classList.add('open');
+}
+
+function startVideo() {
+  const screen = document.getElementById('vm-screen');
+  screen.innerHTML = `<span style="font-size:3rem;animation:fUp .3s ease">📺</span><span style="color:rgba(255,255,255,.6);font-size:.8rem;font-weight:700">▶ Lecture en cours…</span>`;
+  showToast('▶ Vidéo lancée', 'tt');
+}
+
+/* ═══════════════════════════════════════
+   PDF MODAL
+═══════════════════════════════════════ */
+function previewBook(id, title, desc, pages, dl) {
+  document.getElementById('pm-title').textContent = title;
+  document.getElementById('pm-pages').textContent = `${pages} pages · Cliquer pour ouvrir`;
+  document.getElementById('pm-meta').innerHTML = `<span>📄 ${pages} pages</span><span>↓ ${fmtNum(dl)} téléchargements</span>`;
+  document.getElementById('pm-desc').textContent = desc || 'Description non disponible.';
+  document.getElementById('pm-actions').innerHTML = `
+    <button class="ic-btn icb-wg" onclick="downloadBook(${id},'${esc(title)}')">↓ Télécharger PDF</button>
+    <button class="ic-btn icb-ghost" onclick="shareContent('${esc(title)}')">🔗 Partager</button>`;
+  document.getElementById('pdf-modal').classList.add('open');
+}
+
+function downloadPDF() {
+  showToast('↓ Ouverture du PDF…', 'wg');
+}
+
+/* ═══════════════════════════════════════
+   ACTIONS
+═══════════════════════════════════════ */
+function downloadBook(id, title) {
+  showToast(`↓ Téléchargement PDF : ${title.substring(0,30)}…`, 'wg');
+  // window.open(url, '_blank');
+}
+
+function downloadAudio(id, title) {
+  showToast(`↓ Téléchargement audio : ${title.substring(0,30)}…`, 'tb');
+}
+
+function downloadVideo(title) {
+  showToast(`↓ Téléchargement vidéo : ${title.substring(0,30)}…`, 'tt');
+}
+
+function shareContent(title) {
+  const url = location.href;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url);
+    showToast('🔗 Lien copié : ' + title.substring(0,25), 'tb');
+  } else {
+    showToast('🔗 Lien copié !', 'tb');
+  }
+}
+
+function scrollToAudio() {
+  switchTab('audio','ct-tb', document.querySelectorAll('.ctab')[1]);
+  document.querySelector('.content-tabs').scrollIntoView({behavior:'smooth'});
+}
+
+function scrollToBooks() {
+  switchTab('books','ct-wg', document.querySelectorAll('.ctab')[0]);
+  document.querySelector('.content-tabs').scrollIntoView({behavior:'smooth'});
+}
+
+function joinLive() {
+  showToast('📡 Connexion au live en cours…', 'tt');
+  // window.open(live_url)
+}
+
+function toggleFollow() {
+  state.followed = !state.followed;
+  const btn = document.getElementById('btn-follow');
+  btn.textContent = state.followed ? '✅ Suivi' : '➕ Suivre';
+  btn.style.background = state.followed ? 'linear-gradient(135deg,#128C7E,#075E54)' : '';
+  showToast(state.followed ? '✅ Vous suivez ce savant' : '❌ Vous ne suivez plus ce savant', 'wg');
+}
+
+function toggleFavScholar() {
+  const s = state.scholar;
+  const btn = document.getElementById('btn-fav');
+  if (state.favorited[s.id]) {
+    delete state.favorited[s.id];
+    btn.textContent = '🤍 Favoris'; btn.classList.remove('active');
+    showToast('💔 Retiré des favoris', 'tt');
+  } else {
+    state.favorited[s.id] = true;
+    btn.textContent = '❤️ Favoris'; btn.classList.add('active');
+    showToast('❤️ Ajouté aux favoris !', 'wg');
+  }
+  localStorage.setItem('ab_fav_scholars', JSON.stringify(state.favorited));
+}
+
+function toggleFavItem(type, id, btn) {
+  const key = type+id;
+  const favs = JSON.parse(localStorage.getItem('ab_item_favs') || '{}');
+  if (favs[key]) {
+    delete favs[key];
+    btn.textContent = '🤍'; btn.classList.remove('loved');
+    showToast('💔 Retiré des favoris', 'tt');
+  } else {
+    favs[key] = true;
+    btn.textContent = '❤️'; btn.classList.add('loved');
+    showToast('❤️ Ajouté aux favoris !', 'wg');
+  }
+  localStorage.setItem('ab_item_favs', JSON.stringify(favs));
+}
+
+function toggleNotif() {
+  const s = state.scholar;
+  const btn = document.getElementById('notif-btn');
+  state.notifs[s.id] = !state.notifs[s.id];
+  localStorage.setItem('ab_notifs', JSON.stringify(state.notifs));
+  if (state.notifs[s.id]) {
+    btn.textContent = '✅ Notifications activées';
+    btn.style.background = 'linear-gradient(135deg,#128C7E,#075E54)';
+    showToast('🔔 Notifications activées pour ' + s.name_fr.split(' ').slice(0,3).join(' '), 'wg');
+  } else {
+    btn.textContent = '🔔 Activer les notifications';
+    btn.style.background = '';
+    showToast('🔕 Notifications désactivées', 'tb');
+  }
+}
+
+function notifLive() {
+  showToast('🔔 Rappel live activé !', 'tt');
+}
+
+function share(platform) {
+  const s = state.scholar;
+  const url = location.href;
+  const text = `Découvrez ${s.name_fr} sur Al Basîrah — La Voie du Savoir`;
+  if (platform === 'whatsapp') {
+    window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`);
+  } else if (platform === 'telegram') {
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`);
+  } else {
+    navigator.clipboard?.writeText(url);
+    showToast('🔗 Lien copié dans le presse-papier !', 'tb');
+  }
+}
+
+function shareScholar() {
+  share('copy');
+}
+
+/* ═══════════════════════════════════════
+   MODAL CLOSE
+═══════════════════════════════════════ */
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.getElementById('vm-screen').innerHTML = `<div class="vs-play">▶</div><span class="vs-label" id="vm-duration">—</span>`;
+}
+
+document.querySelectorAll('.modal-ov').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target === ov) closeModal(ov.id); });
+});
+
+/* ═══════════════════════════════════════
+   UTILS
+═══════════════════════════════════════ */
+function showToast(msg, type = 'wg') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function fmtNum(n) {
+  if (!n) return '0';
+  if (n >= 1000) return (n/1000).toFixed(1).replace('.0','') + 'K';
+  return n.toString();
+}
+
+function fmtTime(s) {
+  const m = Math.floor(s/60), sec = s%60;
+  return `${m}:${sec.toString().padStart(2,'0')}`;
+}
+
+function esc(s) {
+  return (s||'').replace(/'/g,"\\'").replace(/"/g,'').substring(0,80);
+}
+
+/* ═══ START ═══ */
+init();
+</script>
+</body>
+</html>
