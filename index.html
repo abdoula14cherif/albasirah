@@ -457,10 +457,9 @@ textarea.inp{resize:vertical;min-height:80px}
     <div class="srch"><span>🔍</span><input type="text" placeholder="Rechercher un savant…" id="sch-q" oninput="renderScholars()"/></div>
     <div class="chips" id="sch-chips">
       <div class="chip active" data-cat="all" onclick="setCat(this)">🌐 Tous</div>
-      <!-- chips dynamiques -->
     </div>
     <div class="g2" id="sch-grid">
-      <div class="empty" style="grid-column:1/-1"><span class="ei">👨‍🏫</span><h3>Aucun savant</h3><p>Ajoutez des savants via votre espace admin</p></div>
+      <div class="empty" style="grid-column:1/-1"><span class="ei">👨‍🏫</span><h3>Aucun savant</h3><p>Ajoutez des savants via votre panel admin</p></div>
     </div>
   </div>
 </div>
@@ -475,7 +474,7 @@ textarea.inp{resize:vertical;min-height:80px}
   <div style="padding-top:58px">
     <div style="background:linear-gradient(135deg,#071D2A,#0A1F2E);padding:18px 14px 22px;text-align:center">
       <div class="sc-av" style="width:76px;height:76px;font-size:2rem;margin:0 auto 11px" id="sv-av">?</div>
-      <div id="sv-live-badge" style="display:none;justify-content:center;margin-bottom:8px;display:none">
+      <div id="sv-live-badge" style="display:none;justify-content:center;margin-bottom:8px">
         <span class="badge badge-live" style="display:inline-flex;align-items:center;gap:4px"><div class="ldot" style="background:#fff;width:5px;height:5px"></div>EN DIRECT</span>
       </div>
       <p style="font-family:'Noto Naskh Arabic',serif;font-size:1.15rem;font-weight:700;color:#fff" id="sv-nar">—</p>
@@ -1045,7 +1044,6 @@ function renderScholars(){
   let list=S.scholars;
   if(S.schCat!=='all') list=list.filter(s=>s.category===S.schCat);
   if(q) list=list.filter(s=>(s.name_fr||'').toLowerCase().includes(q)||(s.name_ar||'').includes(q));
-  // Chips dynamiques
   const cats=['all','contemporain','ancien','hadith','rapporteur'];
   el('sch-chips').innerHTML=cats.map(c=>`<div class="chip${S.schCat===c?' active':''}" data-cat="${c}" onclick="setCat(this)">${c==='all'?'🌐 Tous':c==='contemporain'?'🕌 Contemporains':c==='ancien'?'📜 Anciens':c==='hadith'?'📿 Hadith':'📖 Rapporteurs'}</div>`).join('');
   const g=el('sch-grid');
@@ -1083,26 +1081,20 @@ async function openScholar(id){
   const av=el('sv-av'); av.textContent=sc.initial||'?'; av.style.background=avG(idx);
   el('sv-nar').textContent=sc.name_ar||sc.name||'—';
   el('sv-nfr').textContent=sc.name_fr||'—';
-  // Live badge
   const lbadge=el('sv-live-badge');
   lbadge.style.display=sc.is_live?'flex':'none';
-  // Tags
   const tags=(sc.tags||[]).map?sc.tags:[];
   el('sv-tags').innerHTML=tags.slice(0,3).map(t=>`<span class="badge bg-g">${t}</span>`).join('');
-  // Counts
   el('sv-cnts').innerHTML=`
     ${sc.books_count?`<span class="badge bg-g">📚 ${sc.books_count} livres</span>`:''}
     ${sc.audios_count?`<span class="badge bg-b">🎧 ${sc.audios_count} cours</span>`:''}
     ${sc.videos_count?`<span class="badge bg-r">🎬 ${sc.videos_count} vidéos</span>`:''}`;
-  // Actions
   const isF=S.follows[sc.id]||false;
   el('sv-acts').innerHTML=`
     <button class="btn btn-g btn-sm" id="sv-follow" onclick="toggleFollow('${sc.id}',this)">${isF?'✅ Suivi':'➕ Suivre'}</button>
     ${sc.is_live?`<button class="btn btn-r btn-sm" onclick="openLive(null,'${esc(sc.live_title||'')}',${sc.live_viewers||0},'${esc(sc.live_url||'')}','${esc(sc.name_fr||'')}')">📡 Live</button>`:''}
     <button class="btn btn-ghost btn-sm" onclick="share('${esc(sc.name_fr||'')}')">🔗</button>`;
-  // Bio
   el('sv-bio-t').textContent=sc.bio||`Biographie de ${sc.name_fr||sc.name} non disponible.`;
-  // Live panel
   const lp=el('sv-live-panel');
   if(sc.is_live){
     lp.style.display='block';
@@ -1117,7 +1109,6 @@ async function openScholar(id){
       </div>
     </div>`;
   }else lp.style.display='none';
-  // Content
   let books=S.books.filter(b=>String(b.scholar_id)===String(id));
   let audios=S.audios.filter(a=>String(a.scholar_id)===String(id));
   let videos=S.videos.filter(v=>String(v.scholar_id)===String(id));
@@ -1138,12 +1129,14 @@ async function openScholar(id){
   el('sv-audio').innerHTML=audios.length?audios.map(a=>renderCI(a,'audio')).join(''):'<div class="empty"><span class="ei">🎧</span><h3>Aucun cours audio</h3><p>Pas encore de cours audio</p></div>';
   el('sv-video').innerHTML=videos.length?videos.map(v=>renderCI(v,'video')).join(''):'<div class="empty"><span class="ei">🎬</span><h3>Aucune vidéo</h3><p>Pas encore de vidéo</p></div>';
 }
+
 function svTab(n,btn){
   ['sv-books','sv-audio','sv-video','sv-bio'].forEach(id=>{const e=el(id);if(e)e.classList.remove('active');});
   document.querySelectorAll('#sv-tabs .tab').forEach(b=>b.classList.remove('active'));
   const e=el('sv-'+n); if(e) e.classList.add('active');
   btn.classList.add('active');
 }
+
 function svFilter(q){
   document.querySelectorAll('#sv-books .ci,#sv-audio .ci,#sv-video .ci').forEach(e=>{e.style.display=(e.dataset.title||'').includes(q.toLowerCase())?'':'none';});
 }
@@ -1155,7 +1148,6 @@ function renderLib(){
   el('lb-nb').textContent=S.books.length;
   el('lb-na').textContent=S.audios.length;
   el('lb-nv').textContent=S.videos.length;
-  // Chips catégories
   const cats=[...new Set(data.map(d=>d.category).filter(Boolean))];
   el('lib-chips').innerHTML=`<div class="chip active" onclick="libCat('',this)">Tous</div>`+cats.map(c=>`<div class="chip" onclick="libCat('${c}',this)">${c}</div>`).join('');
   const filtered=q?data.filter(d=>(d.title||'').toLowerCase().includes(q)):data;
@@ -1163,12 +1155,14 @@ function renderLib(){
   if(!filtered.length){c.innerHTML='<div class="empty"><span class="ei">'+(S.libType==='books'?'📚':S.libType==='audio'?'🎧':'🎬')+'</span><h3>Aucun contenu</h3><p>Ajoutez du contenu via votre panel admin</p></div>';return;}
   c.innerHTML=filtered.map(item=>renderCI(item,S.libType)).join('');
 }
+
 function libTab(t,btn){
   S.libType=t;
   document.querySelectorAll('#lib-tabs .tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderLib();
 }
+
 function libCat(cat,btn){
   document.querySelectorAll('#lib-chips .chip').forEach(c=>c.classList.remove('active'));
   btn.classList.add('active');
@@ -1222,7 +1216,9 @@ function renderLive(){
     </div>`;
   }).join('');
 }
+
 function notifToggle(btn){btn.textContent=btn.textContent==='🔔'?'✅':'🔔'; toast(btn.textContent==='✅'?'🔔 Rappel activé !':'🔕 Rappel annulé');}
+
 function openLive(id,title,viewers,url,sch){
   el('ml-t').textContent=title||'En Direct';
   el('ml-stitle').textContent=title||'—';
@@ -1232,6 +1228,7 @@ function openLive(id,title,viewers,url,sch){
   else wrap.style.display='none';
   el('mo-live').classList.add('open');
 }
+
 function sendMsg(){
   const inp=el('lc-inp'), msg=inp.value.trim(); if(!msg)return;
   const name=S.profile?.full_name||S.user?.user_metadata?.full_name||'Visiteur';
@@ -1274,7 +1271,6 @@ function playAudio(id,title,author,url,btn){
   AP.load(id,title,author,url,id);
   btn.textContent='⏸ Pause';
   toast('▶ '+title.substring(0,35)+'…');
-  // Incrémenter le compteur
   try{DB.rpc('inc_plays',{aid:id});}catch{}
 }
 
@@ -1289,6 +1285,7 @@ function openVideo(title,author,dur,views,desc,url){
   el('mo-video').classList.add('open');
   try{DB.rpc('inc_views',{vid:0});}catch{}
 }
+
 function mvPlay(){toast('▶ Lecture lancée !');}
 
 /* ══ DOWNLOAD BOOK ══ */
@@ -1305,6 +1302,7 @@ function toggleFav(key,btn){
   btn.textContent=S.favs[key]?'❤️':'🤍';
   toast(S.favs[key]?'❤️ Ajouté aux favoris':'💔 Retiré des favoris');
 }
+
 function toggleFollow(id,btn){
   S.follows[id]=!S.follows[id];
   localStorage.setItem('ab_follows',JSON.stringify(S.follows));
@@ -1322,7 +1320,6 @@ function renderProfile(){
   el('pf-favs').textContent=Object.values(S.favs).filter(Boolean).length;
   el('pf-follows').textContent=Object.values(S.follows).filter(Boolean).length;
   el('admin-panel').style.display=S.isAdmin?'block':'none';
-  // Favoris list
   const favKeys=Object.entries(S.favs).filter(([,v])=>v).map(([k])=>k);
   const fl=el('pf-favs-list');
   if(!favKeys.length){fl.innerHTML='<div class="empty"><span class="ei">❤️</span><h3>Aucun favori</h3><p>Aimez des contenus pour les retrouver ici</p></div>';return;}
@@ -1334,7 +1331,6 @@ function renderProfile(){
     return item?renderCI(item,t):'';
   }).filter(Boolean);
   fl.innerHTML=items.join('')||'<div class="empty"><span class="ei">❤️</span><h3>Aucun favori</h3></div>';
-  // Admin content list
   if(S.isAdmin) loadAdminContentList();
 }
 
@@ -1380,11 +1376,9 @@ function fileChosen(lblId,inp){
 
 /* ══ VÉRIFICATION SESSION ADMIN ══ */
 async function checkAdmin(){
-  // Recharge la session fraîche depuis Supabase
   const {data:{session}} = await DB.auth.getSession();
   if(!session){toast('⚠️ Tu dois être connecté'); return false;}
   S.user = session.user;
-  // Recharge le profil
   try{
     const {data,error} = await DB.from('profiles').select('is_admin').eq('id',session.user.id).single();
     if(error || !data){toast('⚠️ Profil introuvable. Déconnecte-toi et reconnecte-toi.'); return false;}
@@ -1611,6 +1605,7 @@ async function addLive(){
     console.error('addLive error:', e);
     toast('❌ Erreur : ' + e.message);
   }finally{ setBtnLoading('btn-add-live', false, '📡 Publier la session'); }
+} /* ← ACCOLADE FERMANTE CORRIGÉE */
 
 /* ══ FILL SELECTS ══ */
 function fillSelects(){
