@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin — Al Basîrah</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+:root{
+  --g:#25D366;--g2:#128C7E;--b:#2AABEE;--b2:#1565C0;
+  --r:#E53935;--c:#00BCD4;--o:#FF6F00;
+  --dark:#071D2A;--white:#fff;--bg:#F5FFFE;
+  --txt:#0A1F2E;--sub:#1E3A4A;--muted:#607D8B;--line:#E2ECF0;
+  --sh:0 2px 14px rgba(0,0,0,.07);--sh2:0 8px 28px rgba(0,0,0,.13);
+  --rad:14px;--radm:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+button,input,select,textarea{font-family:'Nunito',sans-serif}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--g);border-radius:2px}
+
+/* LAYOUT */
+.admin-layout{display:flex;min-height:100vh}
+.sidebar{width:230px;background:var(--dark);min-height:100vh;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column}
+.sidebar-logo{padding:20px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.sidebar-gem{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--g),var(--b));display:flex;align-items:center;justify-content:center;font-family:'Noto Naskh Arabic',serif;font-size:1rem;color:#fff;font-weight:700;flex-shrink:0}
+.sidebar-title{font-size:.8rem;font-weight:900;color:#fff}
+.sidebar-sub{font-size:.58rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase}
+.sidebar-nav{flex:1;padding:10px 10px;overflow-y:auto}
+.nav-section{font-size:.58rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:12px 8px 6px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--radm);cursor:pointer;transition:all .18s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
+.nav-item .ni{font-size:1rem;flex-shrink:0}
+.nav-item .nl{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.55)}
+.nav-item:hover{background:rgba(255,255,255,.07)}
+.nav-item:hover .nl{color:#fff}
+.nav-item.active{background:linear-gradient(135deg,rgba(37,211,102,.2),rgba(42,171,238,.15))}
+.nav-item.active .nl{color:#fff;font-weight:800}
+.sidebar-footer{padding:14px;border-top:1px solid rgba(255,255,255,.08)}
+.sidebar-user{font-size:.73rem;font-weight:700;color:rgba(255,255,255,.55)}
+.sidebar-email{font-size:.64rem;color:rgba(255,255,255,.35);margin-top:2px}
+
+.main-content{margin-left:230px;flex:1;min-height:100vh}
+.topbar{background:var(--white);border-bottom:1.5px solid var(--line);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-title{font-size:1rem;font-weight:900;color:var(--txt)}
+.topbar-right{display:flex;gap:8px;align-items:center}
+.content-area{padding:22px 24px}
+
+/* SECTIONS */
+.section{display:none}
+.section.active{display:block;animation:fu .25s ease both}
+@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* STATS CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.stat-card{background:var(--white);border-radius:var(--rad);border:1.5px solid var(--line);padding:18px;box-shadow:var(--sh)}
+.stat-card .sc-n{font-size:2rem;font-weight:900;display:block;line-height:1}
+.stat-card .sc-l{font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px;display:block}
+.stat-card .sc-ico{font-size:1.5rem;margin-bottom:8px;display:block}
+
+/* TABLES */
+.table-wrap{background:var(--white);border-radius:var(--rad);border:1.5px solid var(--line);overflow:hidden;box-shadow:var(--sh)}
+.table-header{padding:16px 18px;border-bottom:1.5px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.table-title{font-size:.9rem;font-weight:900;color:var(--txt);display:flex;align-items:center;gap:7px}
+.table-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.srch-bar{display:flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--line);border-radius:25px;padding:.38rem .85rem;transition:border-color .18s}
+.srch-bar:focus-within{border-color:var(--g)}
+.srch-bar input{border:none;background:none;font-size:.78rem;font-weight:600;color:var(--txt);width:160px;outline:none}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--bg)}
+th{text-align:left;padding:11px 16px;font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--line);white-space:nowrap}
+td{padding:11px 16px;border-bottom:1px solid var(--line);font-size:.8rem;font-weight:600;color:var(--sub);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(37,211,102,.03)}
+.td-img{width:42px;height:42px;border-radius:9px;object-fit:cover;display:block}
+.td-img-ph{width:42px;height:42px;border-radius:9px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.2rem;border:1.5px solid var(--line)}
+.td-bold{font-weight:800;color:var(--txt)}
+.td-actions{display:flex;gap:5px;white-space:nowrap}
+.empty-row td{text-align:center;padding:36px;color:var(--muted);font-style:italic}
+.table-footer{padding:12px 16px;border-top:1.5px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.count-label{font-size:.74rem;font-weight:700;color:var(--muted)}
+
+/* PAGINATION */
+.pagination{display:flex;gap:5px}
+.page-btn{width:30px;height:30px;border-radius:7px;border:1.5px solid var(--line);background:var(--white);color:var(--sub);font-size:.75rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s}
+.page-btn:hover{border-color:var(--b);color:var(--b)}
+.page-btn.active{background:var(--g);color:#fff;border-color:var(--g)}
+.page-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;font-weight:800;border:none;border-radius:var(--radm);padding:.44rem .95rem;font-size:.76rem;cursor:pointer;transition:all .18s}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-sm{padding:.3rem .7rem;font-size:.7rem}
+.btn-lg{padding:.58rem 1.35rem;font-size:.84rem}
+.btn-fw{width:100%}
+.btn-g{background:var(--g);color:#fff;box-shadow:0 3px 9px rgba(37,211,102,.27)}
+.btn-g:hover:not(:disabled){background:var(--g2);transform:translateY(-1px)}
+.btn-b{background:var(--b);color:#fff}
+.btn-b:hover:not(:disabled){background:var(--b2);transform:translateY(-1px)}
+.btn-r{background:var(--r);color:#fff}
+.btn-r:hover:not(:disabled){background:#B71C1C;transform:translateY(-1px)}
+.btn-o{background:var(--o);color:#fff}
+.btn-out{background:transparent;border:1.5px solid var(--line);color:var(--sub)}
+.btn-out:hover:not(:disabled){border-color:var(--b);color:var(--b)}
+.btn-ghost{background:var(--bg);border:1.5px solid var(--line);color:var(--sub)}
+.btn-edit{background:rgba(42,171,238,.1);border:1.5px solid rgba(42,171,238,.25);color:var(--b)}
+.btn-edit:hover{background:var(--b);color:#fff}
+.btn-del{background:rgba(229,57,53,.08);border:1.5px solid rgba(229,57,53,.2);color:var(--r)}
+.btn-del:hover{background:var(--r);color:#fff}
+
+/* INPUTS */
+.inp{width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:var(--radm);padding:.55rem .9rem;font-size:.82rem;font-weight:600;color:var(--txt);outline:none;transition:all .18s}
+.inp:focus{border-color:var(--g);background:var(--white);box-shadow:0 0 0 3px rgba(37,211,102,.09)}
+.lbl{font-size:.72rem;font-weight:800;color:var(--sub);display:block;margin-bottom:4px}
+.fg{margin-bottom:13px}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23607D8B'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:26px}
+textarea.inp{resize:vertical;min-height:72px}
+
+/* MODAL */
+.mo{position:fixed;inset:0;z-index:9000;background:rgba(7,29,42,.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:16px}
+.mo.open{display:flex;animation:fi .22s ease}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.mo-box{background:var(--white);border-radius:var(--rad);width:100%;max-width:580px;max-height:90vh;overflow-y:auto;animation:sc .28s ease;box-shadow:0 24px 80px rgba(0,0,0,.2)}
+@keyframes sc{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.mo-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1.5px solid var(--line);position:sticky;top:0;background:var(--white);z-index:1}
+.mo-ttl{font-size:.92rem;font-weight:900;color:var(--txt);display:flex;align-items:center;gap:7px}
+.mo-x{width:30px;height:30px;border-radius:50%;border:none;background:var(--bg);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.88rem;transition:all .18s}
+.mo-x:hover{background:rgba(229,57,53,.1);color:var(--r);transform:rotate(90deg)}
+.mo-body{padding:20px}
+.mo-foot{padding:14px 20px;border-top:1.5px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+
+/* GRID */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.form-grid .fg-full{grid-column:1/-1}
+
+/* BADGES */
+.bdg{display:inline-flex;align-items:center;gap:3px;font-size:.62rem;font-weight:800;padding:.14rem .5rem;border-radius:20px}
+.bdg-g{background:rgba(37,211,102,.12);color:#1B5E20}
+.bdg-b{background:rgba(42,171,238,.12);color:#1565C0}
+.bdg-r{background:rgba(229,57,53,.1);color:var(--r)}
+.bdg-live{background:var(--r);color:#fff}
+.bdg-upc{background:rgba(255,111,0,.1);color:var(--o)}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--r);display:inline-block;animation:bk 1.2s infinite;flex-shrink:0}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.1}}
+
+/* FILE */
+.file-lbl{display:block;border:2px dashed var(--line);border-radius:var(--radm);padding:14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);color:var(--muted);font-size:.76rem;font-weight:700;margin-top:4px}
+.file-lbl:hover{border-color:var(--b);color:var(--b)}
+.file-lbl.got{border-color:var(--g);color:var(--g2);background:rgba(37,211,102,.05)}
+.cover-preview{width:100%;max-height:140px;object-fit:cover;border-radius:var(--radm);border:1.5px solid var(--line);margin-bottom:8px;display:none}
+
+/* MISC */
+.spin{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--g);border-radius:50%;animation:sp .7s linear infinite;margin:20px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+#toast{position:fixed;bottom:20px;right:20px;z-index:9999;background:var(--dark);color:#fff;border-radius:12px;padding:10px 18px;font-size:.78rem;font-weight:700;opacity:0;transition:all .28s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+#toast.on{opacity:1;transform:translateY(0)}
+.confirm-box{background:rgba(229,57,53,.08);border:1.5px solid rgba(229,57,53,.2);border-radius:var(--radm);padding:14px;margin-bottom:14px;display:none}
+.confirm-box p{font-size:.82rem;font-weight:700;color:var(--r)}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+.dot-live{background:var(--r);animation:bk 1.2s infinite}
+.dot-upc{background:var(--o)}
+.dot-end{background:var(--muted)}
+
+/* FILTER TABS */
+.filter-tabs{display:flex;gap:0;border-bottom:2px solid var(--line);margin-bottom:16px}
+.ftab{font-size:.76rem;font-weight:800;color:var(--muted);background:none;border:none;padding:.6rem .9rem;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.ftab.active{color:var(--g);border-bottom-color:var(--g)}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .sidebar{width:200px}
+  .main-content{margin-left:200px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main-content{margin-left:0}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ═══ CONFIRM MODAL ═══ -->
+<div class="mo" id="mo-confirm">
+  <div class="mo-box" style="max-width:420px">
+    <div class="mo-hd"><p class="mo-ttl">🗑️ Confirmer la suppression</p><button class="mo-x" onclick="closeMo('mo-confirm')">✕</button></div>
+    <div class="mo-body">
+      <p style="font-size:.85rem;font-weight:700;color:var(--sub);margin-bottom:14px">Tu es sur le point de supprimer :</p>
+      <div style="background:rgba(229,57,53,.07);border:1.5px solid rgba(229,57,53,.2);border-radius:var(--radm);padding:12px;margin-bottom:14px">
+        <p style="font-size:.84rem;font-weight:800;color:var(--r)" id="confirm-name">—</p>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);font-weight:600">⚠️ Cette action est irréversible.</p>
+    </div>
+    <div class="mo-foot">
+      <button class="btn btn-ghost" onclick="closeMo('mo-confirm')">Annuler</button>
+      <button class="btn btn-r" id="confirm-delete-btn" onclick="executeDelete()">🗑️ Supprimer définitivement</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ EDIT MODAL ═══ -->
+<div class="mo" id="mo-edit">
+  <div class="mo-box">
+    <div class="mo-hd">
+      <p class="mo-ttl" id="edit-modal-title">✏️ Modifier</p>
+      <button class="mo-x" onclick="closeMo('mo-edit')">✕</button>
+    </div>
+    <div class="mo-body" id="edit-modal-body">
+      <!-- Contenu dynamique -->
+    </div>
+    <div class="mo-foot">
+      <button class="btn btn-ghost" onclick="closeMo('mo-edit')">Annuler</button>
+      <button class="btn btn-g" id="edit-save-btn" onclick="saveEdit()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADD MODAL ═══ -->
+<div class="mo" id="mo-add">
+  <div class="mo-box">
+    <div class="mo-hd">
+      <p class="mo-ttl" id="add-modal-title">➕ Ajouter</p>
+      <button class="mo-x" onclick="closeMo('mo-add')">✕</button>
+    </div>
+    <div class="mo-body" id="add-modal-body"></div>
+    <div class="mo-foot">
+      <button class="btn btn-ghost" onclick="closeMo('mo-add')">Annuler</button>
+      <button class="btn btn-g" id="add-save-btn" onclick="saveAdd()">➕ Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LAYOUT ═══ -->
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-gem">ب</div>
+      <div><div class="sidebar-title">Al Basîrah</div><div class="sidebar-sub">Panel Admin</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Vue d'ensemble</div>
+      <button class="nav-item active" onclick="goSection('dashboard',this)"><span class="ni">📊</span><span class="nl">Tableau de bord</span></button>
+
+      <div class="nav-section">Contenu</div>
+      <button class="nav-item" onclick="goSection('scholars',this)"><span class="ni">👨‍🏫</span><span class="nl">Savants</span></button>
+      <button class="nav-item" onclick="goSection('books',this)"><span class="ni">📚</span><span class="nl">Livres / PDF</span></button>
+      <button class="nav-item" onclick="goSection('audios',this)"><span class="ni">🎧</span><span class="nl">Cours Audio</span></button>
+      <button class="nav-item" onclick="goSection('videos',this)"><span class="ni">🎬</span><span class="nl">Vidéos</span></button>
+      <button class="nav-item" onclick="goSection('lives',this)"><span class="ni">📡</span><span class="nl">Sessions Live</span></button>
+
+      <div class="nav-section">Paramètres</div>
+      <button class="nav-item" onclick="goSection('categories',this)"><span class="ni">🏷️</span><span class="nl">Catégories</span></button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" id="sb-user">—</div>
+      <div class="sidebar-email" id="sb-email">—</div>
+      <button class="btn btn-r btn-fw" style="margin-top:10px;font-size:.72rem" onclick="doLogout()">🚪 Déconnexion</button>
+      <a href="index.html" style="display:block;text-align:center;margin-top:8px;font-size:.68rem;color:rgba(255,255,255,.35);font-weight:700">← Retour au site</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <div class="topbar">
+      <p class="topbar-title" id="topbar-title">📊 Tableau de bord</p>
+      <div class="topbar-right">
+        <button class="btn btn-g btn-sm" id="topbar-add-btn" style="display:none" onclick="openAdd()">➕ Ajouter</button>
+        <span style="font-size:.74rem;font-weight:700;color:var(--muted)" id="topbar-date"></span>
+      </div>
+    </div>
+
+    <div class="content-area">
+
+      <!-- ═══ DASHBOARD ═══ -->
+      <div id="sec-dashboard" class="section active">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="sc-ico">👨‍🏫</span>
+            <span class="sc-n" style="color:var(--g)" id="dash-scholars">—</span>
+            <span class="sc-l">Savants</span>
+          </div>
+          <div class="stat-card">
+            <span class="sc-ico">📚</span>
+            <span class="sc-n" style="color:var(--b)" id="dash-books">—</span>
+            <span class="sc-l">Livres / PDF</span>
+          </div>
+          <div class="stat-card">
+            <span class="sc-ico">🎧</span>
+            <span class="sc-n" style="color:var(--c)" id="dash-audios">—</span>
+            <span class="sc-l">Cours Audio</span>
+          </div>
+          <div class="stat-card">
+            <span class="sc-ico">🎬</span>
+            <span class="sc-n" style="color:var(--r)" id="dash-videos">—</span>
+            <span class="sc-l">Vidéos</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="table-wrap">
+            <div class="table-header"><p class="table-title">📡 Sessions Live</p></div>
+            <div id="dash-lives-list" style="padding:12px 16px"></div>
+          </div>
+          <div class="table-wrap">
+            <div class="table-header"><p class="table-title">🕐 Ajouts récents</p></div>
+            <div id="dash-recent-list" style="padding:12px 16px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SCHOLARS ═══ -->
+      <div id="sec-scholars" class="section">
+        <div class="table-wrap">
+          <div class="table-header">
+            <p class="table-title">👨‍🏫 Savants <span id="cnt-scholars" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
+            <div class="table-actions">
+              <div class="srch-bar"><span>🔍</span><input type="text" placeholder="Rechercher…" id="sch-srch" oninput="filterTable('scholars',this.value)"/></div>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr>
+                <th>Savant</th><th>Catégorie</th><th>Pays</th><th>Époque</th>
+                <th>📚</th><th>🎧</th><th>🎬</th><th>Statut</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="tbl-scholars"></tbody>
+            </table>
+          </div>
+          <div class="table-footer"><span class="count-label" id="cl-scholars"></span></div>
+        </div>
+      </div>
+
+      <!-- ═══ BOOKS ═══ -->
+      <div id="sec-books" class="section">
+        <div class="table-wrap">
+          <div class="table-header">
+            <p class="table-title">📚 Livres <span id="cnt-books" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
+            <div class="table-actions">
+              <div class="srch-bar"><span>🔍</span><input type="text" placeholder="Rechercher…" id="book-srch" oninput="filterTable('books',this.value)"/></div>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr>
+                <th>Cover</th><th>Titre</th><th>Auteur</th><th>Catégorie</th>
+                <th>Type</th><th>Pages</th><th>↓</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="tbl-books"></tbody>
+            </table>
+          </div>
+          <div class="table-footer"><span class="count-label" id="cl-books"></span></div>
+        </div>
+      </div>
+
+      <!-- ═══ AUDIOS ═══ -->
+      <div id="sec-audios" class="section">
+        <div class="table-wrap">
+          <div class="table-header">
+            <p class="table-title">🎧 Cours Audio <span id="cnt-audios" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
+            <div class="table-actions">
+              <div class="srch-bar"><span>🔍</span><input type="text" placeholder="Rechercher…" id="audio-srch" oninput="filterTable('audios',this.value)"/></div>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr>
+                <th>Cover</th><th>Titre</th><th>Savant</th><th>Catégorie</th>
+                <th>Ép.</th><th>Durée</th><th>▶</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="tbl-audios"></tbody>
+            </table>
+          </div>
+          <div class="table-footer"><span class="count-label" id="cl-audios"></span></div>
+        </div>
+      </div>
+
+      <!-- ═══ VIDEOS ═══ -->
+      <div id="sec-videos" class="section">
+        <div class="table-wrap">
+          <div class="table-header">
+            <p class="table-title">🎬 Vidéos <span id="cnt-videos" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
+            <div class="table-actions">
+              <div class="srch-bar"><span>🔍</span><input type="text" placeholder="Rechercher…" id="video-srch" oninput="filterTable('videos',this.value)"/></div>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr>
+                <th>Thumb</th><th>Titre</th><th>Savant</th><th>Catégorie</th>
+                <th>Durée</th><th>👁</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="tbl-videos"></tbody>
+            </table>
+          </div>
+          <div class="table-footer"><span class="count-label" id="cl-videos"></span></div>
+        </div>
+      </div>
+
+      <!-- ═══ LIVES ═══ -->
+      <div id="sec-lives" class="section">
+        <div class="table-wrap">
+          <div class="table-header">
+            <p class="table-title">📡 Sessions Live <span id="cnt-lives" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr>
+                <th>Titre</th><th>Savant</th><th>Date & Heure</th>
+                <th>Statut</th><th>Auditeurs</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="tbl-lives"></tbody>
+            </table>
+          </div>
+          <div class="table-footer"><span class="count-label" id="cl-lives"></span></div>
+        </div>
+      </div>
+
+      <!-- ═══ CATEGORIES ═══ -->
+      <div id="sec-categories" class="section">
+        <div class="table-wrap">
+          <div class="table-header">
+            <p class="table-title">🏷️ Catégories <span id="cnt-cats" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr>
+                <th>Emoji</th><th>Nom Arabe</th><th>Nom Français</th>
+                <th>Couleur</th><th>Contenus</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="tbl-cats"></tbody>
+            </table>
+          </div>
+          <div class="table-footer"><span class="count-label" id="cl-cats"></span></div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /main-content -->
+</div><!-- /admin-layout -->
+
+<script>
+'use strict';
+
+const SB = supabase.createClient(
+  'https://mutdtyifvcrkiouudwhr.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11dGR0eWlmdmNya2lvdXVkd2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5ODEwODcsImV4cCI6MjA4OTU1NzA4N30.l08pEalpQ50QN4xVuDp5hyan7hwXprHOeCo0nrCA4vU'
+);
+
+// ─── STATE ───────────────────────────────────
+const A = {
+  user: null, isAdmin: false,
+  scholars:[], books:[], audios:[], videos:[], lives:[], cats:[],
+  section: 'dashboard',
+  editItem: null, editTable: null,
+  deleteItem: null, deleteTable: null,
+};
+
+// ─── HELPERS ─────────────────────────────────
+function g(id){ return document.getElementById(id); }
+function val(id){ return (g(id)?.value||'').trim(); }
+function fmt(n){ if(!n)return '0'; return n>=1000?(n/1000).toFixed(1).replace('.0','')+'K':String(n); }
+function fmtDate(dt){ if(!dt)return '—'; const d=new Date(dt); return d.toLocaleDateString('fr')+' '+d.toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'}); }
+function clrForm(ids){ ids.forEach(id=>{ const e=g(id); if(!e)return; if(e.type==='checkbox')e.checked=false; else e.value=''; }); }
+
+let _tt;
+function toast(m){ const e=g('toast'); e.textContent=m; e.classList.add('on'); clearTimeout(_tt); _tt=setTimeout(()=>e.classList.remove('on'),2800); }
+function busy(id,b,lbl){ const e=g(id); if(!e)return; e.disabled=b; e.textContent=b?'⏳ En cours…':lbl; }
+
+function closeMo(id){ const e=g(id); if(e) e.classList.remove('open'); }
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+
+// ─── AUTH CHECK ──────────────────────────────
+async function checkAuth(){
+  const {data:{session}} = await SB.auth.getSession();
+  if(!session){ window.location.href='index.html'; return; }
+  A.user = session.user;
+  const {data} = await SB.from('profiles').select('full_name,is_admin').eq('id',session.user.id).single();
+  if(!data?.is_admin){ alert('⛔ Accès refusé — tu n\'es pas administrateur.'); window.location.href='index.html'; return; }
+  A.isAdmin = true;
+  const name = data.full_name || session.user.user_metadata?.full_name || 'Admin';
+  g('sb-user').textContent = name;
+  g('sb-email').textContent = session.user.email;
+  await loadAll();
+}
+
+async function doLogout(){
+  await SB.auth.signOut();
+  window.location.href = 'index.html';
+}
+
+// ─── LOAD DATA ───────────────────────────────
+async function loadAll(){
+  try{
+    const [sc,b,a,v,l,c] = await Promise.all([
+      SB.from('scholars').select('*').order('name_fr'),
+      SB.from('books').select('*').order('created_at',{ascending:false}),
+      SB.from('audios').select('*').order('created_at',{ascending:false}),
+      SB.from('videos').select('*').order('created_at',{ascending:false}),
+      SB.from('live_sessions').select('*').order('scheduled_at'),
+      SB.from('categories').select('*').order('label_fr'),
+    ]);
+    A.scholars=sc.data||[]; A.books=b.data||[]; A.audios=a.data||[];
+    A.videos=v.data||[]; A.lives=l.data||[]; A.cats=c.data||[];
+  }catch(e){ toast('❌ Erreur chargement: '+e.message); }
+  renderAll();
+}
+
+function renderAll(){
+  renderDashboard();
+  renderScholars();
+  renderBooks();
+  renderAudios();
+  renderVideos();
+  renderLives();
+  renderCats();
+}
+
+// ─── NAVIGATION ──────────────────────────────
+const SECTION_TITLES = {
+  dashboard:'📊 Tableau de bord',
+  scholars:'👨‍🏫 Savants',
+  books:'📚 Livres / PDF',
+  audios:'🎧 Cours Audio',
+  videos:'🎬 Vidéos',
+  lives:'📡 Sessions Live',
+  categories:'🏷️ Catégories',
+};
+const ADD_SECTIONS = ['scholars','books','audios','videos','lives','categories'];
+
+function goSection(name, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  const sec = g('sec-'+name);
+  if(sec) sec.classList.add('active');
+  if(btn) btn.classList.add('active');
+  A.section = name;
+  g('topbar-title').textContent = SECTION_TITLES[name]||name;
+  const addBtn = g('topbar-add-btn');
+  addBtn.style.display = ADD_SECTIONS.includes(name) ? 'flex' : 'none';
+}
+
+// ─── DASHBOARD ───────────────────────────────
+function renderDashboard(){
+  g('dash-scholars').textContent = A.scholars.length;
+  g('dash-books').textContent    = A.books.length;
+  g('dash-audios').textContent   = A.audios.length;
+  g('dash-videos').textContent   = A.videos.length;
+  // Lives
+  const lv = g('dash-lives-list');
+  lv.innerHTML = A.lives.length ? A.lives.slice(0,6).map(l=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)">
+      <div>
+        <p style="font-size:.78rem;font-weight:800;color:var(--txt)">${l.title}</p>
+        <p style="font-size:.66rem;color:var(--muted)">${fmtDate(l.scheduled_at)}</p>
+      </div>
+      ${l.status==='live'
+        ? '<span class="bdg bdg-live" style="display:inline-flex;align-items:center;gap:3px"><div class="ldot"></div>LIVE</span>'
+        : l.status==='upcoming'
+        ? '<span class="bdg bdg-upc">À venir</span>'
+        : '<span class="bdg" style="background:var(--bg);color:var(--muted)">Terminé</span>'}
+    </div>`).join('') : '<p style="font-size:.78rem;color:var(--muted);text-align:center;padding:20px">Aucune session</p>';
+  // Recent
+  const recent = [
+    ...A.books.slice(0,3).map(b=>({type:'livre',title:b.title,date:b.created_at})),
+    ...A.audios.slice(0,2).map(a=>({type:'audio',title:a.title,date:a.created_at})),
+    ...A.videos.slice(0,2).map(v=>({type:'vidéo',title:v.title,date:v.created_at})),
+  ].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,6);
+  const rl = g('dash-recent-list');
+  rl.innerHTML = recent.length ? recent.map(r=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)">
+      <span style="font-size:.7rem;font-weight:800;background:var(--bg);padding:.18rem .5rem;border-radius:20px;color:var(--muted)">${r.type}</span>
+      <p style="font-size:.78rem;font-weight:700;color:var(--txt);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.title}</p>
+    </div>`).join('') : '<p style="font-size:.78rem;color:var(--muted);text-align:center;padding:20px">Aucun contenu</p>';
+}
+
+// ─── FILTER ──────────────────────────────────
+function filterTable(section, q){
+  const sel = {scholars:'tbl-scholars',books:'tbl-books',audios:'tbl-audios',videos:'tbl-videos'};
+  const tbody = g(sel[section]);
+  if(!tbody) return;
+  tbody.querySelectorAll('tr').forEach(row=>{
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// ─── SCHOLARS TABLE ───────────────────────────
+function renderScholars(){
+  const cnt = A.scholars.length;
+  g('cnt-scholars').textContent = '('+cnt+')';
+  g('cl-scholars').textContent = cnt+' savant'+(cnt>1?'s':'');
+  const CAT = {contemporain:'🕌 Contemporain',ancien:'📜 Ancien',hadith:'📿 Hadith',rapporteur:'📖 Rapporteur'};
+  g('tbl-scholars').innerHTML = !cnt
+    ? '<tr class="empty-row"><td colspan="9">Aucun savant — ajoutez-en via le bouton ➕</td></tr>'
+    : A.scholars.map(s=>`
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#25D366,#2AABEE);display:flex;align-items:center;justify-content:center;font-family:'Noto Naskh Arabic',serif;font-size:.95rem;color:#fff;font-weight:700;flex-shrink:0">${s.initial||'?'}</div>
+            <div>
+              <p class="td-bold">${s.name_fr||'—'}</p>
+              <p style="font-size:.68rem;color:var(--muted);font-family:'Noto Naskh Arabic',serif">${s.name_ar||''}</p>
+            </div>
+          </div>
+        </td>
+        <td><span class="bdg bdg-g">${CAT[s.category]||s.category||'—'}</span></td>
+        <td>${s.country||'—'}</td>
+        <td>${s.era||'—'}</td>
+        <td>${s.books_count||0}</td>
+        <td>${s.audios_count||0}</td>
+        <td>${s.videos_count||0}</td>
+        <td>${s.is_live?'<span class="bdg bdg-live" style="display:inline-flex;align-items:center;gap:3px"><div class="ldot"></div>LIVE</span>':'<span style="font-size:.72rem;color:var(--muted)">Hors ligne</span>'}</td>
+        <td class="td-actions">
+          <button class="btn btn-sm btn-edit" onclick="editItem('scholars','${s.id}')">✏️ Modifier</button>
+          <button class="btn btn-sm btn-del" onclick="confirmDelete('scholars','${s.id}','${(s.name_fr||'').replace(/'/g,"\\'")}')">🗑️</button>
+        </td>
+      </tr>`).join('');
+}
+
+// ─── BOOKS TABLE ─────────────────────────────
+function renderBooks(){
+  const cnt = A.books.length;
+  g('cnt-books').textContent = '('+cnt+')';
+  g('cl-books').textContent = cnt+' livre'+(cnt>1?'s':'');
+  g('tbl-books').innerHTML = !cnt
+    ? '<tr class="empty-row"><td colspan="8">Aucun livre</td></tr>'
+    : A.books.map(b=>`
+      <tr>
+        <td>${b.cover_url
+          ? `<img src="${b.cover_url}" class="td-img" onerror="this.style.display='none'">`
+          : `<div class="td-img-ph">${b.emoji||'📗'}</div>`}</td>
+        <td><p class="td-bold" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.title||'—'}</p>
+            ${b.is_new?'<span class="bdg bdg-r" style="font-size:.54rem">NOUVEAU</span>':''}</td>
+        <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.author_name||'—'}</td>
+        <td>${b.category?`<span class="bdg bdg-g">${b.category}</span>`:'—'}</td>
+        <td><span class="bdg" style="background:rgba(255,111,0,.1);color:#E65100">${b.file_type||'PDF'}</span></td>
+        <td>${b.pages||0}</td>
+        <td>${fmt(b.downloads||0)}</td>
+        <td class="td-actions">
+          <button class="btn btn-sm btn-edit" onclick="editItem('books',${b.id})">✏️</button>
+          <button class="btn btn-sm btn-del" onclick="confirmDelete('books',${b.id},'${(b.title||'').replace(/'/g,"\\'")}')">🗑️</button>
+        </td>
+      </tr>`).join('');
+}
+
+// ─── AUDIOS TABLE ─────────────────────────────
+function renderAudios(){
+  const cnt = A.audios.length;
+  g('cnt-audios').textContent = '('+cnt+')';
+  g('cl-audios').textContent = cnt+' cours';
+  g('tbl-audios').innerHTML = !cnt
+    ? '<tr class="empty-row"><td colspan="8">Aucun cours audio</td></tr>'
+    : A.audios.map(a=>{
+        const sc = A.scholars.find(s=>s.id===a.scholar_id);
+        return `<tr>
+          <td>${a.cover_url
+            ? `<img src="${a.cover_url}" class="td-img" onerror="this.style.display='none'">`
+            : `<div class="td-img-ph">${a.emoji||'🎧'}</div>`}</td>
+          <td><p class="td-bold" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.title||'—'}</p></td>
+          <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sc?sc.name_fr:a.author_name||'—'}</td>
+          <td>${a.category?`<span class="bdg bdg-b">${a.category}</span>`:'—'}</td>
+          <td>${a.episodes||1}</td>
+          <td>${a.duration||'—'}</td>
+          <td>${fmt(a.plays||0)}</td>
+          <td class="td-actions">
+            <button class="btn btn-sm btn-edit" onclick="editItem('audios',${a.id})">✏️</button>
+            <button class="btn btn-sm btn-del" onclick="confirmDelete('audios',${a.id},'${(a.title||'').replace(/'/g,"\\'")}')">🗑️</button>
+          </td>
+        </tr>`;
+      }).join('');
+}
+
+// ─── VIDEOS TABLE ─────────────────────────────
+function renderVideos(){
+  const cnt = A.videos.length;
+  g('cnt-videos').textContent = '('+cnt+')';
+  g('cl-videos').textContent = cnt+' vidéo'+(cnt>1?'s':'');
+  g('tbl-videos').innerHTML = !cnt
+    ? '<tr class="empty-row"><td colspan="7">Aucune vidéo</td></tr>'
+    : A.videos.map(v=>{
+        const sc = A.scholars.find(s=>s.id===v.scholar_id);
+        return `<tr>
+          <td>${v.thumbnail_url||v.cover_url
+            ? `<img src="${v.thumbnail_url||v.cover_url}" class="td-img" onerror="this.style.display='none'">`
+            : `<div class="td-img-ph">${v.emoji||'🎬'}</div>`}</td>
+          <td><p class="td-bold" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.title||'—'}</p></td>
+          <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sc?sc.name_fr:v.author_name||'—'}</td>
+          <td>${v.category?`<span class="bdg bdg-r">${v.category}</span>`:'—'}</td>
+          <td>${v.duration||'—'}</td>
+          <td>${fmt(v.views||0)}</td>
+          <td class="td-actions">
+            <button class="btn btn-sm btn-edit" onclick="editItem('videos',${v.id})">✏️</button>
+            <button class="btn btn-sm btn-del" onclick="confirmDelete('videos',${v.id},'${(v.title||'').replace(/'/g,"\\'")}')">🗑️</button>
+          </td>
+        </tr>`;
+      }).join('');
+}
+
+// ─── LIVES TABLE ─────────────────────────────
+function renderLives(){
+  const cnt = A.lives.length;
+  g('cnt-lives').textContent = '('+cnt+')';
+  g('cl-lives').textContent = cnt+' session'+(cnt>1?'s':'');
+  const STATUS = {
+    live:     '<span class="bdg bdg-live" style="display:inline-flex;align-items:center;gap:3px"><div class="ldot"></div>EN DIRECT</span>',
+    upcoming: '<span class="bdg bdg-upc">📅 Planifié</span>',
+    ended:    '<span class="bdg" style="background:var(--bg);color:var(--muted)">✅ Terminé</span>',
+  };
+  g('tbl-lives').innerHTML = !cnt
+    ? '<tr class="empty-row"><td colspan="6">Aucune session live</td></tr>'
+    : A.lives.map(l=>`
+      <tr>
+        <td><p class="td-bold" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.title||'—'}</p></td>
+        <td>${l.scholar_name||'—'}</td>
+        <td style="white-space:nowrap">${fmtDate(l.scheduled_at)}</td>
+        <td>${STATUS[l.status]||l.status}</td>
+        <td>${fmt(l.viewers||0)}</td>
+        <td class="td-actions">
+          <button class="btn btn-sm btn-edit" onclick="editItem('lives',${l.id})">✏️ Modifier</button>
+          <button class="btn btn-sm btn-del" onclick="confirmDelete('lives',${l.id},'${(l.title||'').replace(/'/g,"\\'")}')">🗑️</button>
+        </td>
+      </tr>`).join('');
+}
+
+// ─── CATS TABLE ──────────────────────────────
+function renderCats(){
+  const cnt = A.cats.length;
+  g('cnt-cats').textContent = '('+cnt+')';
+  g('cl-cats').textContent = cnt+' catégorie'+(cnt>1?'s':'');
+  const COL_BG = {green:'rgba(37,211,102,.1)',blue:'rgba(42,171,238,.1)',red:'rgba(229,57,53,.09)',cyan:'rgba(0,188,212,.1)'};
+  g('tbl-cats').innerHTML = !cnt
+    ? '<tr class="empty-row"><td colspan="6">Aucune catégorie</td></tr>'
+    : A.cats.map(c=>`
+      <tr>
+        <td><div style="width:36px;height:36px;border-radius:9px;background:${COL_BG[c.color]||COL_BG.green};display:flex;align-items:center;justify-content:center;font-size:1.2rem">${c.emoji||'📚'}</div></td>
+        <td style="font-family:'Noto Naskh Arabic',serif;font-size:.88rem;font-weight:700">${c.label_ar||'—'}</td>
+        <td class="td-bold">${c.label_fr||'—'}</td>
+        <td><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${COL_BG[c.color]?.replace('.1','1')};margin-right:5px"></span>${c.color||'—'}</td>
+        <td>${c.content_count||0}</td>
+        <td class="td-actions">
+          <button class="btn btn-sm btn-edit" onclick="editItem('categories',${c.id})">✏️ Modifier</button>
+          <button class="btn btn-sm btn-del" onclick="confirmDelete('categories',${c.id},'${(c.label_fr||'').replace(/'/g,"\\'")}')">🗑️</button>
+        </td>
+      </tr>`).join('');
+}
+
+// ─── DELETE ──────────────────────────────────
+function confirmDelete(table, id, name){
+  A.deleteTable = table; A.deleteId = id;
+  g('confirm-name').textContent = name;
+  g('mo-confirm').classList.add('open');
+}
+
+async function executeDelete(){
+  busy('confirm-delete-btn', true, '🗑️ Supprimer définitivement');
+  try{
+    const {error} = await SB.from(A.deleteTable).delete().eq('id', A.deleteId);
+    if(error) throw error;
+    closeMo('mo-confirm');
+    toast('✅ Supprimé avec succès');
+    await loadAll();
+  }catch(e){ toast('❌ '+e.message); }
+  finally{ busy('confirm-delete-btn', false, '🗑️ Supprimer définitivement'); }
+}
+
+// ─── EDIT ────────────────────────────────────
+function editItem(table, id){
+  A.editTable = table;
+  A.editId    = id;
+  const schOpts = A.scholars.map(s=>`<option value="${s.id}">${s.name_fr||s.name_ar}</option>`).join('');
+  const catOpts = A.cats.map(c=>`<option value="${c.label_fr}">${c.emoji||''} ${c.label_fr}</option>`).join('');
+
+  if(table === 'scholars'){
+    const sc = A.scholars.find(s=>String(s.id)===String(id));
+    if(!sc) return;
+    g('edit-modal-title').textContent = '✏️ Modifier — '+sc.name_fr;
+    g('edit-modal-body').innerHTML = `
+      <div class="form-grid">
+        <div class="fg"><label class="lbl">Nom arabe *</label><input class="inp" id="e-nar" value="${sc.name_ar||''}"/></div>
+        <div class="fg"><label class="lbl">Nom français *</label><input class="inp" id="e-nfr" value="${sc.name_fr||''}"/></div>
+        <div class="fg"><label class="lbl">Initiale</label><input class="inp" id="e-ini" value="${sc.initial||''}" maxlength="2"/></div>
+        <div class="fg"><label class="lbl">Pays</label><input class="inp" id="e-cty" value="${sc.country||''}"/></div>
+        <div class="fg"><label class="lbl">Époque</label><input class="inp" id="e-era" value="${sc.era||''}"/></div>
+        <div class="fg"><label class="lbl">Catégorie</label>
+          <select class="inp" id="e-cat">
+            <option value="contemporain"${sc.category==='contemporain'?' selected':''}>🕌 Contemporain</option>
+            <option value="ancien"${sc.category==='ancien'?' selected':''}>📜 Ancien</option>
+            <option value="hadith"${sc.category==='hadith'?' selected':''}>📿 Hadith</option>
+            <option value="rapporteur"${sc.category==='rapporteur'?' selected':''}>📖 Rapporteur</option>
+          </select>
+        </div>
+        <div class="fg fg-full"><label class="lbl">Tags (séparés par virgule)</label><input class="inp" id="e-tags" value="${(sc.tags||[]).join(', ')}"/></div>
+        <div class="fg fg-full"><label class="lbl">Biographie</label><textarea class="inp" id="e-bio" rows="3">${sc.bio||''}</textarea></div>
+        <div class="fg"><label class="lbl">Statut Live</label>
+          <select class="inp" id="e-live">
+            <option value="false"${!sc.is_live?' selected':''}>⬛ Hors ligne</option>
+            <option value="true"${sc.is_live?' selected':''}>🔴 En direct</option>
+          </select>
+        </div>
+        <div class="fg"><label class="lbl">Titre du Live</label><input class="inp" id="e-ltitle" value="${sc.live_title||''}"/></div>
+        <div class="fg"><label class="lbl">Auditeurs Live</label><input class="inp" type="number" id="e-lvw" value="${sc.live_viewers||0}"/></div>
+        <div class="fg"><label class="lbl">Lien Live (URL)</label><input class="inp" id="e-lurl" value="${sc.live_url||''}"/></div>
+      </div>`;
+  }
+  else if(table === 'books'){
+    const b = A.books.find(x=>x.id===id||String(x.id)===String(id));
+    if(!b) return;
+    g('edit-modal-title').textContent = '✏️ Modifier — '+b.title;
+    g('edit-modal-body').innerHTML = `
+      <div class="form-grid">
+        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="e-ttl" value="${b.title||''}"/></div>
+        <div class="fg"><label class="lbl">Auteur</label><input class="inp" id="e-aut" value="${b.author_name||''}"/></div>
+        <div class="fg"><label class="lbl">Savant lié</label>
+          <select class="inp" id="e-sch"><option value="">— Aucun —</option>${schOpts}</select>
+        </div>
+        <div class="fg"><label class="lbl">Catégorie</label>
+          <select class="inp" id="e-cat"><option value="">— Choisir —</option>${catOpts}</select>
+        </div>
+        <div class="fg"><label class="lbl">Type</label>
+          <select class="inp" id="e-typ">
+            <option value="PDF"${b.file_type==='PDF'?' selected':''}>📄 PDF</option>
+            <option value="EPUB"${b.file_type==='EPUB'?' selected':''}>📱 Ebook</option>
+            <option value="Word"${b.file_type==='Word'?' selected':''}>📝 Word</option>
+            <option value="Autre"${b.file_type==='Autre'?' selected':''}>📎 Autre</option>
+          </select>
+        </div>
+        <div class="fg"><label class="lbl">Pages</label><input class="inp" type="number" id="e-pg" value="${b.pages||0}"/></div>
+        <div class="fg fg-full"><label class="lbl">Lien fichier (URL)</label><input class="inp" id="e-url" value="${b.file_url||''}"/></div>
+        <div class="fg fg-full"><label class="lbl">Image de couverture (URL)</label>
+          ${b.cover_url?`<img src="${b.cover_url}" style="width:100%;max-height:100px;object-fit:cover;border-radius:8px;margin-bottom:6px;border:1.5px solid var(--line)">`:''}
+          <input class="inp" id="e-cvr" value="${b.cover_url||''}" placeholder="https://… ou uploader ci-dessous"/>
+          <label class="file-lbl" id="e-cvrlbl" for="e-cvrinp" style="margin-top:6px">🖼️ Uploader une nouvelle image</label>
+          <input type="file" style="display:none" id="e-cvrinp" accept="image/*" onchange="editCoverPreview('e-cvrlbl','e-cvrinp','e-cvr')"/>
+        </div>
+        <div class="fg fg-full"><label class="lbl">Description</label><textarea class="inp" id="e-dsc" rows="3">${b.description||''}</textarea></div>
+        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="e-emo" value="${b.emoji||'📗'}" maxlength="4"/></div>
+        <div class="fg" style="display:flex;align-items:center;gap:7px;padding-top:20px">
+          <input type="checkbox" id="e-new" style="accent-color:var(--r);width:15px;height:15px"${b.is_new?' checked':''}/>
+          <label for="e-new" class="lbl" style="margin:0;cursor:pointer">Marquer NOUVEAU</label>
+        </div>
+      </div>`;
+    // Set selected values
+    setTimeout(()=>{
+      const sel = g('e-sch'); if(sel&&b.scholar_id) sel.value=b.scholar_id;
+      const catsel = g('e-cat'); if(catsel&&b.category) catsel.value=b.category;
+    },50);
+  }
+  else if(table === 'audios'){
+    const a = A.audios.find(x=>x.id===id||String(x.id)===String(id));
+    if(!a) return;
+    g('edit-modal-title').textContent = '✏️ Modifier — '+a.title;
+    g('edit-modal-body').innerHTML = `
+      <div class="form-grid">
+        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="e-ttl" value="${a.title||''}"/></div>
+        <div class="fg"><label class="lbl">Savant</label>
+          <select class="inp" id="e-sch"><option value="">— Aucun —</option>${schOpts}</select>
+        </div>
+        <div class="fg"><label class="lbl">Catégorie</label>
+          <select class="inp" id="e-cat"><option value="">— Choisir —</option>${catOpts}</select>
+        </div>
+        <div class="fg"><label class="lbl">Épisodes</label><input class="inp" type="number" id="e-eps" value="${a.episodes||1}"/></div>
+        <div class="fg"><label class="lbl">Durée totale</label><input class="inp" id="e-dur" value="${a.duration||''}"/></div>
+        <div class="fg fg-full"><label class="lbl">Lien audio (URL)</label><input class="inp" id="e-url" value="${a.file_url||''}"/></div>
+        <div class="fg fg-full"><label class="lbl">Image de couverture (URL)</label>
+          ${a.cover_url?`<img src="${a.cover_url}" style="width:100%;max-height:100px;object-fit:cover;border-radius:8px;margin-bottom:6px;border:1.5px solid var(--line)">`:''}
+          <input class="inp" id="e-cvr" value="${a.cover_url||''}" placeholder="https://…"/>
+          <label class="file-lbl" id="e-cvrlbl" for="e-cvrinp" style="margin-top:6px">🖼️ Uploader une nouvelle image</label>
+          <input type="file" style="display:none" id="e-cvrinp" accept="image/*" onchange="editCoverPreview('e-cvrlbl','e-cvrinp','e-cvr')"/>
+        </div>
+        <div class="fg fg-full"><label class="lbl">Description</label><textarea class="inp" id="e-dsc" rows="3">${a.description||''}</textarea></div>
+        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="e-emo" value="${a.emoji||'🎧'}" maxlength="4"/></div>
+      </div>`;
+    setTimeout(()=>{
+      const sel=g('e-sch'); if(sel&&a.scholar_id) sel.value=a.scholar_id;
+      const cat=g('e-cat'); if(cat&&a.category) cat.value=a.category;
+    },50);
+  }
+  else if(table === 'videos'){
+    const v = A.videos.find(x=>x.id===id||String(x.id)===String(id));
+    if(!v) return;
+    g('edit-modal-title').textContent = '✏️ Modifier — '+v.title;
+    g('edit-modal-body').innerHTML = `
+      <div class="form-grid">
+        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="e-ttl" value="${v.title||''}"/></div>
+        <div class="fg"><label class="lbl">Savant</label>
+          <select class="inp" id="e-sch"><option value="">— Aucun —</option>${schOpts}</select>
+        </div>
+        <div class="fg"><label class="lbl">Catégorie</label>
+          <select class="inp" id="e-cat"><option value="">— Choisir —</option>${catOpts}</select>
+        </div>
+        <div class="fg"><label class="lbl">Durée</label><input class="inp" id="e-dur" value="${v.duration||''}"/></div>
+        <div class="fg fg-full"><label class="lbl">Lien vidéo (URL YouTube, etc.)</label><input class="inp" id="e-url" value="${v.video_url||''}"/></div>
+        <div class="fg fg-full"><label class="lbl">Thumbnail / Miniature (URL)</label>
+          ${v.thumbnail_url?`<img src="${v.thumbnail_url}" style="width:100%;max-height:100px;object-fit:cover;border-radius:8px;margin-bottom:6px;border:1.5px solid var(--line)">`:''}
+          <input class="inp" id="e-cvr" value="${v.thumbnail_url||''}" placeholder="https://…"/>
+          <label class="file-lbl" id="e-cvrlbl" for="e-cvrinp" style="margin-top:6px">🖼️ Uploader une nouvelle miniature</label>
+          <input type="file" style="display:none" id="e-cvrinp" accept="image/*" onchange="editCoverPreview('e-cvrlbl','e-cvrinp','e-cvr')"/>
+        </div>
+        <div class="fg fg-full"><label class="lbl">Description</label><textarea class="inp" id="e-dsc" rows="3">${v.description||''}</textarea></div>
+        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="e-emo" value="${v.emoji||'🎬'}" maxlength="4"/></div>
+      </div>`;
+    setTimeout(()=>{
+      const sel=g('e-sch'); if(sel&&v.scholar_id) sel.value=v.scholar_id;
+      const cat=g('e-cat'); if(cat&&v.category) cat.value=v.category;
+    },50);
+  }
+  else if(table === 'lives'){
+    const l = A.lives.find(x=>x.id===id||String(x.id)===String(id));
+    if(!l) return;
+    const localDt = l.scheduled_at ? new Date(l.scheduled_at).toISOString().slice(0,16) : '';
+    g('edit-modal-title').textContent = '✏️ Modifier — '+l.title;
+    g('edit-modal-body').innerHTML = `
+      <div class="form-grid">
+        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="e-ttl" value="${l.title||''}"/></div>
+        <div class="fg"><label class="lbl">Savant</label>
+          <select class="inp" id="e-sch"><option value="">— Aucun —</option>${schOpts}</select>
+        </div>
+        <div class="fg"><label class="lbl">Nom du savant (manuel)</label><input class="inp" id="e-snm" value="${l.scholar_name||''}"/></div>
+        <div class="fg"><label class="lbl">Date & Heure</label><input class="inp" type="datetime-local" id="e-dt" value="${localDt}"/></div>
+        <div class="fg"><label class="lbl">Lien stream (YouTube Live…)</label><input class="inp" id="e-url" value="${l.stream_url||''}"/></div>
+        <div class="fg"><label class="lbl">Statut</label>
+          <select class="inp" id="e-st">
+            <option value="upcoming"${l.status==='upcoming'?' selected':''}>📅 Planifié</option>
+            <option value="live"${l.status==='live'?' selected':''}>🔴 En direct</option>
+            <option value="ended"${l.status==='ended'?' selected':''}>✅ Terminé</option>
+          </select>
+        </div>
+        <div class="fg"><label class="lbl">Nombre d'auditeurs</label><input class="inp" type="number" id="e-vw" value="${l.viewers||0}"/></div>
+        <div class="fg"><label class="lbl">Lien replay (optionnel)</label><input class="inp" id="e-replay" value="${l.replay_url||''}"/></div>
+      </div>`;
+    setTimeout(()=>{
+      const sel=g('e-sch'); if(sel&&l.scholar_id) sel.value=l.scholar_id;
+    },50);
+  }
+  else if(table === 'categories'){
+    const c = A.cats.find(x=>x.id===id||String(x.id)===String(id));
+    if(!c) return;
+    g('edit-modal-title').textContent = '✏️ Modifier — '+c.label_fr;
+    g('edit-modal-body').innerHTML = `
+      <div class="form-grid">
+        <div class="fg"><label class="lbl">Nom arabe *</label><input class="inp" id="e-ar" value="${c.label_ar||''}"/></div>
+        <div class="fg"><label class="lbl">Nom français *</label><input class="inp" id="e-fr" value="${c.label_fr||''}"/></div>
+        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="e-em" value="${c.emoji||'📚'}" maxlength="4"/></div>
+        <div class="fg"><label class="lbl">Couleur</label>
+          <select class="inp" id="e-col">
+            <option value="green"${c.color==='green'?' selected':''}>🟢 Vert</option>
+            <option value="blue"${c.color==='blue'?' selected':''}>🔵 Bleu</option>
+            <option value="red"${c.color==='red'?' selected':''}>🔴 Rouge</option>
+            <option value="cyan"${c.color==='cyan'?' selected':''}>🩵 Cyan</option>
+          </select>
+        </div>
+      </div>`;
+  }
+
+  g('mo-edit').classList.add('open');
+}
+
+// ─── SAVE EDIT ───────────────────────────────
+async function saveEdit(){
+  busy('edit-save-btn', true, '💾 Enregistrer');
+  try{
+    let data = {};
+    const t = A.editTable;
+
+    // Upload cover if chosen
+    let newCoverUrl = val('e-cvr')||null;
+    if(g('e-cvrinp')?.files?.length){
+      newCoverUrl = await uploadFile('e-cvrinp','covers');
+    }
+
+    if(t==='scholars'){
+      data = {
+        name_ar:  val('e-nar')||undefined,
+        name_fr:  val('e-nfr')||undefined,
+        initial:  val('e-ini')||undefined,
+        country:  val('e-cty')||null,
+        era:      val('e-era')||null,
+        category: val('e-cat')||undefined,
+        tags:     val('e-tags').split(',').map(x=>x.trim()).filter(Boolean),
+        bio:      val('e-bio')||null,
+        is_live:  val('e-live')==='true',
+        live_title:   val('e-ltitle')||null,
+        live_viewers: parseInt(val('e-lvw'))||0,
+        live_url: val('e-lurl')||null,
+      };
+    } else if(t==='books'){
+      data = {
+        title:       val('e-ttl')||undefined,
+        author_name: val('e-aut')||null,
+        scholar_id:  val('e-sch')||null,
+        category:    val('e-cat')||null,
+        file_type:   val('e-typ')||'PDF',
+        pages:       parseInt(val('e-pg'))||0,
+        file_url:    val('e-url')||null,
+        cover_url:   newCoverUrl,
+        description: val('e-dsc')||null,
+        emoji:       val('e-emo')||'📗',
+        is_new:      g('e-new')?.checked||false,
+      };
+    } else if(t==='audios'){
+      data = {
+        title:      val('e-ttl')||undefined,
+        scholar_id: val('e-sch')||null,
+        category:   val('e-cat')||null,
+        episodes:   parseInt(val('e-eps'))||1,
+        duration:   val('e-dur')||null,
+        file_url:   val('e-url')||null,
+        cover_url:  newCoverUrl,
+        description:val('e-dsc')||null,
+        emoji:      val('e-emo')||'🎧',
+      };
+    } else if(t==='videos'){
+      data = {
+        title:         val('e-ttl')||undefined,
+        scholar_id:    val('e-sch')||null,
+        category:      val('e-cat')||null,
+        duration:      val('e-dur')||null,
+        video_url:     val('e-url')||null,
+        thumbnail_url: newCoverUrl,
+        description:   val('e-dsc')||null,
+        emoji:         val('e-emo')||'🎬',
+      };
+    } else if(t==='lives'){
+      data = {
+        title:        val('e-ttl')||undefined,
+        scholar_id:   val('e-sch')||null,
+        scholar_name: val('e-snm')||null,
+        scheduled_at: val('e-dt') ? new Date(val('e-dt')).toISOString() : undefined,
+        stream_url:   val('e-url')||null,
+        status:       val('e-st')||'upcoming',
+        viewers:      parseInt(val('e-vw'))||0,
+        replay_url:   val('e-replay')||null,
+      };
+    } else if(t==='categories'){
+      data = {
+        label_ar: val('e-ar')||undefined,
+        label_fr: val('e-fr')||undefined,
+        emoji:    val('e-em')||'📚',
+        color:    val('e-col')||'green',
+      };
+    }
+
+    const {error} = await SB.from(t).update(data).eq('id', A.editId);
+    if(error) throw error;
+    closeMo('mo-edit');
+    toast('✅ Modifié avec succès !');
+    await loadAll();
+  }catch(e){ toast('❌ '+e.message); }
+  finally{ busy('edit-save-btn', false, '💾 Enregistrer'); }
+}
+
+// ─── ADD ─────────────────────────────────────
+function openAdd(){
+  const t = A.section;
+  const schOpts = A.scholars.map(s=>`<option value="${s.id}">${s.name_fr||s.name_ar}</option>`).join('');
+  const catOpts = A.cats.map(c=>`<option value="${c.label_fr}">${c.emoji||''} ${c.label_fr}</option>`).join('');
+
+  const titles = {scholars:'👨‍🏫 Ajouter un Savant',books:'📚 Ajouter un Livre',audios:'🎧 Ajouter un Cours Audio',videos:'🎬 Ajouter une Vidéo',lives:'📡 Publier un Live',categories:'🏷️ Créer une Catégorie'};
+  g('add-modal-title').textContent = titles[t]||'➕ Ajouter';
+
+  const forms = {
+    scholars: `
+      <div class="form-grid">
+        <div class="fg"><label class="lbl">Nom arabe *</label><input class="inp" id="n-nar" placeholder="الشيخ …"/></div>
+        <div class="fg"><label class="lbl">Nom français *</label><input class="inp" id="n-nfr" placeholder="Cheikh …"/></div>
+        <div class="fg"><label class="lbl">Initiale *</label><input class="inp" id="n-ini" placeholder="ا" maxlength="2"/></div>
+        <div class="fg"><label class="lbl">Pays</label><input class="inp" id="n-cty" placeholder="Arabie Saoudite"/></div>
+        <div class="fg"><label class="lbl">Époque</label><input class="inp" id="n-era" placeholder="1910–1999"/></div>
+        <div class="fg"><label class="lbl">Catégorie</label>
+          <select class="inp" id="n-cat">
+            <option value="contemporain">🕌 Contemporain</option>
+            <option value="ancien">📜 Ancien</option>
+            <option value="hadith">📿 Hadith</option>
+            <option value="rapporteur">📖 Rapporteur</option>
+          </select>
+        </div>
+        <div class="fg fg-full"><label class="lbl">Tags (séparés par virgule)</label><input class="inp" id="n-tags" placeholder="Aqida, Fiqh…"/></div>
+        <div class="fg fg-full"><label class="lbl">Biographie</label><textarea class="inp" id="n-bio" rows="3" placeholder="Biographie…"></textarea></div>
+      </div>`,
+    books: `
+      <div class="form-grid">
+        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="n-ttl" placeholder="Titre du livre"/></div>
+        <div class="fg"><label class="lbl">Auteur</label><input class="inp" id="n-aut" placeholder="Auteur"/></div>
+        <div class="fg"><label class="lbl">Savant lié</label><select class="inp" id="n-sch"><option value="">— Aucun —</option>${schOpts}</select></div>
+        <div class="fg"><label class="lbl">Catégorie</label><select class="inp" id="n-cat"><option value="">— Choisir —</option>${catOpts}</select></div>
+        <div class="fg"><label class="lbl">Type</label>
+          <select class="inp" id="n-typ"><option value="PDF">📄 PDF</option><option value="EPUB">📱 Ebook</option><option value="Word">📝 Word</option><option value="Autre">📎 Autre</option></select>
+        </div>
+        <div class="fg"><label class="lbl">Pages</label><input class="inp" type="number" id="n-pg" placeholder="120" min="1"/></div>
+        <div class="fg fg-full"><label class="lbl">Lien fichier (URL)</label><input class="inp" id="n-url" placeholder="https://…"/></div>
+        <div class="fg fg-full">
+          <label class="lbl">🖼️ Image de couverture</label>
+          <div id="n-cvr-prev" style="display:none;margin-bottom:7px"><img id="n-cvr-img" style="width:100%;max-height:120px;object-fit:cover;border-radius:9px;border:1.5px solid var(--line)"/></div>
+          <label class="file-lbl" id="n-cvrlbl" for="n-cvrinp">🖼️ Choisir une image JPG / PNG / WEBP</label>
+          <input type="file" style="display:none" id="n-cvrinp" accept="image/*" onchange="addCoverPreview('n-cvrlbl','n-cvrinp','n-cvr-prev','n-cvr-img')"/>
+        </div>
+        <div class="fg fg-full"><label class="lbl">Description</label><textarea class="inp" id="n-dsc" rows="2" placeholder="Description…"></textarea></div>
+        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="n-emo" placeholder="📗" maxlength="4"/></div>
+        <div class="fg" style="display:flex;align-items:center;gap:7px;padding-top:20px"><input type="checkbox" id="n-new" style="accent-color:var(--r);width:14px;height:14px"/><label for="n-new" class="lbl" style="margin:0;cursor:pointer">Marquer NOUVEAU</label></div>
+      </div>`,
+    audios: `
+      <div class="form-grid">
+        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="n-ttl" placeholder="Titre du cours"/></div>
+        <div class="fg"><label class="lbl">Savant</label><select class="inp" id="n-sch"><option value="">— Aucun —</option>${schOpts}</select></div>
+        <div class="fg"><label class="lbl">Catégorie</label><select class="inp" id="n-cat"><option value="">— Choisir —</option>${catOpts}</select></div>
+        <div class="fg"><label class="lbl">Épisodes</label><input class="inp" type="number" id="n-eps" placeholder="12" min="1"/></div>
+        <div class="fg"><label class="lbl">Durée</label><input class="inp" id="n-dur" placeholder="8h 30min"/></div>
+        <div class="fg fg-full"><label class="lbl">Lien audio (URL)</label><input class="inp" id="n-url" placeholder="https://…"/></div>
+        <div class="fg fg-full">
+          <label class="lbl">🖼️ Image de couverture</label>
+          <div id="n-cvr-prev" style="display:none;margin-bottom:7px"><img id="n-cvr-img" style="width:100%;max-height:120px;object-fit:cover;border-radius:9px;border:1.5px solid var(--line)"/></div>
+          <label class="file-lbl" id="n-cvrlbl" for="n-cvrinp">🖼️ Choisir une image JPG / PNG / WEBP</label>
+          <input type="file" style="display:none" id="n-cvrinp" accept="image/*" onchange="addCoverPreview('n-cvrlbl','n-cvrinp','n-cvr-prev','n-cvr-img')"/>
+        </div>
+        <div class="fg fg-full"><label class="lbl">Description</label><textarea class="inp" id="n-dsc" rows="2" placeholder="Description…"></textarea></div>
+        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="n-emo" placeholder="🎧" maxlength="4"/></div>
+      </div>`,
+    videos: `
+      <div class="form-grid">
+        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="n-ttl" placeholder="Titre de la vidéo"/></div>
+        <div class="fg"><label class="lbl">Savant</label><select class="inp" id="n-sch"><option value="">— Aucun —</option>${schOpts}</select></div>
+        <div class="fg"><label class="lbl">Catégorie</label><select class="inp" id="n-cat"><option value="">— Choisir —</option>${catOpts}</select></div>
+        <div class="fg"><label class="lbl">Durée</label><input class="inp" id="n-dur" placeholder="1h 24min"/></div>
+        <div class="fg fg-full"><label class="lbl">Lien YouTube / TikTok / Vimeo</label><input class="inp" id="n-url" placeholder="https://youtube.com/watch?v=…"/></div>
+        <div class="fg fg-full">
+          <label class="lbl">🖼️ Miniature / Thumbnail</label>
+          <div id="n-cvr-prev" style="display:none;margin-bottom:7px"><img id="n-cvr-img" style="width:100%;max-height:120px;object-fit:cover;border-radius:9px;border:1.5px solid var(--line)"/></div>
+          <label class="file-lbl" id="n-cvrlbl" for="n-cvrinp">🖼️ Choisir une image JPG / PNG / WEBP</label>
+          <input type="file" style="display:none" id="n-cvrinp" accept="image/*" onchange="addCoverPreview('n-cvrlbl','n-cvrinp','n-cvr-prev','n-cvr-img')"/>
+        </div>
+        <div class="fg fg-full"><label class="lbl">Description</label><textarea class="inp" id="n-dsc" rows="2" placeholder="Description…"></textarea></div>
+        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="n-emo" placeholder="🎬" maxlength="4"/></div>
+      </div>`,
+    lives: `
+      <div class="form-grid">
+        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="n-ttl" placeholder="Cours sur l'Aqida — Séance 1"/></div>
+        <div class="fg"><label class="lbl">Savant</label><select class="inp" id="n-sch"><option value="">— Aucun —</option>${schOpts}</select></div>
+        <div class="fg"><label class="lbl">Nom du savant (manuel)</label><input class="inp" id="n-snm" placeholder="Nom du savant"/></div>
+        <div class="fg"><label class="lbl">Date & Heure *</label><input class="inp" type="datetime-local" id="n-dt"/></div>
+        <div class="fg"><label class="lbl">Lien stream *</label><input class="inp" id="n-url" placeholder="https://youtube.com/live/…"/></div>
+        <div class="fg"><label class="lbl">Statut</label>
+          <select class="inp" id="n-st"><option value="upcoming">📅 Planifié</option><option value="live">🔴 En direct maintenant</option></select>
+        </div>
+        <div class="fg"><label class="lbl">Auditeurs estimés</label><input class="inp" type="number" id="n-vw" placeholder="0" min="0"/></div>
+      </div>`,
+    categories: `
+      <div class="form-grid">
+        <div class="fg"><label class="lbl">Nom arabe *</label><input class="inp" id="n-ar" placeholder="العقيدة"/></div>
+        <div class="fg"><label class="lbl">Nom français *</label><input class="inp" id="n-fr" placeholder="Aqida"/></div>
+        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="n-em" placeholder="☝️" maxlength="4"/></div>
+        <div class="fg"><label class="lbl">Couleur</label>
+          <select class="inp" id="n-col"><option value="green">🟢 Vert</option><option value="blue">🔵 Bleu</option><option value="red">🔴 Rouge</option><option value="cyan">🩵 Cyan</option></select>
+        </div>
+      </div>`,
+  };
+  g('add-modal-body').innerHTML = forms[t]||'<p>Section non supportée</p>';
+  g('mo-add').classList.add('open');
+}
+
+async function saveAdd(){
+  const t = A.section;
+  busy('add-save-btn', true, '➕ Ajouter');
+  try{
+    let coverUrl = null;
+    if(g('n-cvrinp')?.files?.length){
+      toast('⏳ Upload de l\'image…');
+      coverUrl = await uploadFile('n-cvrinp','covers');
+    }
+
+    let res;
+    if(t==='scholars'){
+      const nfr = val('n-nfr');
+      if(!val('n-nar')||!nfr||!val('n-ini')){ toast('⚠️ Nom arabe, français et initiale requis'); return; }
+      const id = nfr.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,38)+'-'+Date.now().toString(36);
+      res = await SB.from('scholars').insert({
+        id, name_ar:val('n-nar'), name_fr:nfr, initial:val('n-ini'),
+        country:val('n-cty')||null, era:val('n-era')||null, category:val('n-cat')||'contemporain',
+        tags:val('n-tags').split(',').map(x=>x.trim()).filter(Boolean), bio:val('n-bio')||null,
+      });
+    } else if(t==='books'){
+      if(!val('n-ttl')){ toast('⚠️ Titre requis'); return; }
+      let fileUrl = val('n-url')||null;
+      res = await SB.from('books').insert({
+        title:val('n-ttl'), author_name:val('n-aut')||null, scholar_id:val('n-sch')||null,
+        category:val('n-cat')||null, file_type:val('n-typ')||'PDF', pages:parseInt(val('n-pg'))||0,
+        file_url:fileUrl, cover_url:coverUrl, description:val('n-dsc')||null,
+        emoji:val('n-emo')||'📗', is_new:g('n-new')?.checked||false,
+      });
+    } else if(t==='audios'){
+      if(!val('n-ttl')){ toast('⚠️ Titre requis'); return; }
+      res = await SB.from('audios').insert({
+        title:val('n-ttl'), scholar_id:val('n-sch')||null, category:val('n-cat')||null,
+        episodes:parseInt(val('n-eps'))||1, duration:val('n-dur')||null,
+        file_url:val('n-url')||null, cover_url:coverUrl, description:val('n-dsc')||null, emoji:val('n-emo')||'🎧',
+      });
+    } else if(t==='videos'){
+      if(!val('n-ttl')){ toast('⚠️ Titre requis'); return; }
+      res = await SB.from('videos').insert({
+        title:val('n-ttl'), scholar_id:val('n-sch')||null, category:val('n-cat')||null,
+        duration:val('n-dur')||null, video_url:val('n-url')||null, thumbnail_url:coverUrl,
+        description:val('n-dsc')||null, emoji:val('n-emo')||'🎬',
+      });
+    } else if(t==='lives'){
+      if(!val('n-ttl')||!val('n-dt')){ toast('⚠️ Titre et date requis'); return; }
+      const scId=val('n-sch'); const sc=A.scholars.find(s=>s.id===scId);
+      res = await SB.from('live_sessions').insert({
+        title:val('n-ttl'), scholar_id:scId||null, scholar_name:val('n-snm')||sc?.name_fr||'',
+        scheduled_at:new Date(val('n-dt')).toISOString(), stream_url:val('n-url')||null,
+        status:val('n-st')||'upcoming', viewers:parseInt(val('n-vw'))||0, emoji:'📡',
+      });
+    } else if(t==='categories'){
+      if(!val('n-ar')||!val('n-fr')){ toast('⚠️ Noms requis'); return; }
+      const slug=val('n-fr').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+      res = await SB.from('categories').insert({slug, label_ar:val('n-ar'), label_fr:val('n-fr'), emoji:val('n-em')||'📚', color:val('n-col')||'green'});
+    }
+
+    if(res?.error) throw res.error;
+    closeMo('mo-add');
+    toast('✅ Ajouté avec succès !');
+    await loadAll();
+  }catch(e){ toast('❌ '+e.message); }
+  finally{ busy('add-save-btn', false, '➕ Ajouter'); }
+}
+
+// ─── COVER PREVIEW ───────────────────────────
+function addCoverPreview(lblId, inpId, prevId, imgId){
+  const inp=g(inpId), lbl=g(lblId), prev=g(prevId), img=g(imgId);
+  if(!inp?.files?.length) return;
+  lbl.textContent='✅ '+inp.files[0].name.substring(0,35); lbl.classList.add('got');
+  const r=new FileReader(); r.onload=e=>{ img.src=e.target.result; prev.style.display='block'; }; r.readAsDataURL(inp.files[0]);
+}
+
+function editCoverPreview(lblId, inpId, urlInpId){
+  const inp=g(inpId), lbl=g(lblId);
+  if(!inp?.files?.length) return;
+  lbl.textContent='✅ '+inp.files[0].name.substring(0,35); lbl.classList.add('got');
+  const r=new FileReader(); r.onload=e=>{ const ui=g(urlInpId); if(ui) ui.value='[nouveau fichier]'; }; r.readAsDataURL(inp.files[0]);
+}
+
+// ─── UPLOAD FILE ─────────────────────────────
+async function uploadFile(inpId, bucket){
+  const inp=g(inpId);
+  if(!inp?.files?.length) return null;
+  const file=inp.files[0];
+  const ext=file.name.split('.').pop().toLowerCase();
+  const path=Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.'+ext;
+  const {data,error}=await SB.storage.from(bucket).upload(path,file,{upsert:true});
+  if(error) throw new Error('Upload: '+error.message);
+  return SB.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+}
+
+// ─── TOPBAR DATE ─────────────────────────────
+g('topbar-date').textContent = new Date().toLocaleDateString('fr',{weekday:'long',day:'numeric',month:'long'});
+
+// ─── INIT ────────────────────────────────────
+checkAuth();
+</script>
+</body>
+</html>
