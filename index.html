@@ -654,6 +654,14 @@ textarea.inp{resize:vertical;min-height:72px}
             </div>
             <div class="fg"><label class="lbl">Tags (virgule entre chaque)</label><input class="inp" id="s-tags" placeholder="Aqida, Fiqh, Hadith"/></div>
             <div class="fg"><label class="lbl">Biographie</label><textarea class="inp" id="s-bio" rows="3" placeholder="Biographie…"></textarea></div>
+            <div class="fg">
+              <label class="lbl">🖼️ Photo du savant (affichée sur son profil et sa carte)</label>
+              <div id="s-av-prev" style="display:none;margin-bottom:8px;text-align:center">
+                <img id="s-av-img" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--g)"/>
+              </div>
+              <label class="file-lbl" id="s-avlbl" for="s-avinp">📷 Choisir une photo JPG / PNG / WEBP</label>
+              <input type="file" style="display:none" id="s-avinp" accept="image/*" onchange="onCoverChosen('s-avlbl','s-avinp','s-av-prev','s-av-img')"/>
+            </div>
             <button class="btn btn-g btn-fw" id="btn-s" onclick="adminAddScholar()">➕ Ajouter le savant</button>
           </div>
         </div>
@@ -696,8 +704,16 @@ textarea.inp{resize:vertical;min-height:72px}
               <label class="file-lbl" id="b-flbl" for="b-finp">📎 Choisir PDF / EPUB / DOCX</label>
               <input type="file" style="display:none" id="b-finp" accept=".pdf,.epub,.docx" onchange="onFileChosen('b-flbl','b-finp')"/>
             </div>
+            <div class="fg">
+              <label class="lbl">🖼️ Image de couverture (visuel affiché sur la carte)</label>
+              <div id="b-cover-preview" style="display:none;margin-bottom:8px">
+                <img id="b-cover-img" style="width:100%;max-height:160px;object-fit:cover;border-radius:10px;border:1.5px solid var(--line)"/>
+              </div>
+              <label class="file-lbl" id="b-cvrlbl" for="b-cvrinp">🖼️ Choisir une image JPG / PNG / WEBP</label>
+              <input type="file" style="display:none" id="b-cvrinp" accept="image/*" onchange="onCoverChosen('b-cvrlbl','b-cvrinp','b-cover-preview','b-cover-img')"/>
+            </div>
             <div class="fg"><label class="lbl">Description</label><textarea class="inp" id="b-dsc" rows="3" placeholder="Description…"></textarea></div>
-            <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="b-emo" placeholder="📗" maxlength="4"/></div>
+            <div class="fg"><label class="lbl">Emoji (affiché si pas d'image)</label><input class="inp" id="b-emo" placeholder="📗" maxlength="4"/></div>
             <label style="display:flex;align-items:center;gap:7px;font-size:.78rem;font-weight:700;color:var(--sub);margin-bottom:11px;cursor:pointer">
               <input type="checkbox" id="b-new" style="accent-color:var(--r);width:15px;height:15px"/> Marquer NOUVEAU
             </label>
@@ -719,8 +735,16 @@ textarea.inp{resize:vertical;min-height:72px}
               <label class="file-lbl" id="a-flbl" for="a-finp">🎵 Choisir MP3 / AAC / M4A</label>
               <input type="file" style="display:none" id="a-finp" accept=".mp3,.aac,.m4a,.ogg" onchange="onFileChosen('a-flbl','a-finp')"/>
             </div>
+            <div class="fg">
+              <label class="lbl">🖼️ Image de couverture (visuel affiché sur la carte)</label>
+              <div id="a-cover-preview" style="display:none;margin-bottom:8px">
+                <img id="a-cover-img" style="width:100%;max-height:160px;object-fit:cover;border-radius:10px;border:1.5px solid var(--line)"/>
+              </div>
+              <label class="file-lbl" id="a-cvrlbl" for="a-cvrinp">🖼️ Choisir une image JPG / PNG / WEBP</label>
+              <input type="file" style="display:none" id="a-cvrinp" accept="image/*" onchange="onCoverChosen('a-cvrlbl','a-cvrinp','a-cover-preview','a-cover-img')"/>
+            </div>
             <div class="fg"><label class="lbl">Description</label><textarea class="inp" id="a-dsc" rows="3" placeholder="Description…"></textarea></div>
-            <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="a-emo" placeholder="🎧" maxlength="4"/></div>
+            <div class="fg"><label class="lbl">Emoji (affiché si pas d'image)</label><input class="inp" id="a-emo" placeholder="🎧" maxlength="4"/></div>
             <button class="btn btn-b btn-fw" id="btn-a" onclick="adminAddAudio()">➕ Ajouter le cours audio</button>
           </div>
         </div>
@@ -738,8 +762,16 @@ textarea.inp{resize:vertical;min-height:72px}
               <label class="file-lbl" id="v-flbl" for="v-finp">🎬 Choisir MP4 / MOV / WebM</label>
               <input type="file" style="display:none" id="v-finp" accept=".mp4,.mov,.webm" onchange="onFileChosen('v-flbl','v-finp')"/>
             </div>
+            <div class="fg">
+              <label class="lbl">🖼️ Miniature / Thumbnail (visuel affiché sur la carte)</label>
+              <div id="v-cover-preview" style="display:none;margin-bottom:8px">
+                <img id="v-cover-img" style="width:100%;max-height:160px;object-fit:cover;border-radius:10px;border:1.5px solid var(--line)"/>
+              </div>
+              <label class="file-lbl" id="v-cvrlbl" for="v-cvrinp">🖼️ Choisir une image JPG / PNG / WEBP</label>
+              <input type="file" style="display:none" id="v-cvrinp" accept="image/*" onchange="onCoverChosen('v-cvrlbl','v-cvrinp','v-cover-preview','v-cover-img')"/>
+            </div>
             <div class="fg"><label class="lbl">Description</label><textarea class="inp" id="v-dsc" rows="3" placeholder="Description…"></textarea></div>
-            <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="v-emo" placeholder="🎬" maxlength="4"/></div>
+            <div class="fg"><label class="lbl">Emoji (affiché si pas d'image)</label><input class="inp" id="v-emo" placeholder="🎬" maxlength="4"/></div>
             <button class="btn btn-r btn-fw" id="btn-v" onclick="adminAddVideo()">➕ Ajouter la vidéo</button>
           </div>
         </div>
@@ -1030,10 +1062,13 @@ function renderHomeScholars(){
     return;
   }
   el.innerHTML = APP.scholars.slice(0,10).map(function(s,i){
+    var avHtml = s.avatar_url
+      ? '<div style="width:50px;height:50px;border-radius:50%;overflow:hidden;margin:0 auto 8px;flex-shrink:0"><img src="'+s.avatar_url+'" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.background=\''+avColor(i)+'\';this.parentNode.innerHTML=\''+( s.initial||'?')+'\';this.parentNode.style.display=\'flex\';this.parentNode.style.alignItems=\'center\';this.parentNode.style.justifyContent=\'center\';this.parentNode.style.fontFamily=\'Noto Naskh Arabic,serif\';this.parentNode.style.fontSize=\'1.3rem\';this.parentNode.style.color=\'#fff\';this.parentNode.style.fontWeight=\'700\'"/></div>'
+      : '<div class="sc-av" style="width:50px;height:50px;font-size:1.3rem;background:'+avColor(i)+'">'+( s.initial||'?')+'</div>';
     return '<div style="min-width:115px;flex-shrink:0" class="sc" onclick="openScholar(\''+esc(s.id)+'\')">'
       +'<div class="sc-bar" style="background:'+barColor(i)+'"></div>'
       +(s.is_live?'<div style="position:absolute;top:6px;right:6px"><span class="bdg bdg-live" style="font-size:.54rem;display:inline-flex;align-items:center;gap:3px"><div class="ldot" style="background:#fff;width:4px;height:4px"></div>LIVE</span></div>':'')
-      +'<div class="sc-av" style="width:50px;height:50px;font-size:1.3rem;background:'+avColor(i)+'">'+( s.initial||'?')+'</div>'
+      +avHtml
       +'<p class="sc-nar" style="font-size:.75rem">'+(s.name_ar||'—')+'</p>'
       +'<p class="sc-nfr" style="font-size:.6rem">'+((s.name_fr||'').split(' ').slice(0,3).join(' '))+'</p>'
       +'</div>';
@@ -1109,17 +1144,25 @@ function renderCI(item, type){
     ? ('🎵 '+(item.episodes||'—')+' ép. · ⏱ '+(item.duration||'—')+' · ▶ '+fmt(item.plays||0))
     : ('⏱ '+(item.duration||'—')+' · 👁 '+fmt(item.views||0));
 
+  // Cover image ou emoji
+  var coverUrl = item.cover_url || item.thumbnail_url || null;
+  var thumbHtml = coverUrl
+    ? '<div class="ci-th" style="width:64px;height:64px;border-radius:11px;overflow:hidden;flex-shrink:0">'
+      + '<img src="'+coverUrl+'" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.innerHTML=\''+emoji+'\';this.parentNode.style.background=\''+thBg+'\';this.parentNode.style.display=\'flex\';this.parentNode.style.alignItems=\'center\';this.parentNode.style.justifyContent=\'center\';this.parentNode.style.fontSize=\'1.3rem\'"/>'
+      + '</div>'
+    : '<div class="ci-th" style="background:'+thBg+'">'+emoji+'</div>';
+
   var mainBtn = '';
   if(isB){
     mainBtn = '<button class="btn btn-g btn-sm" onclick="event.stopPropagation();dlBook('+item.id+',\''+esc(item.file_url||'')+'\',\''+esc(item.title||'')+'\')">↓ '+(item.file_type||'PDF')+'</button>';
   } else if(isA){
     mainBtn = '<button class="btn btn-b btn-sm" id="pb-'+item.id+'" onclick="event.stopPropagation();playAudio('+item.id+',\''+esc(item.title||'')+'\',\''+esc(item.author_name||'')+'\',\''+esc(item.file_url||'')+'\',this)">▶ Écouter</button>';
   } else {
-    mainBtn = '<button class="btn btn-r btn-sm" onclick="event.stopPropagation();openVideo(\''+esc(item.title||'')+'\',\''+esc(item.author_name||'')+'\',\''+( item.duration||'')+'\','+( item.views||0)+',\''+esc(item.description||'')+'\',\''+esc(item.video_url||'')+'\')">▶ Regarder</button>';
+    mainBtn = '<button class="btn btn-r btn-sm" onclick="event.stopPropagation();openVideo(\''+esc(item.title||'')+'\',\''+esc(item.author_name||'')+'\',\''+( item.duration||'')+'\','+( item.views||0)+',\''+esc(item.description||'')+'\',\''+esc(item.video_url||'')+'\',\''+esc(coverUrl||'')+'\')">▶ Regarder</button>';
   }
 
   return '<div class="ci" data-title="'+(item.title||'').toLowerCase()+'">'
-    +'<div class="ci-th" style="background:'+thBg+'">'+emoji+'</div>'
+    +thumbHtml
     +'<div class="ci-body">'
     +'<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:3px">'
     +'<span class="bdg '+bdg+'">'+(item.category||'—')+'</span>'
@@ -1160,10 +1203,13 @@ function renderScholars(){
     return;
   }
   gr.innerHTML = list.map(function(s,i){
+    var avHtml = s.avatar_url
+      ? '<div style="width:58px;height:58px;border-radius:50%;overflow:hidden;margin:0 auto 8px"><img src="'+s.avatar_url+'" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.innerHTML=\''+( s.initial||'?')+'\';this.parentNode.style.background=\''+avColor(i)+'\';this.parentNode.style.display=\'flex\';this.parentNode.style.alignItems=\'center\';this.parentNode.style.justifyContent=\'center\';this.parentNode.style.fontFamily=\'Noto Naskh Arabic,serif\';this.parentNode.style.fontSize=\'1.4rem\';this.parentNode.style.color=\'#fff\';this.parentNode.style.fontWeight=\'700\'"/></div>'
+      : '<div class="sc-av" style="background:'+avColor(i)+'">'+( s.initial||'?')+'</div>';
     return '<div class="sc" onclick="openScholar(\''+esc(s.id)+'\')">'
       +'<div class="sc-bar" style="background:'+barColor(i)+'"></div>'
       +(s.is_live?'<div style="position:absolute;top:6px;right:6px"><span class="bdg bdg-live" style="font-size:.54rem;display:inline-flex;align-items:center;gap:3px"><div class="ldot" style="background:#fff;width:4px;height:4px"></div>LIVE</span></div>':'')
-      +'<div class="sc-av" style="background:'+avColor(i)+'">'+( s.initial||'?')+'</div>'
+      +avHtml
       +'<p class="sc-nar">'+(s.name_ar||'—')+'</p>'
       +'<p class="sc-nfr">'+(s.name_fr||'—')+'</p>'
       +'<p style="font-size:.6rem;color:var(--muted);margin-bottom:4px">🌍 '+(s.country||'—')+' · '+(s.era||'—')+'</p>'
@@ -1190,7 +1236,15 @@ function openScholar(id){
   showScreen('savant');
   var idx = APP.scholars.indexOf(sc);
   g('sv-nav').textContent = (sc.name_fr||'').split(' ').slice(0,3).join(' ');
-  var av = g('sv-av'); av.textContent = sc.initial||'?'; av.style.background = avColor(idx);
+  var av = g('sv-av');
+  if(sc.avatar_url){
+    av.style.background = 'transparent';
+    av.innerHTML = '<img src="'+sc.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.textContent=\''+( sc.initial||'?')+'\';this.parentNode.style.background=\''+avColor(idx)+'\'"/>';
+  } else {
+    av.textContent = sc.initial||'?';
+    av.style.background = avColor(idx);
+    av.innerHTML = '';
+  }
   g('sv-nar').textContent = sc.name_ar||'—';
   g('sv-nfr').textContent = sc.name_fr||'—';
   var lb = g('sv-live-bdg'); if(lb) lb.style.display = sc.is_live ? 'flex' : 'none';
@@ -1383,10 +1437,20 @@ function playAudio(id, title, author, url, btn){
 }
 
 // ─── VIDEO ─────────────────────────────────────
-function openVideo(title, author, dur, views, desc, url){
+function openVideo(title, author, dur, views, desc, url, thumb){
   g('mv-ttl').textContent = title||'—';
   g('mv-meta').textContent = '👤 '+(author||'—')+' · ⏱ '+(dur||'—')+' · 👁 '+fmt(views||0)+' vues';
   g('mv-desc').textContent = desc||'Appuyez pour lancer la lecture.';
+  // Afficher le thumbnail dans le player si dispo
+  var screen = g('mv-ttl').closest('.mb')?.querySelector('#mv-screen, [onclick="mvLaunch()"]');
+  var mvScr = document.querySelector('#mo-vid [onclick="mvLaunch()"]');
+  if(mvScr && thumb && thumb.startsWith('http')){
+    mvScr.style.backgroundImage = 'url('+thumb+')';
+    mvScr.style.backgroundSize  = 'cover';
+    mvScr.style.backgroundPosition = 'center';
+  } else if(mvScr) {
+    mvScr.style.backgroundImage = '';
+  }
   var ew = g('mv-extw'), el = g('mv-extl');
   if(url && url.startsWith('http')){ el.href=url; ew.style.display='block'; } else ew.style.display='none';
   g('mo-vid').classList.add('on');
@@ -1496,6 +1560,29 @@ function onFileChosen(lblId, inpId){
   else lbl.classList.remove('got');
 }
 
+// ─── COVER IMAGE PREVIEW ───────────────────────
+function onCoverChosen(lblId, inpId, previewId, imgId){
+  var lbl  = g(lblId);
+  var inp  = g(inpId);
+  var prev = g(previewId);
+  var img  = g(imgId);
+  if(inp?.files?.length){
+    var file = inp.files[0];
+    lbl.textContent = '✅ '+file.name.substring(0,35);
+    lbl.classList.add('got');
+    // Afficher la prévisualisation
+    var reader = new FileReader();
+    reader.onload = function(e){
+      img.src = e.target.result;
+      prev.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    lbl.classList.remove('got');
+    if(prev) prev.style.display = 'none';
+  }
+}
+
 // ─── UPLOAD STORAGE ────────────────────────────
 async function uploadFile(inpId, bucket){
   var inp = g(inpId);
@@ -1543,7 +1630,13 @@ async function adminAddScholar(){
     .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')
     .substring(0,38)) + '-' + Date.now().toString(36);
   var tags = val('s-tags').split(',').map(function(t){ return t.trim(); }).filter(Boolean);
+  var avatarUrl = null;
   try {
+    // Upload photo si choisie
+    if(g('s-avinp')?.files?.length){
+      toast('⏳ Upload de la photo…');
+      avatarUrl = await uploadToStorage('s-avinp', 'covers');
+    }
     var res = await SB.from('scholars').insert({
       id:id, name_ar:nar, name_fr:nfr, initial:ini,
       country:  val('s-cty')||null,
@@ -1551,10 +1644,13 @@ async function adminAddScholar(){
       category: val('s-cat')||'contemporain',
       tags:     tags,
       bio:      val('s-bio')||null,
+      avatar_url: avatarUrl,
     });
     if(res.error) throw res.error;
     toast('✅ Savant ajouté !');
     clr(['s-nar','s-nfr','s-ini','s-cty','s-era','s-tags','s-bio']);
+    var avlbl=g('s-avlbl'); if(avlbl){avlbl.textContent='📷 Choisir une photo JPG / PNG / WEBP';avlbl.classList.remove('got');}
+    var avprev=g('s-av-prev'); if(avprev) avprev.style.display='none';
     await loadAll();
   } catch(e){ toast('❌ '+e.message); }
   finally { busyBtn('btn-s', false, '➕ Ajouter le savant'); }
@@ -1592,9 +1688,15 @@ async function adminAddBook(){
   if(!title){ toast('⚠️ Titre requis'); return; }
   if(!await checkAdmin()) return;
   busyBtn('btn-b', true, '➕ Ajouter le livre');
-  var fileUrl = val('b-url')||null;
+  var fileUrl  = val('b-url')||null;
+  var coverUrl = null;
   try {
     if(!fileUrl) fileUrl = await uploadFile('b-finp','books');
+    // Upload cover image
+    if(g('b-cvrinp')?.files?.length){
+      toast('⏳ Upload de l\'image…');
+      coverUrl = await uploadFile('b-cvrinp','covers');
+    }
     var res = await SB.from('books').insert({
       title:       title,
       author_name: val('b-aut')||null,
@@ -1603,6 +1705,7 @@ async function adminAddBook(){
       pages:       parseInt(val('b-pg'))||0,
       file_url:    fileUrl,
       file_type:   val('b-typ')||'PDF',
+      cover_url:   coverUrl,
       description: val('b-dsc')||null,
       emoji:       val('b-emo')||'📗',
       is_new:      g('b-new')?.checked||false,
@@ -1611,6 +1714,8 @@ async function adminAddBook(){
     toast('✅ Livre ajouté !');
     clr(['b-ttl','b-aut','b-url','b-pg','b-dsc','b-emo','b-new']);
     var lbl=g('b-flbl'); if(lbl){lbl.textContent='📎 Choisir PDF / EPUB / DOCX';lbl.classList.remove('got');}
+    var cvlbl=g('b-cvrlbl'); if(cvlbl){cvlbl.textContent='🖼️ Choisir une image JPG / PNG / WEBP';cvlbl.classList.remove('got');}
+    var prev=g('b-cover-preview'); if(prev) prev.style.display='none';
     await loadAll();
   } catch(e){ toast('❌ '+e.message); }
   finally { busyBtn('btn-b', false, '➕ Ajouter le livre'); }
@@ -1622,9 +1727,14 @@ async function adminAddAudio(){
   if(!title){ toast('⚠️ Titre requis'); return; }
   if(!await checkAdmin()) return;
   busyBtn('btn-a', true, '➕ Ajouter le cours audio');
-  var fileUrl = val('a-url')||null;
+  var fileUrl  = val('a-url')||null;
+  var coverUrl = null;
   try {
     if(!fileUrl) fileUrl = await uploadFile('a-finp','audio');
+    if(g('a-cvrinp')?.files?.length){
+      toast('⏳ Upload de l\'image…');
+      coverUrl = await uploadFile('a-cvrinp','covers');
+    }
     var res = await SB.from('audios').insert({
       title:       title,
       scholar_id:  val('a-sch')||null,
@@ -1632,6 +1742,7 @@ async function adminAddAudio(){
       episodes:    parseInt(val('a-eps'))||1,
       duration:    val('a-dur')||null,
       file_url:    fileUrl,
+      cover_url:   coverUrl,
       description: val('a-dsc')||null,
       emoji:       val('a-emo')||'🎧',
     });
@@ -1639,6 +1750,8 @@ async function adminAddAudio(){
     toast('✅ Cours audio ajouté !');
     clr(['a-ttl','a-url','a-eps','a-dur','a-dsc','a-emo']);
     var lbl=g('a-flbl'); if(lbl){lbl.textContent='🎵 Choisir MP3 / AAC / M4A';lbl.classList.remove('got');}
+    var cvlbl=g('a-cvrlbl'); if(cvlbl){cvlbl.textContent='🖼️ Choisir une image JPG / PNG / WEBP';cvlbl.classList.remove('got');}
+    var prev=g('a-cover-preview'); if(prev) prev.style.display='none';
     await loadAll();
   } catch(e){ toast('❌ '+e.message); }
   finally { busyBtn('btn-a', false, '➕ Ajouter le cours audio'); }
@@ -1650,22 +1763,30 @@ async function adminAddVideo(){
   if(!title){ toast('⚠️ Titre requis'); return; }
   if(!await checkAdmin()) return;
   busyBtn('btn-v', true, '➕ Ajouter la vidéo');
-  var fileUrl = val('v-url')||null;
+  var fileUrl  = val('v-url')||null;
+  var coverUrl = null;
   try {
     if(!fileUrl) fileUrl = await uploadFile('v-finp','videos');
+    if(g('v-cvrinp')?.files?.length){
+      toast('⏳ Upload du thumbnail…');
+      coverUrl = await uploadFile('v-cvrinp','covers');
+    }
     var res = await SB.from('videos').insert({
-      title:       title,
-      scholar_id:  val('v-sch')||null,
-      category:    val('v-cat')||null,
-      duration:    val('v-dur')||null,
-      video_url:   fileUrl,
-      description: val('v-dsc')||null,
-      emoji:       val('v-emo')||'🎬',
+      title:         title,
+      scholar_id:    val('v-sch')||null,
+      category:      val('v-cat')||null,
+      duration:      val('v-dur')||null,
+      video_url:     fileUrl,
+      thumbnail_url: coverUrl,
+      description:   val('v-dsc')||null,
+      emoji:         val('v-emo')||'🎬',
     });
     if(res.error) throw res.error;
     toast('✅ Vidéo ajoutée !');
     clr(['v-ttl','v-url','v-dur','v-dsc','v-emo']);
     var lbl=g('v-flbl'); if(lbl){lbl.textContent='🎬 Choisir MP4 / MOV / WebM';lbl.classList.remove('got');}
+    var cvlbl=g('v-cvrlbl'); if(cvlbl){cvlbl.textContent='🖼️ Choisir une image JPG / PNG / WEBP';cvlbl.classList.remove('got');}
+    var prev=g('v-cover-preview'); if(prev) prev.style.display='none';
     await loadAll();
   } catch(e){ toast('❌ '+e.message); }
   finally { busyBtn('btn-v', false, '➕ Ajouter la vidéo'); }
