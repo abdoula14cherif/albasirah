@@ -53,7 +53,13 @@ button,input,select,textarea{font-family:'Nunito',sans-serif}
 
 /* STATS CARDS */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
-.stat-card{background:var(--white);border-radius:var(--rad);border:1.5px solid var(--line);padding:18px;box-shadow:var(--sh)}
+.stat-card{background:var(--white);border-radius:var(--rad);border:1.5px solid var(--line);padding:18px;box-shadow:var(--sh);position:relative;overflow:hidden;cursor:pointer;transition:all .2s}
+.stat-card:hover{transform:translateY(-3px);box-shadow:var(--sh2)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.sc-green::before{background:var(--g)}
+.stat-card.sc-blue::before{background:var(--b)}
+.stat-card.sc-cyan::before{background:var(--c)}
+.stat-card.sc-red::before{background:var(--r)}
 .stat-card .sc-n{font-size:2rem;font-weight:900;display:block;line-height:1}
 .stat-card .sc-l{font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px;display:block}
 .stat-card .sc-ico{font-size:1.5rem;margin-bottom:8px;display:block}
@@ -166,23 +172,79 @@ textarea.inp{resize:vertical;min-height:72px}
 .ftab{font-size:.76rem;font-weight:800;color:var(--muted);background:none;border:none;padding:.6rem .9rem;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;transition:all .18s;white-space:nowrap}
 .ftab.active{color:var(--g);border-bottom-color:var(--g)}
 
-/* RESPONSIVE */
-@media(max-width:1024px){
-  .sidebar{width:200px}
-  .main-content{margin-left:200px}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
+/* MOBILE BOTTOM NAV */
+.mob-bnav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:var(--dark);border-top:1px solid rgba(255,255,255,.08);
+  height:58px;
 }
-@media(max-width:768px){
+.mob-bnav-inner{display:flex;height:100%}
+.mob-bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;cursor:pointer;padding:4px 2px}
+.mob-bn .mi{font-size:1.15rem;line-height:1}
+.mob-bn .ml{font-size:.5rem;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.04em}
+.mob-bn.active .ml{color:var(--g)}
+.mob-bn.active .mi{transform:scale(1.12)}
+
+/* HAMBURGER */
+.mob-topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:200;height:52px;background:var(--dark);align-items:center;justify-content:space-between;padding:0 14px}
+.mob-ttl{font-size:.88rem;font-weight:900;color:#fff}
+.mob-add-btn{font-size:.72rem;font-weight:800;background:var(--g);color:#fff;border:none;border-radius:8px;padding:.4rem .85rem;cursor:pointer}
+
+/* RESPONSIVE */
+@media(max-width:900px){
   .sidebar{display:none}
-  .main-content{margin-left:0}
-  .stats-grid{grid-template-columns:1fr 1fr}
+  .mob-topbar{display:flex}
+  .mob-bnav{display:block}
+  .main-content{margin-left:0;padding-bottom:58px}
+  .topbar{display:none}
+  .content-area{padding:10px 12px;padding-top:60px}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .stat-card{padding:14px}
+  .stat-card .sc-n{font-size:1.6rem}
+  .dash-bottom-grid{grid-template-columns:1fr!important}
   .form-grid{grid-template-columns:1fr}
+  .form-grid .fg-full{grid-column:1}
+  th,td{padding:9px 10px}
+  .td-actions{flex-direction:column;gap:4px}
+  .table-wrap{border-radius:10px}
+  .mo-box{border-radius:var(--rad)}
+  .mo{align-items:flex-end;padding:0}
+  .mo-box{border-radius:var(--rad) var(--rad) 0 0;max-height:88vh}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .content-area{padding:8px 10px;padding-top:60px}
 }
 </style>
 </head>
 <body>
 
 <div id="toast"></div>
+
+<!-- ═══ MOBILE TOPBAR ═══ -->
+<div class="mob-topbar" id="mob-topbar">
+  <div style="display:flex;align-items:center;gap:8px">
+    <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--g),var(--b));display:flex;align-items:center;justify-content:center;font-family:'Noto Naskh Arabic',serif;font-size:.85rem;color:#fff;font-weight:700">ب</div>
+    <span class="mob-ttl" id="mob-section-title">📊 Tableau de bord</span>
+  </div>
+  <div style="display:flex;gap:7px;align-items:center">
+    <button class="mob-add-btn" id="mob-add-btn" style="display:none" onclick="openAdd()">➕ Ajouter</button>
+    <button style="background:none;border:none;color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;cursor:pointer" onclick="doLogout()">🚪</button>
+  </div>
+</div>
+
+<!-- ═══ MOBILE BOTTOM NAV ═══ -->
+<div class="mob-bnav">
+  <div class="mob-bnav-inner">
+    <button class="mob-bn active" data-mob="dashboard" onclick="goSection('dashboard',null,this)"><span class="mi">📊</span><span class="ml">Bord</span></button>
+    <button class="mob-bn" data-mob="scholars" onclick="goSection('scholars',null,this)"><span class="mi">👨‍🏫</span><span class="ml">Savants</span></button>
+    <button class="mob-bn" data-mob="books" onclick="goSection('books',null,this)"><span class="mi">📚</span><span class="ml">Livres</span></button>
+    <button class="mob-bn" data-mob="audios" onclick="goSection('audios',null,this)"><span class="mi">🎧</span><span class="ml">Audio</span></button>
+    <button class="mob-bn" data-mob="videos" onclick="goSection('videos',null,this)"><span class="mi">🎬</span><span class="ml">Vidéos</span></button>
+    <button class="mob-bn" data-mob="lives" onclick="goSection('lives',null,this)"><span class="mi">📡</span><span class="ml">Live</span></button>
+    <button class="mob-bn" data-mob="categories" onclick="goSection('categories',null,this)"><span class="mi">🏷️</span><span class="ml">Cats</span></button>
+  </div>
+</div>
 
 <!-- ═══ CONFIRM MODAL ═══ -->
 <div class="mo" id="mo-confirm">
@@ -245,17 +307,17 @@ textarea.inp{resize:vertical;min-height:72px}
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Vue d'ensemble</div>
-      <button class="nav-item active" onclick="goSection('dashboard',this)"><span class="ni">📊</span><span class="nl">Tableau de bord</span></button>
+      <button class="nav-item active" onclick="goSection('dashboard',this,null)"><span class="ni">📊</span><span class="nl">Tableau de bord</span></button>
 
       <div class="nav-section">Contenu</div>
-      <button class="nav-item" onclick="goSection('scholars',this)"><span class="ni">👨‍🏫</span><span class="nl">Savants</span></button>
-      <button class="nav-item" onclick="goSection('books',this)"><span class="ni">📚</span><span class="nl">Livres / PDF</span></button>
-      <button class="nav-item" onclick="goSection('audios',this)"><span class="ni">🎧</span><span class="nl">Cours Audio</span></button>
-      <button class="nav-item" onclick="goSection('videos',this)"><span class="ni">🎬</span><span class="nl">Vidéos</span></button>
-      <button class="nav-item" onclick="goSection('lives',this)"><span class="ni">📡</span><span class="nl">Sessions Live</span></button>
+      <button class="nav-item" onclick="goSection('scholars',this,null)"><span class="ni">👨‍🏫</span><span class="nl">Savants</span></button>
+      <button class="nav-item" onclick="goSection('books',this,null)"><span class="ni">📚</span><span class="nl">Livres / PDF</span></button>
+      <button class="nav-item" onclick="goSection('audios',this,null)"><span class="ni">🎧</span><span class="nl">Cours Audio</span></button>
+      <button class="nav-item" onclick="goSection('videos',this,null)"><span class="ni">🎬</span><span class="nl">Vidéos</span></button>
+      <button class="nav-item" onclick="goSection('lives',this,null)"><span class="ni">📡</span><span class="nl">Sessions Live</span></button>
 
       <div class="nav-section">Paramètres</div>
-      <button class="nav-item" onclick="goSection('categories',this)"><span class="ni">🏷️</span><span class="nl">Catégories</span></button>
+      <button class="nav-item" onclick="goSection('categories',this,null)"><span class="ni">🏷️</span><span class="nl">Catégories</span></button>
     </nav>
     <div class="sidebar-footer">
       <div class="sidebar-user" id="sb-user">—</div>
@@ -280,28 +342,28 @@ textarea.inp{resize:vertical;min-height:72px}
       <!-- ═══ DASHBOARD ═══ -->
       <div id="sec-dashboard" class="section active">
         <div class="stats-grid">
-          <div class="stat-card">
+          <div class="stat-card sc-green" onclick="goSection('scholars',null,null)">
             <span class="sc-ico">👨‍🏫</span>
             <span class="sc-n" style="color:var(--g)" id="dash-scholars">—</span>
             <span class="sc-l">Savants</span>
           </div>
-          <div class="stat-card">
+          <div class="stat-card sc-blue" onclick="goSection('books',null,null)">
             <span class="sc-ico">📚</span>
             <span class="sc-n" style="color:var(--b)" id="dash-books">—</span>
             <span class="sc-l">Livres / PDF</span>
           </div>
-          <div class="stat-card">
+          <div class="stat-card sc-cyan" onclick="goSection('audios',null,null)">
             <span class="sc-ico">🎧</span>
             <span class="sc-n" style="color:var(--c)" id="dash-audios">—</span>
             <span class="sc-l">Cours Audio</span>
           </div>
-          <div class="stat-card">
+          <div class="stat-card sc-red" onclick="goSection('videos',null,null)">
             <span class="sc-ico">🎬</span>
             <span class="sc-n" style="color:var(--r)" id="dash-videos">—</span>
             <span class="sc-l">Vidéos</span>
           </div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px" class="dash-bottom-grid">
           <div class="table-wrap">
             <div class="table-header"><p class="table-title">📡 Sessions Live</p></div>
             <div id="dash-lives-list" style="padding:12px 16px"></div>
@@ -532,16 +594,33 @@ const SECTION_TITLES = {
 };
 const ADD_SECTIONS = ['scholars','books','audios','videos','lives','categories'];
 
-function goSection(name, btn){
+function goSection(name, sidebarBtn, mobBtn){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.mob-bn').forEach(b=>b.classList.remove('active'));
+
   const sec = g('sec-'+name);
   if(sec) sec.classList.add('active');
-  if(btn) btn.classList.add('active');
+  if(sidebarBtn) sidebarBtn.classList.add('active');
+  if(mobBtn) mobBtn.classList.add('active');
+
+  // Sync sidebar active state
+  document.querySelectorAll('.nav-item[onclick*="\''+name+'\'"]').forEach(b=>b.classList.add('active'));
+  // Sync mobile active
+  const mobBnMatch = document.querySelector('.mob-bn[data-mob="'+name+'"]');
+  if(mobBnMatch) mobBnMatch.classList.add('active');
+
   A.section = name;
-  g('topbar-title').textContent = SECTION_TITLES[name]||name;
+  const title = SECTION_TITLES[name]||name;
+  g('topbar-title').textContent = title;
+  const mobTitle = g('mob-section-title');
+  if(mobTitle) mobTitle.textContent = title;
+
   const addBtn = g('topbar-add-btn');
-  addBtn.style.display = ADD_SECTIONS.includes(name) ? 'flex' : 'none';
+  const mobAdd = g('mob-add-btn');
+  const show = ADD_SECTIONS.includes(name);
+  if(addBtn) addBtn.style.display = show ? 'flex' : 'none';
+  if(mobAdd) mobAdd.style.display = show ? 'block' : 'none';
 }
 
 // ─── DASHBOARD ───────────────────────────────
