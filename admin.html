@@ -690,7 +690,10 @@ function renderScholars(){
       <tr>
         <td>
           <div style="display:flex;align-items:center;gap:9px">
-            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#25D366,#2AABEE);display:flex;align-items:center;justify-content:center;font-family:'Noto Naskh Arabic',serif;font-size:.95rem;color:#fff;font-weight:700;flex-shrink:0">${s.initial||'?'}</div>
+            ${s.avatar_url
+              ? `<img src="${s.avatar_url}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--line)" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+              : ''}
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#25D366,#2AABEE);display:${s.avatar_url?'none':'flex'};align-items:center;justify-content:center;font-family:'Noto Naskh Arabic',serif;font-size:.95rem;color:#fff;font-weight:700;flex-shrink:0">${s.initial||'?'}</div>
             <div>
               <p class="td-bold">${s.name_fr||'—'}</p>
               <p style="font-size:.68rem;color:var(--muted);font-family:'Noto Naskh Arabic',serif">${s.name_ar||''}</p>
@@ -867,12 +870,37 @@ function editItem(table, id){
   if(table === 'scholars'){
     const sc = A.scholars.find(s=>String(s.id)===String(id));
     if(!sc) return;
-    g('edit-modal-title').textContent = '✏️ Modifier — '+sc.name_fr;
+    g('edit-modal-title').textContent = '✏️ Modifier — '+(sc.name_fr||sc.name_ar||'Savant');
     g('edit-modal-body').innerHTML = `
       <div class="form-grid">
+
+        <!-- Photo du savant -->
+        <div class="fg fg-full">
+          <label class="lbl">📷 Photo du savant</label>
+          <div style="display:flex;align-items:center;gap:14px;background:var(--bg);border-radius:var(--radm);padding:12px;margin-bottom:8px">
+            <div id="e-av-wrap" style="width:72px;height:72px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#25D366,#2AABEE);display:flex;align-items:center;justify-content:center;font-family:'Noto Naskh Arabic',serif;font-size:1.6rem;font-weight:700;color:#fff;border:2px solid var(--line)">
+              ${sc.avatar_url
+                ? `<img id="e-av-img" src="${sc.avatar_url}" style="width:100%;height:100%;object-fit:cover"/>`
+                : `<span id="e-av-img">${sc.initial||'?'}</span>`}
+            </div>
+            <div style="flex:1">
+              <p style="font-size:.8rem;font-weight:800;color:var(--txt);margin-bottom:4px">${sc.name_fr||sc.name_ar||'—'}</p>
+              <label class="file-lbl" id="e-avlbl" for="e-avinp" style="margin:0;padding:10px;font-size:.74rem">
+                📷 ${sc.avatar_url ? 'Changer la photo' : 'Ajouter une photo'}
+              </label>
+              <input type="file" style="display:none" id="e-avinp" accept="image/*"
+                onchange="previewAvatar('e-avlbl','e-avinp','e-av-wrap')"/>
+              ${sc.avatar_url
+                ? `<button onclick="clearAvatar()" style="display:block;margin-top:5px;font-size:.68rem;font-weight:700;color:var(--r);background:none;border:none;cursor:pointer">🗑️ Supprimer la photo</button>`
+                : ''}
+            </div>
+          </div>
+          <input type="hidden" id="e-avurl" value="${sc.avatar_url||''}"/>
+        </div>
+
         <div class="fg"><label class="lbl">Nom arabe *</label><input class="inp" id="e-nar" value="${sc.name_ar||''}"/></div>
         <div class="fg"><label class="lbl">Nom français *</label><input class="inp" id="e-nfr" value="${sc.name_fr||''}"/></div>
-        <div class="fg"><label class="lbl">Initiale</label><input class="inp" id="e-ini" value="${sc.initial||''}" maxlength="2"/></div>
+        <div class="fg"><label class="lbl">Initiale (avatar si pas de photo)</label><input class="inp" id="e-ini" value="${sc.initial||''}" maxlength="2"/></div>
         <div class="fg"><label class="lbl">Pays</label><input class="inp" id="e-cty" value="${sc.country||''}"/></div>
         <div class="fg"><label class="lbl">Époque</label><input class="inp" id="e-era" value="${sc.era||''}"/></div>
         <div class="fg"><label class="lbl">Catégorie</label>
@@ -1063,6 +1091,21 @@ async function saveEdit(){
     }
 
     if(t==='scholars'){
+      // Gérer la photo du savant
+      let avatarUrl = g('e-avurl')?.value || null;
+
+      if(avatarUrl === '[upload]' && g('e-avinp')?.files?.length){
+        // Uploader la nouvelle photo
+        toast('⏳ Upload de la photo…');
+        avatarUrl = await uploadFile('e-avinp','covers');
+      } else if(avatarUrl === '[delete]'){
+        // Supprimer la photo
+        avatarUrl = null;
+      } else if(avatarUrl === '' || avatarUrl === '[upload]'){
+        avatarUrl = null;
+      }
+      // Si avatarUrl n'a pas changé (valeur URL normale), on la garde telle quelle
+
       data = {
         name_ar:  val('e-nar')||undefined,
         name_fr:  val('e-nfr')||undefined,
@@ -1072,6 +1115,7 @@ async function saveEdit(){
         category: val('e-cat')||undefined,
         tags:     val('e-tags').split(',').map(x=>x.trim()).filter(Boolean),
         bio:      val('e-bio')||null,
+        avatar_url: avatarUrl,
         is_live:  val('e-live')==='true',
         live_title:   val('e-ltitle')||null,
         live_viewers: parseInt(val('e-lvw'))||0,
@@ -1155,6 +1199,17 @@ function openAdd(){
   const forms = {
     scholars: `
       <div class="form-grid">
+        <div class="fg fg-full">
+          <label class="lbl">📷 Photo du savant</label>
+          <div style="display:flex;align-items:center;gap:14px;background:var(--bg);border-radius:var(--radm);padding:12px">
+            <div id="n-av-wrap" style="width:64px;height:64px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#25D366,#2AABEE);display:flex;align-items:center;justify-content:center;font-size:1.6rem;border:2px solid var(--line)">📷</div>
+            <div style="flex:1">
+              <label class="file-lbl" id="n-avlbl" for="n-avinp" style="margin:0;padding:10px;font-size:.74rem">📷 Choisir une photo JPG / PNG / WEBP</label>
+              <input type="file" style="display:none" id="n-avinp" accept="image/*" onchange="previewAvatarAdd('n-avlbl','n-avinp','n-av-wrap')"/>
+              <p style="font-size:.66rem;color:var(--muted);font-weight:600;margin-top:4px">Optionnel — sinon l'initiale arabe sera utilisée</p>
+            </div>
+          </div>
+        </div>
         <div class="fg"><label class="lbl">Nom arabe *</label><input class="inp" id="n-nar" placeholder="الشيخ …"/></div>
         <div class="fg"><label class="lbl">Nom français *</label><input class="inp" id="n-nfr" placeholder="Cheikh …"/></div>
         <div class="fg"><label class="lbl">Initiale *</label><input class="inp" id="n-ini" placeholder="ا" maxlength="2"/></div>
@@ -1266,10 +1321,17 @@ async function saveAdd(){
       const nfr = val('n-nfr');
       if(!val('n-nar')||!nfr||!val('n-ini')){ toast('⚠️ Nom arabe, français et initiale requis'); return; }
       const id = nfr.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,38)+'-'+Date.now().toString(36);
+      // Upload photo si choisie
+      let avatarUrl = null;
+      if(g('n-avinp')?.files?.length){
+        toast('⏳ Upload de la photo…');
+        avatarUrl = await uploadFile('n-avinp','covers');
+      }
       res = await SB.from('scholars').insert({
         id, name_ar:val('n-nar'), name_fr:nfr, initial:val('n-ini'),
         country:val('n-cty')||null, era:val('n-era')||null, category:val('n-cat')||'contemporain',
         tags:val('n-tags').split(',').map(x=>x.trim()).filter(Boolean), bio:val('n-bio')||null,
+        avatar_url: avatarUrl,
       });
     } else if(t==='books'){
       if(!val('n-ttl')){ toast('⚠️ Titre requis'); return; }
@@ -1316,7 +1378,52 @@ async function saveAdd(){
   finally{ busy('add-save-btn', false, '➕ Ajouter'); }
 }
 
-// ─── COVER PREVIEW ───────────────────────────
+// ─── AVATAR PREVIEW ──────────────────────────
+function previewAvatarAdd(lblId, inpId, wrapId){
+  const inp  = g(inpId);
+  const lbl  = g(lblId);
+  const wrap = g(wrapId);
+  if(!inp?.files?.length) return;
+  lbl.textContent = '✅ '+inp.files[0].name.substring(0,28);
+  lbl.classList.add('got');
+  const reader = new FileReader();
+  reader.onload = e => {
+    if(wrap) wrap.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover"/>`;
+  };
+  reader.readAsDataURL(inp.files[0]);
+}
+
+function previewAvatar(lblId, inpId, wrapId){
+  const inp  = g(inpId);
+  const lbl  = g(lblId);
+  const wrap = g(wrapId);
+  if(!inp?.files?.length) return;
+  const file = inp.files[0];
+  lbl.textContent = '✅ '+file.name.substring(0,28);
+  lbl.classList.add('got');
+  // Prévisualisation ronde
+  const reader = new FileReader();
+  reader.onload = e => {
+    wrap.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover"/>`;
+    // Effacer la valeur hidden pour signaler qu'un fichier est choisi
+    const urlInp = g('e-avurl');
+    if(urlInp) urlInp.value = '[upload]';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearAvatar(){
+  const wrap = g('e-av-wrap');
+  const lbl  = g('e-avlbl');
+  const urlInp = g('e-avurl');
+  if(wrap) wrap.innerHTML = '<span style="font-family:\'Noto Naskh Arabic\',serif;font-size:1.6rem;font-weight:700;color:#fff">?</span>';
+  if(urlInp) urlInp.value = '[delete]';
+  if(lbl){ lbl.textContent = '📷 Ajouter une photo'; lbl.classList.remove('got'); }
+  // Reset input file
+  const inp = g('e-avinp');
+  if(inp) inp.value = '';
+  toast('🗑️ Photo supprimée (sauvegarder pour confirmer)');
+}
 function addCoverPreview(lblId, inpId, prevId, imgId){
   const inp=g(inpId), lbl=g(lblId), prev=g(prevId), img=g(imgId);
   if(!inp?.files?.length) return;
