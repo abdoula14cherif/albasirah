@@ -2,1740 +2,1529 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <title>Al Basîrah — البصيرة</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ═══ RESET & VARS ═══ */
-:root {
-  --g1:#25D366; --g2:#128C7E; --g3:#075E54;
-  --b1:#2AABEE; --b2:#1A7FBA; --b3:#0D47A1;
-  --r1:#E53935; --r2:#B71C1C;
-  --c1:#00BCD4; --c2:#00838F;
-  --bg:#F7FFFE; --white:#fff; --dark:#071D2A;
-  --txt:#0A1F2E; --sub:#1E3A4A; --muted:#607D8B;
-  --line:#E2ECF0;
-  --sh:0 2px 16px rgba(0,0,0,.07);
-  --sh2:0 8px 32px rgba(0,0,0,.12);
-  --r:18px; --r2x:12px; --r3:8px;
+/* ══ VARS ══ */
+:root{
+  --g1:#25D366;--g2:#128C7E;
+  --b1:#2AABEE;--b2:#1565C0;
+  --r1:#E53935;--r2:#B71C1C;
+  --c1:#00BCD4;--c2:#00838F;
+  --o1:#FF6F00;
+  --bg:#F7FFFE;--white:#fff;--dark:#071D2A;
+  --txt:#0A1F2E;--sub:#1E3A4A;--muted:#607D8B;--line:#E2ECF0;
+  --sh:0 2px 14px rgba(0,0,0,.07);--sh2:0 8px 28px rgba(0,0,0,.12);
+  --r:18px;--rm:12px;--rs:8px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth}
 body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;min-height:100vh}
 a{text-decoration:none;color:inherit}
 button{font-family:'Nunito',sans-serif;cursor:pointer}
 input,select,textarea{font-family:'Nunito',sans-serif}
-img{max-width:100%}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:var(--g1);border-radius:2px}
 
-/* ═══ PAGES ═══ */
-.page{display:none;min-height:100vh;padding-bottom:80px}
+/* ══ PAGES ══ */
+.page{display:none;min-height:100vh;padding-bottom:70px}
 .page.active{display:block}
 
-/* ═══ NAVBAR ═══ */
-.navbar{
-  position:fixed;top:0;left:0;right:0;z-index:800;
-  height:60px;display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px;background:var(--white);
-  border-bottom:1.5px solid var(--line);
-  box-shadow:0 2px 12px rgba(0,0,0,.06);
-}
-.nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer}
-.nav-logo-icon{
-  width:38px;height:38px;border-radius:11px;
-  background:linear-gradient(135deg,var(--g1),var(--b1));
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Noto Naskh Arabic',serif;font-size:1.1rem;color:#fff;font-weight:700;
-}
-.nav-logo-txt{line-height:1.1}
-.nav-logo-ar{font-family:'Noto Naskh Arabic',serif;font-size:.9rem;font-weight:700;color:var(--g2);display:block}
-.nav-logo-fr{font-size:.55rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:block}
-.nav-actions{display:flex;gap:8px}
+/* ══ NAVBAR ══ */
+.navbar{position:fixed;top:0;left:0;right:0;z-index:900;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:var(--white);border-bottom:1.5px solid var(--line);box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.nav-logo{display:flex;align-items:center;gap:9px;cursor:pointer}
+.nav-ico{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--g1),var(--b1));display:flex;align-items:center;justify-content:center;font-family:'Noto Naskh Arabic',serif;font-size:1.1rem;color:#fff;font-weight:700}
+.nav-txt .nar{font-family:'Noto Naskh Arabic',serif;font-size:.88rem;font-weight:700;color:var(--g2);display:block}
+.nav-txt .nfr{font-size:.54rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:block}
+.nav-right{display:flex;gap:6px}
 
-/* ═══ BOTTOM NAV ═══ */
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;z-index:800;
-  height:62px;background:var(--white);
-  border-top:1.5px solid var(--line);
-  display:flex;align-items:center;
-  box-shadow:0 -2px 12px rgba(0,0,0,.06);
-}
-.bnav-item{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;cursor:pointer;padding:8px 4px;transition:all .18s;
-  border:none;background:none;
-}
-.bnav-item .bi-ico{font-size:1.3rem;line-height:1}
-.bnav-item .bi-lbl{font-size:.58rem;font-weight:700;color:var(--muted)}
-.bnav-item.active .bi-lbl{color:var(--g1)}
-.bnav-item.active .bi-ico{transform:scale(1.1)}
+/* ══ BOTTOM NAV ══ */
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:900;height:60px;background:var(--white);border-top:1.5px solid var(--line);display:flex;box-shadow:0 -2px 10px rgba(0,0,0,.05)}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;cursor:pointer;transition:all .18s;padding:6px 2px}
+.bnav-btn .ico{font-size:1.25rem;line-height:1;transition:transform .18s}
+.bnav-btn .lbl{font-size:.56rem;font-weight:700;color:var(--muted)}
+.bnav-btn.active .ico{transform:scale(1.15)}
+.bnav-btn.active .lbl{color:var(--g1);font-weight:800}
 
-/* ═══ BUTTONS ═══ */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  font-weight:800;border:none;border-radius:var(--r2x);
-  padding:.5rem 1.1rem;font-size:.82rem;cursor:pointer;transition:all .18s;
-}
-.btn-sm{padding:.38rem .85rem;font-size:.76rem}
-.btn-lg{padding:.65rem 1.5rem;font-size:.9rem}
+/* ══ BUTTONS ══ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;font-weight:800;border:none;border-radius:var(--rm);padding:.48rem 1rem;font-size:.8rem;cursor:pointer;transition:all .18s;white-space:nowrap}
+.btn-sm{padding:.35rem .8rem;font-size:.73rem}
+.btn-lg{padding:.62rem 1.4rem;font-size:.88rem}
 .btn-block{width:100%}
-.btn-green{background:var(--g1);color:#fff;box-shadow:0 3px 12px rgba(37,211,102,.3)}
-.btn-green:hover{background:var(--g2);transform:translateY(-1px)}
-.btn-blue{background:var(--b1);color:#fff;box-shadow:0 3px 12px rgba(42,171,238,.28)}
-.btn-blue:hover{background:var(--b2);transform:translateY(-1px)}
-.btn-red{background:var(--r1);color:#fff;box-shadow:0 3px 12px rgba(229,57,53,.25)}
-.btn-red:hover{background:var(--r2);transform:translateY(-1px)}
-.btn-cyan{background:var(--c1);color:#fff;box-shadow:0 3px 12px rgba(0,188,212,.25)}
-.btn-outline-g{background:transparent;color:var(--g1);border:2px solid var(--g1)}
-.btn-outline-b{background:transparent;color:var(--b1);border:2px solid var(--b1)}
+.btn-g{background:var(--g1);color:#fff;box-shadow:0 3px 10px rgba(37,211,102,.28)}
+.btn-g:hover{background:var(--g2);transform:translateY(-1px)}
+.btn-b{background:var(--b1);color:#fff;box-shadow:0 3px 10px rgba(42,171,238,.25)}
+.btn-b:hover{background:var(--b2);transform:translateY(-1px)}
+.btn-r{background:var(--r1);color:#fff;box-shadow:0 3px 10px rgba(229,57,53,.22)}
+.btn-r:hover{background:var(--r2);transform:translateY(-1px)}
+.btn-c{background:var(--c1);color:#fff}
+.btn-o{background:var(--o1);color:#fff}
 .btn-ghost{background:var(--bg);color:var(--sub);border:1.5px solid var(--line)}
 .btn-ghost:hover{border-color:var(--b1);color:var(--b1)}
+.btn-og{background:transparent;color:var(--g1);border:2px solid var(--g1)}
+.btn-ob{background:transparent;color:var(--b1);border:2px solid var(--b1)}
+.btn-icon{width:34px;height:34px;padding:0;border-radius:50%;background:var(--bg);color:var(--sub);border:1.5px solid var(--line);font-size:1rem}
+.btn-icon:hover{border-color:var(--b1);color:var(--b1)}
 
-/* ═══ CARDS ═══ */
+/* ══ CARD ══ */
 .card{background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);box-shadow:var(--sh);transition:all .22s}
 .card:hover{transform:translateY(-3px);box-shadow:var(--sh2)}
 
-/* ═══ BADGE ═══ */
-.badge{display:inline-block;font-size:.62rem;font-weight:800;padding:.15rem .55rem;border-radius:20px}
-.badge-green{background:rgba(37,211,102,.12);color:var(--g2)}
-.badge-blue{background:rgba(42,171,238,.12);color:var(--b2)}
-.badge-red{background:rgba(229,57,53,.1);color:var(--r1)}
-.badge-cyan{background:rgba(0,188,212,.12);color:var(--c2)}
-.badge-live{background:var(--r1);color:#fff}
+/* ══ BADGE ══ */
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:.6rem;font-weight:800;padding:.14rem .5rem;border-radius:20px;white-space:nowrap}
+.bg-g{background:rgba(37,211,102,.12);color:var(--g2)}
+.bg-b{background:rgba(42,171,238,.12);color:var(--b2)}
+.bg-r{background:rgba(229,57,53,.1);color:var(--r1)}
+.bg-c{background:rgba(0,188,212,.12);color:var(--c2)}
+.bg-o{background:rgba(255,111,0,.1);color:var(--o1)}
+.badge-live{background:var(--r1);color:#fff;animation:livePulse 1.5s infinite}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.75}}
 
-/* ═══ LIVE DOT ═══ */
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--r1);display:inline-block;animation:blink 1.2s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+/* ══ LIVE DOT ══ */
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--r1);display:inline-block;animation:blink 1.2s infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
 
-/* ═══ SECTION HEADERS ═══ */
-.sec-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
-.sec-title{font-size:1.05rem;font-weight:900;color:var(--txt)}
-.sec-title span{font-style:italic}
-.sec-link{font-size:.78rem;font-weight:800;color:var(--b1)}
-.sec-eyebrow{font-size:.62rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:4px}
+/* ══ INPUTS ══ */
+.inp{width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:var(--rm);padding:.58rem .95rem;font-size:.85rem;font-weight:600;color:var(--txt);outline:none;transition:all .18s}
+.inp:focus{border-color:var(--g1);background:var(--white);box-shadow:0 0 0 3px rgba(37,211,102,.09)}
+.inp-lbl{font-size:.75rem;font-weight:800;color:var(--sub);display:block;margin-bottom:4px}
+.fg{margin-bottom:13px}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%23607D8B' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+textarea.inp{resize:vertical;min-height:80px}
 
-/* ═══ INPUT ═══ */
-.input{
-  width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:var(--r2x);
-  padding:.62rem 1rem;font-size:.88rem;font-weight:600;color:var(--txt);outline:none;transition:border-color .18s;
-}
-.input:focus{border-color:var(--g1);background:var(--white);box-shadow:0 0 0 3px rgba(37,211,102,.1)}
-.input-label{font-size:.78rem;font-weight:800;color:var(--sub);display:block;margin-bottom:5px}
-.form-group{margin-bottom:14px}
-
-/* ═══ TABS ═══ */
-.tabs{display:flex;border-bottom:2px solid var(--line);overflow-x:auto;scrollbar-width:none;gap:0}
+/* ══ TABS ══ */
+.tabs{display:flex;border-bottom:2px solid var(--line);overflow-x:auto;scrollbar-width:none;background:var(--white)}
 .tabs::-webkit-scrollbar{display:none}
-.tab-btn{
-  font-size:.78rem;font-weight:800;color:var(--muted);background:none;border:none;
-  padding:.7rem .95rem;border-bottom:3px solid transparent;margin-bottom:-2px;
-  white-space:nowrap;transition:all .18s;display:flex;align-items:center;gap:5px;
-}
-.tab-btn.active{color:var(--g1);border-bottom-color:var(--g1)}
-.tab-cnt{font-size:.6rem;font-weight:800;background:var(--bg);color:var(--muted);padding:.1rem .4rem;border-radius:20px}
-.tab-panel{display:none}.tab-panel.active{display:block;animation:fadeUp .28s ease both}
+.tab{font-size:.76rem;font-weight:800;color:var(--muted);background:none;border:none;padding:.65rem .9rem;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .18s;display:flex;align-items:center;gap:4px;cursor:pointer}
+.tab.active{color:var(--g1);border-bottom-color:var(--g1)}
+.tab-panel{display:none}.tab-panel.active{display:block;animation:fup .28s ease both}
+@keyframes fup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-/* ═══ SEARCH ═══ */
-.search-bar{
-  display:flex;align-items:center;gap:8px;
-  background:var(--white);border:1.5px solid var(--line);border-radius:25px;
-  padding:.5rem 1rem;transition:border-color .18s;
-}
-.search-bar:focus-within{border-color:var(--g1)}
-.search-bar input{border:none;background:none;font-size:.85rem;font-weight:600;color:var(--txt);flex:1;outline:none}
-.search-bar input::placeholder{color:var(--muted)}
+/* ══ SECTION ══ */
+.sec{padding:16px 14px}
+.sec-white{background:var(--white)}
+.sh{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px}
+.st{font-size:1rem;font-weight:900;color:var(--txt)}
+.sl{font-size:.76rem;font-weight:800;color:var(--b1);cursor:pointer}
+.ey{font-size:.6rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:3px}
 
-/* ═══ CHIPS ═══ */
-.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
-.chip{font-size:.75rem;font-weight:800;padding:.32rem .85rem;border-radius:100px;border:1.5px solid var(--line);background:var(--white);color:var(--sub);cursor:pointer;transition:all .18s;white-space:nowrap}
+/* ══ GRIDS ══ */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.g-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.scrollx{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.scrollx::-webkit-scrollbar{display:none}
+
+/* ══ SCHOLAR CARD ══ */
+.sc{background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);padding:14px 12px;text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.sc:hover{transform:translateY(-4px);box-shadow:var(--sh2)}
+.sc-bar{position:absolute;top:0;left:0;right:0;height:3px;transform:scaleX(0);transition:transform .35s}
+.sc:hover .sc-bar{transform:scaleX(1)}
+.sc-av{width:60px;height:60px;border-radius:50%;margin:0 auto 9px;display:flex;align-items:center;justify-content:center;font-family:'Noto Naskh Arabic',serif;font-size:1.5rem;font-weight:700;color:#fff}
+.sc-nar{font-family:'Noto Naskh Arabic',serif;font-size:.85rem;font-weight:700;color:var(--txt);margin-bottom:2px}
+.sc-nfr{font-size:.68rem;font-weight:600;color:var(--muted);margin-bottom:4px}
+.sc-cnts{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+.sc-btn{width:100%;font-size:.72rem;font-weight:800;border:none;border-radius:var(--rs);padding:.45rem;background:rgba(37,211,102,.1);color:var(--g2);cursor:pointer;border:1.5px solid rgba(37,211,102,.2);transition:all .2s}
+.sc-btn:hover{background:var(--g1);color:#fff;border-color:var(--g1)}
+
+/* ══ CONTENT ITEM ══ */
+.ci{background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);padding:13px;display:flex;align-items:flex-start;gap:11px;margin-bottom:9px;cursor:pointer;transition:all .2s}
+.ci:hover{border-color:rgba(42,171,238,.35);box-shadow:0 4px 14px rgba(42,171,238,.09);transform:translateX(2px)}
+.ci-th{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.ci-body{flex:1;min-width:0}
+.ci-top{display:flex;align-items:center;gap:5px;margin-bottom:3px;flex-wrap:wrap}
+.ci-title{font-size:.85rem;font-weight:800;color:var(--txt);line-height:1.4;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ci-meta{font-size:.68rem;font-weight:600;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin-bottom:7px}
+.ci-acts{display:flex;gap:5px;flex-wrap:wrap}
+
+/* ══ LIVE ══ */
+.live-card{background:var(--white);border-radius:var(--r);border:2px solid rgba(229,57,53,.3);padding:14px;margin-bottom:10px;box-shadow:0 4px 18px rgba(229,57,53,.07);position:relative;overflow:hidden}
+.live-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(var(--r1),var(--c1))}
+.live-title{font-size:.9rem;font-weight:900;color:var(--txt);margin-bottom:3px;line-height:1.3}
+.live-meta{font-size:.74rem;font-weight:600;color:var(--muted)}
+.live-vw{font-size:.72rem;font-weight:800;color:var(--g1);margin-top:2px}
+
+.upc{background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);padding:12px;display:flex;align-items:center;gap:11px;margin-bottom:9px;box-shadow:var(--sh);transition:all .2s}
+.upc:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.upc-date{min-width:48px;height:52px;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.upc-day{font-size:1.3rem;font-weight:900;line-height:1}
+.upc-mon{font-size:.55rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.upc-info{flex:1}
+.upc-title{font-size:.83rem;font-weight:800;color:var(--txt);line-height:1.35}
+.upc-sch{font-size:.7rem;font-weight:600;color:var(--muted);margin-top:2px}
+.upc-time{font-size:.67rem;font-weight:800;color:var(--b1);margin-top:2px}
+
+/* ══ CAT ══ */
+.catc{background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);padding:14px 10px;text-align:center;cursor:pointer;transition:all .22s;box-shadow:var(--sh)}
+.catc:hover{transform:translateY(-4px);box-shadow:var(--sh2)}
+.catc-ico{width:46px;height:46px;border-radius:13px;margin:0 auto 7px;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.catc-ar{font-family:'Noto Naskh Arabic',serif;font-size:.85rem;font-weight:700;color:var(--txt)}
+.catc-fr{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-top:2px}
+.catc-cnt{font-size:.66rem;font-weight:800;margin-top:3px;display:block}
+
+/* ══ HERO ══ */
+.hero{padding:68px 14px 20px;background:linear-gradient(160deg,#F4FFFB 0%,#EDF8FF 55%,#FFF5F5 100%);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 80% 30%,rgba(37,211,102,.07),transparent),radial-gradient(ellipse 40% 40% at 10% 75%,rgba(42,171,238,.06),transparent)}
+.hero-c{position:relative;z-index:1}
+.hero-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(37,211,102,.1);border:1.5px solid rgba(37,211,102,.22);border-radius:100px;padding:.28rem .8rem;font-size:.67rem;font-weight:800;color:var(--g2);margin-bottom:11px}
+.bism{font-family:'Noto Naskh Arabic',serif;font-size:1.05rem;font-weight:700;color:var(--g2);display:block;margin-bottom:7px}
+.hero-h1{font-size:clamp(1.6rem,5.5vw,2.5rem);font-weight:900;line-height:1.05;color:var(--txt);margin-bottom:5px}
+.hero-h1 .gr{color:var(--g1)}.hero-h1 .bl{color:var(--b1);font-style:italic}
+.hero-sub{font-family:'Noto Naskh Arabic',serif;font-size:.85rem;color:var(--g2);display:block;margin-bottom:9px}
+.hero-desc{font-size:.82rem;font-weight:600;color:var(--sub);line-height:1.75;margin-bottom:16px}
+.hero-btns{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+.hero-stats{display:flex;gap:16px;flex-wrap:wrap}
+.hsn{font-size:1.25rem;font-weight:900;display:block;line-height:1}
+.hsl{font-size:.57rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* ══ STATS BAR ══ */
+.sbar{display:flex;flex-wrap:wrap;background:var(--white);border-top:3px solid transparent;border-image:linear-gradient(90deg,var(--g1),var(--b1),var(--r1),var(--c1)) 1;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.sbi{flex:1;min-width:70px;padding:12px 6px;text-align:center}
+.sbn{font-size:1.2rem;font-weight:900;display:block}
+.sbl{font-size:.55rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px;display:block}
+
+/* ══ AUDIO PLAYER ══ */
+#ap{position:fixed;bottom:60px;left:0;right:0;z-index:800;background:var(--white);border-top:2px solid var(--line);box-shadow:0 -3px 18px rgba(0,0,0,.09);padding:9px 14px;display:flex;align-items:center;gap:9px;transform:translateY(100%);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+#ap.open{transform:translateY(0)}
+.ap-ico{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--b1),var(--c1));display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.ap-inf{flex:1;min-width:0}
+.ap-t{font-size:.78rem;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-a{font-size:.65rem;font-weight:600;color:var(--muted)}
+.ap-ctr{display:flex;align-items:center;gap:5px}
+.ap-b{width:30px;height:30px;border-radius:50%;border:none;background:var(--bg);color:var(--sub);display:flex;align-items:center;justify-content:center;font-size:.82rem;cursor:pointer;transition:all .18s}
+.ap-b:hover{background:rgba(42,171,238,.1);color:var(--b1)}
+.ap-pl{width:38px;height:38px;background:var(--g1);color:#fff;font-size:.95rem;box-shadow:0 3px 9px rgba(37,211,102,.28)}
+.ap-pl:hover{background:var(--g2);transform:scale(1.06)}
+.ap-p{flex:1;display:flex;flex-direction:column;gap:3px;max-width:180px}
+.ap-bar{height:4px;background:var(--line);border-radius:2px;cursor:pointer;position:relative}
+.ap-fill{height:100%;background:linear-gradient(90deg,var(--g1),var(--b1));border-radius:2px;width:0%;transition:width .3s}
+.ap-ti{display:flex;justify-content:space-between;font-size:.58rem;font-weight:700;color:var(--muted)}
+.ap-x{width:24px;height:24px;border-radius:50%;border:none;background:var(--bg);color:var(--muted);font-size:.75rem;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ap-x:hover{background:rgba(229,57,53,.1);color:var(--r1)}
+
+/* ══ MODAL ══ */
+.mo{position:fixed;inset:0;z-index:9000;background:rgba(7,29,42,.82);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center}
+.mo.open{display:flex;animation:fin .22s ease}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+.mb{background:var(--white);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:640px;max-height:92vh;overflow-y:auto;animation:sup .3s ease}
+@keyframes sup{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1.5px solid var(--line);position:sticky;top:0;background:var(--white);z-index:1}
+.mt{font-size:.92rem;font-weight:800;color:var(--txt)}
+.mx{width:28px;height:28px;border-radius:50%;border:none;background:var(--bg);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.82rem}
+.mx:hover{background:rgba(229,57,53,.1);color:var(--r1);transform:rotate(90deg)}
+.mbody{padding:16px}
+
+/* ══ LIVE STREAM ══ */
+.ls-box{background:var(--dark);border-radius:var(--rm);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;position:relative;overflow:hidden;margin-bottom:12px}
+.ls-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.ls-ext{position:absolute;bottom:12px;left:50%;transform:translateX(-50%)}
+.lc-wrap{margin-bottom:10px}
+.lc-list{height:110px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+.lc-msg{font-size:.76rem;font-weight:600;color:var(--txt);padding:5px 10px;background:var(--bg);border-radius:var(--rm)}
+.lc-msg strong{color:var(--g2)}
+.lc-in{display:flex;gap:7px}
+
+/* ══ AUTH ══ */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:14px;background:linear-gradient(160deg,#F4FFFB,#EDF8FF)}
+.auth-card{background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);box-shadow:0 8px 36px rgba(0,0,0,.1);padding:26px 20px;width:100%;max-width:400px}
+.auth-logo{text-align:center;margin-bottom:18px}
+.auth-av{width:52px;height:52px;border-radius:15px;background:linear-gradient(135deg,var(--g1),var(--b1));display:flex;align-items:center;justify-content:center;margin:0 auto 7px;font-family:'Noto Naskh Arabic',serif;font-size:1.3rem;color:#fff;font-weight:700}
+.auth-name{font-family:'Noto Naskh Arabic',serif;font-size:1rem;font-weight:700;color:var(--g2)}
+.auth-ttl{font-size:1.25rem;font-weight:900;color:var(--txt);text-align:center;margin-bottom:3px}
+.auth-sub{font-size:.8rem;font-weight:600;color:var(--muted);text-align:center;margin-bottom:18px}
+.auth-msg{border-radius:var(--rm);padding:.58rem .9rem;font-size:.77rem;font-weight:700;margin-bottom:10px;display:none}
+.auth-err{background:rgba(229,57,53,.08);border:1.5px solid rgba(229,57,53,.2);color:var(--r1)}
+.auth-ok{background:rgba(37,211,102,.08);border:1.5px solid rgba(37,211,102,.2);color:var(--g2)}
+.auth-div{display:flex;align-items:center;gap:7px;margin:12px 0;color:var(--muted);font-size:.72rem;font-weight:700}
+.auth-div::before,.auth-div::after{content:'';flex:1;height:1px;background:var(--line)}
+.auth-sw{text-align:center;margin-top:12px;font-size:.78rem;font-weight:600;color:var(--muted)}
+.auth-sw a{color:var(--g1);font-weight:800;cursor:pointer}
+.auth-bk{text-align:center;margin-top:8px}
+.auth-bk a{font-size:.75rem;font-weight:700;color:var(--muted);cursor:pointer}
+
+/* ══ PROFIL ══ */
+.pf-hero{background:linear-gradient(135deg,var(--g2),var(--b2));padding:68px 14px 24px;text-align:center}
+.pf-av{width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 9px}
+.pf-name{font-size:1rem;font-weight:900;color:#fff}
+.pf-email{font-size:.74rem;color:rgba(255,255,255,.65);margin-top:2px}
+.pf-stats{display:flex;gap:9px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.pf-s{background:rgba(255,255,255,.15);border-radius:var(--rm);padding:7px 14px;text-align:center}
+.pf-sn{font-size:1.1rem;font-weight:900;color:#fff;display:block}
+.pf-sl{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.65)}
+
+/* ══ ADMIN ══ */
+.admin-box{background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);overflow:hidden;margin-bottom:12px}
+.admin-hd{background:linear-gradient(135deg,rgba(37,211,102,.07),rgba(42,171,238,.05));padding:11px 14px;font-size:.78rem;font-weight:900;color:var(--sub);border-bottom:1.5px solid var(--line);display:flex;align-items:center;gap:6px}
+.admin-body{padding:14px}
+.file-inp{display:none}
+.file-btn{width:100%;border:2px dashed var(--line);border-radius:var(--rm);padding:18px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);color:var(--muted);font-size:.8rem;font-weight:700}
+.file-btn:hover{border-color:var(--b1);color:var(--b1);background:rgba(42,171,238,.04)}
+.file-btn.has-file{border-color:var(--g1);color:var(--g2);background:rgba(37,211,102,.05)}
+
+/* ══ SEARCH ══ */
+.srch{display:flex;align-items:center;gap:7px;background:var(--white);border:1.5px solid var(--line);border-radius:25px;padding:.45rem .9rem;margin-bottom:12px;transition:border-color .18s}
+.srch:focus-within{border-color:var(--g1)}
+.srch input{border:none;background:none;font-size:.82rem;font-weight:600;color:var(--txt);flex:1;outline:none}
+.srch input::placeholder{color:var(--muted)}
+
+/* ══ CHIPS ══ */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{font-size:.73rem;font-weight:800;padding:.3rem .8rem;border-radius:100px;border:1.5px solid var(--line);background:var(--white);color:var(--sub);cursor:pointer;transition:all .18s;white-space:nowrap}
 .chip:hover{border-color:var(--g1);color:var(--g2)}
 .chip.active{background:var(--g1);color:#fff;border-color:var(--g1)}
 
-/* ═══ SCHOLAR CARD ═══ */
-.sc-card{
-  background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);
-  padding:16px 14px;text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
-}
-.sc-card:hover{transform:translateY(-5px);box-shadow:var(--sh2)}
-.sc-card-top{position:absolute;top:0;left:0;right:0;height:3px;transform:scaleX(0);transition:transform .35s}
-.sc-card:hover .sc-card-top{transform:scaleX(1)}
-.sc-av{
-  width:68px;height:68px;border-radius:50%;margin:0 auto 10px;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Noto Naskh Arabic',serif;font-size:1.7rem;font-weight:700;color:#fff;
-}
-.sc-name-ar{font-family:'Noto Naskh Arabic',serif;font-size:.9rem;font-weight:700;color:var(--txt);margin-bottom:2px}
-.sc-name-fr{font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:5px}
-.sc-country{font-size:.65rem;color:var(--muted);margin-bottom:7px}
-.sc-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:7px}
-.sc-counts{display:flex;gap:4px;justify-content:center;margin-bottom:10px}
-.sc-action{width:100%;font-size:.76rem;font-weight:800;border:none;border-radius:var(--r2x);padding:.5rem;background:linear-gradient(135deg,rgba(37,211,102,.1),rgba(42,171,238,.1));color:var(--g2);cursor:pointer;border:1.5px solid rgba(37,211,102,.2);transition:all .2s}
-.sc-action:hover{background:var(--g1);color:#fff;border-color:var(--g1)}
-.sc-live-pip{position:absolute;top:8px;right:8px}
-
-/* ═══ CONTENT ITEM ═══ */
-.content-item{
-  background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);
-  padding:14px;display:flex;align-items:flex-start;gap:12px;
-  cursor:pointer;transition:all .2s;margin-bottom:10px;
-}
-.content-item:hover{border-color:var(--b1);box-shadow:0 4px 16px rgba(42,171,238,.1);transform:translateX(3px)}
-.ci-thumb{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
-.ci-body{flex:1;min-width:0}
-.ci-title{font-size:.87rem;font-weight:800;color:var(--txt);line-height:1.4;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ci-meta{font-size:.7rem;font-weight:600;color:var(--muted);margin-bottom:7px;display:flex;gap:8px;flex-wrap:wrap}
-.ci-actions{display:flex;gap:6px;flex-wrap:wrap}
-.playing-ring{animation:playRing .8s ease-in-out infinite alternate}
-@keyframes playRing{0%{box-shadow:0 0 0 0 rgba(42,171,238,.4)}100%{box-shadow:0 0 0 6px rgba(42,171,238,0)}}
-
-/* ═══ LIVE CARD ═══ */
-.live-card{
-  background:var(--white);border-radius:var(--r);
-  border:2px solid rgba(229,57,53,.25);
-  padding:16px;margin-bottom:12px;
-  box-shadow:0 4px 20px rgba(229,57,53,.08);
-  position:relative;overflow:hidden;
-}
-.live-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(var(--r1),var(--c1))}
-.lc-title{font-size:.92rem;font-weight:900;color:var(--txt);margin-bottom:4px;line-height:1.35}
-.lc-meta{font-size:.76rem;font-weight:600;color:var(--muted)}
-.lc-viewers{font-size:.76rem;font-weight:800;color:var(--g1);margin-top:3px}
-.upcoming-card{
-  background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);
-  padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:10px;
-  box-shadow:var(--sh);transition:all .22s;
-}
-.upcoming-card:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
-.uc-date{min-width:50px;height:54px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
-.uc-day{font-size:1.35rem;font-weight:900;line-height:1}
-.uc-mon{font-size:.56rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
-.uc-info{flex:1}
-.uc-title{font-size:.85rem;font-weight:800;color:var(--txt);line-height:1.35}
-.uc-sch{font-size:.72rem;font-weight:600;color:var(--muted);margin-top:2px}
-.uc-time{font-size:.68rem;font-weight:800;color:var(--b1);margin-top:2px}
-
-/* ═══ CAT CARD ═══ */
-.cat-card{background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);padding:16px 10px;text-align:center;cursor:pointer;transition:all .22s}
-.cat-card:hover{transform:translateY(-4px);box-shadow:var(--sh2)}
-.cat-ico{width:48px;height:48px;border-radius:13px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
-.cat-ar{font-family:'Noto Naskh Arabic',serif;font-size:.88rem;font-weight:700;color:var(--txt)}
-.cat-fr{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px;display:block}
-.cat-cnt{font-size:.68rem;font-weight:800;margin-top:4px;display:block}
-
-/* ═══ HERO ═══ */
-.hero{
-  padding:76px 16px 24px;
-  background:linear-gradient(160deg,#F5FFFB 0%,#EEF9FF 50%,#FFF5F5 100%);
-  position:relative;overflow:hidden;
-}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 80% 30%,rgba(37,211,102,.07),transparent),radial-gradient(ellipse 40% 40% at 10% 70%,rgba(42,171,238,.06),transparent)}
-.hero-content{position:relative;z-index:1}
-.hero-pill{
-  display:inline-flex;align-items:center;gap:6px;
-  background:rgba(37,211,102,.1);border:1.5px solid rgba(37,211,102,.25);
-  border-radius:100px;padding:.3rem .85rem;font-size:.7rem;font-weight:800;color:var(--g2);margin-bottom:12px;
-}
-.hero-dot{width:7px;height:7px;border-radius:50%;background:var(--g1);animation:dotbeat 2s ease-in-out infinite}
-@keyframes dotbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
-.bismillah{font-family:'Noto Naskh Arabic',serif;font-size:1.1rem;font-weight:700;color:var(--g2);margin-bottom:8px;display:block}
-.hero-h1{font-size:clamp(1.7rem,6vw,2.8rem);font-weight:900;line-height:1.05;color:var(--txt);margin-bottom:6px}
-.hero-h1 .green{color:var(--g1)}.hero-h1 .blue{color:var(--b1);font-style:italic}
-.hero-sub{font-family:'Noto Naskh Arabic',serif;font-size:.88rem;color:var(--g2);margin-bottom:10px;display:block}
-.hero-desc{font-size:.85rem;font-weight:600;color:var(--sub);line-height:1.75;margin-bottom:18px}
-.hero-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.hero-stats{display:flex;gap:18px;flex-wrap:wrap}
-.hs-n{font-size:1.3rem;font-weight:900;display:block;line-height:1}
-.hs-l{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block}
-
-/* ═══ STATS BAR ═══ */
-.stats-bar{
-  display:flex;flex-wrap:wrap;background:var(--white);
-  border-top:3px solid transparent;
-  border-image:linear-gradient(90deg,var(--g1),var(--b1),var(--r1),var(--c1)) 1;
-  box-shadow:0 2px 10px rgba(0,0,0,.05);
-}
-.stat-item{flex:1;min-width:80px;padding:14px 8px;text-align:center}
-.stat-n{font-size:1.3rem;font-weight:900;display:block}
-.stat-l{font-size:.58rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px;display:block}
-
-/* ═══ SECTION ═══ */
-.sec{padding:20px 16px}
-.sec-white{background:var(--white)}
-.sec-bg{background:var(--bg)}
-
-/* ═══ GRIDS ═══ */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-
-/* ═══ AUDIO PLAYER ═══ */
-#audio-player{
-  position:fixed;bottom:62px;left:0;right:0;z-index:700;
-  background:var(--white);border-top:2px solid var(--line);
-  box-shadow:0 -4px 20px rgba(0,0,0,.1);
-  padding:10px 16px;display:flex;align-items:center;gap:10px;
-  transform:translateY(100%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);
-}
-#audio-player.open{transform:translateY(0)}
-.ap-ico{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--b1),var(--c1));display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
-.ap-info{flex:1;min-width:0}
-.ap-title{font-size:.82rem;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ap-auth{font-size:.68rem;font-weight:600;color:var(--muted)}
-.ap-ctrls{display:flex;align-items:center;gap:6px}
-.ap-btn{width:32px;height:32px;border-radius:50%;border:none;background:var(--bg);color:var(--sub);display:flex;align-items:center;justify-content:center;font-size:.85rem;cursor:pointer;transition:all .18s}
-.ap-btn:hover{background:rgba(42,171,238,.12);color:var(--b1)}
-.ap-play{width:40px;height:40px;background:var(--g1);color:#fff;font-size:1rem;box-shadow:0 3px 10px rgba(37,211,102,.3)}
-.ap-play:hover{background:var(--g2);transform:scale(1.06)}
-.ap-prog{flex:1;display:flex;flex-direction:column;gap:3px;max-width:200px}
-.ap-bar{height:4px;background:var(--line);border-radius:2px;cursor:pointer}
-.ap-fill{height:100%;background:linear-gradient(90deg,var(--g1),var(--b1));border-radius:2px;width:0%;transition:width .3s}
-.ap-times{display:flex;justify-content:space-between;font-size:.58rem;font-weight:700;color:var(--muted)}
-.ap-x{width:26px;height:26px;border-radius:50%;border:none;background:var(--bg);color:var(--muted);font-size:.75rem;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.ap-x:hover{background:rgba(229,57,53,.1);color:var(--r1)}
-
-/* ═══ MODAL ═══ */
-.modal-ov{
-  position:fixed;inset:0;z-index:9000;
-  background:rgba(7,29,42,.8);backdrop-filter:blur(10px);
-  display:none;align-items:flex-end;justify-content:center;
-}
-.modal-ov.open{display:flex;animation:fadeIn .25s ease}
-.modal-box{
-  background:var(--white);border-radius:var(--r) var(--r) 0 0;
-  width:100%;max-width:600px;max-height:90vh;overflow-y:auto;
-  animation:slideUpModal .3s ease;
-}
-.modal-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 18px;border-bottom:1.5px solid var(--line);
-  position:sticky;top:0;background:var(--white);z-index:1;
-}
-.modal-title{font-size:.95rem;font-weight:800;color:var(--txt)}
-.modal-x{width:30px;height:30px;border-radius:50%;border:none;background:var(--bg);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem}
-.modal-x:hover{background:rgba(229,57,53,.1);color:var(--r1);transform:rotate(90deg)}
-.modal-body{padding:18px}
-@keyframes slideUpModal{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-
-/* ═══ LIVE STREAM ═══ */
-.live-stream-box{
-  background:var(--dark);border-radius:var(--r);overflow:hidden;
-  aspect-ratio:9/16;max-height:60vh;position:relative;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-}
-.live-stream-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,.4)}
-.live-stream-box video{width:100%;height:100%;object-fit:cover}
-.live-controls{position:absolute;bottom:0;left:0;right:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.6));display:flex;align-items:center;gap:8px}
-.live-chat{height:120px;overflow-y:auto;padding:8px 0;display:flex;flex-direction:column;gap:5px}
-.live-msg{font-size:.78rem;font-weight:600;color:var(--txt);padding:5px 10px;background:var(--bg);border-radius:var(--r2x)}
-.live-msg strong{color:var(--g2)}
-.live-input-row{display:flex;gap:8px;margin-top:8px}
-
-/* ═══ AUTH ═══ */
-.auth-wrap{
-  min-height:100vh;display:flex;align-items:center;justify-content:center;
-  padding:16px;background:linear-gradient(160deg,#F5FFFB,#EEF9FF);
-}
-.auth-card{
-  background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);
-  box-shadow:0 8px 40px rgba(0,0,0,.1);padding:28px 22px;width:100%;max-width:400px;
-}
-.auth-logo-wrap{text-align:center;margin-bottom:20px}
-.auth-logo-ico{
-  width:56px;height:56px;border-radius:16px;
-  background:linear-gradient(135deg,var(--g1),var(--b1));
-  display:flex;align-items:center;justify-content:center;margin:0 auto 8px;
-  font-family:'Noto Naskh Arabic',serif;font-size:1.4rem;color:#fff;font-weight:700;
-}
-.auth-name{font-family:'Noto Naskh Arabic',serif;font-size:1.1rem;font-weight:700;color:var(--g2)}
-.auth-title{font-size:1.3rem;font-weight:900;color:var(--txt);text-align:center;margin-bottom:4px}
-.auth-sub{font-size:.82rem;font-weight:600;color:var(--muted);text-align:center;margin-bottom:22px}
-.auth-err{background:rgba(229,57,53,.08);border:1.5px solid rgba(229,57,53,.2);border-radius:var(--r2x);padding:.65rem 1rem;font-size:.8rem;font-weight:700;color:var(--r1);margin-bottom:12px;display:none}
-.auth-ok{background:rgba(37,211,102,.08);border:1.5px solid rgba(37,211,102,.2);border-radius:var(--r2x);padding:.65rem 1rem;font-size:.8rem;font-weight:700;color:var(--g2);margin-bottom:12px;display:none}
-.auth-divider{display:flex;align-items:center;gap:8px;margin:14px 0;color:var(--muted);font-size:.75rem;font-weight:700}
-.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--line)}
-.auth-switch{text-align:center;margin-top:14px;font-size:.8rem;font-weight:600;color:var(--muted)}
-.auth-switch a{color:var(--g1);font-weight:800;cursor:pointer}
-.auth-back{text-align:center;margin-top:10px}
-.auth-back a{font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer}
-
-/* ═══ PROFIL ═══ */
-.profil-hero{
-  background:linear-gradient(135deg,var(--g2),var(--b2));
-  padding:80px 16px 30px;text-align:center;
-}
-.profil-av{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 10px}
-.profil-name{font-size:1.1rem;font-weight:900;color:#fff}
-.profil-email{font-size:.78rem;color:rgba(255,255,255,.7);margin-top:3px}
-.profil-stat{background:rgba(255,255,255,.15);border-radius:var(--r2x);padding:8px 14px;text-align:center}
-.ps-n{font-size:1.2rem;font-weight:900;color:#fff;display:block}
-.ps-l{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7)}
-
-/* ═══ TOAST ═══ */
-#toast{
-  position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);z-index:9999;
-  background:var(--dark);color:#fff;border-radius:25px;padding:9px 18px;
-  font-size:.8rem;font-weight:700;opacity:0;transition:all .3s;white-space:nowrap;
-  max-width:90vw;pointer-events:none;
-}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ═══ SPINNER ═══ */
-.spinner{width:36px;height:36px;border:3px solid var(--line);border-top-color:var(--g1);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto}
+/* ══ SPINNER ══ */
+.spin{width:32px;height:32px;border:3px solid var(--line);border-top-color:var(--g1);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ═══ EMPTY ═══ */
-.empty{text-align:center;padding:40px 20px;color:var(--muted)}
-.empty-ico{font-size:2.8rem;display:block;margin-bottom:8px}
-.empty h3{font-size:.95rem;font-weight:800;color:var(--sub);margin-bottom:4px}
-.empty p{font-size:.8rem;font-weight:600}
+/* ══ EMPTY ══ */
+.empty{text-align:center;padding:36px 16px;color:var(--muted)}
+.empty .ei{font-size:2.8rem;display:block;margin-bottom:8px}
+.empty h3{font-size:.92rem;font-weight:800;color:var(--sub);margin-bottom:4px}
+.empty p{font-size:.78rem;font-weight:600}
 
-/* ═══ SCROLL HIDE ═══ */
-.scroll-x{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
-.scroll-x::-webkit-scrollbar{display:none}
-
-/* ═══ ADMIN PANEL ═══ */
-.admin-form{background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);padding:18px;margin-bottom:14px}
-.admin-form h3{font-size:.9rem;font-weight:900;color:var(--txt);margin-bottom:14px;display:flex;align-items:center;gap:6px}
-select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23607D8B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+/* ══ TOAST ══ */
+#toast{position:fixed;bottom:74px;left:50%;transform:translateX(-50%) translateY(14px);z-index:9999;background:var(--dark);color:#fff;border-radius:25px;padding:8px 16px;font-size:.78rem;font-weight:700;opacity:0;transition:all .3s;white-space:nowrap;max-width:90vw;pointer-events:none;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
 
-<!-- TOAST -->
+<!-- ══ TOAST ══ -->
 <div id="toast"></div>
 
-<!-- AUDIO PLAYER -->
-<div id="audio-player">
+<!-- ══ AUDIO PLAYER ══ -->
+<div id="ap">
   <div class="ap-ico">🎧</div>
-  <div class="ap-info">
-    <div class="ap-title" id="ap-title">—</div>
-    <div class="ap-auth" id="ap-auth">—</div>
+  <div class="ap-inf"><div class="ap-t" id="ap-t">—</div><div class="ap-a" id="ap-a">—</div></div>
+  <div class="ap-ctr">
+    <button class="ap-b" onclick="AP.step(-15)">-15s</button>
+    <button class="ap-b ap-pl" id="ap-btn" onclick="AP.toggle()">▶</button>
+    <button class="ap-b" onclick="AP.step(15)">+15s</button>
   </div>
-  <div class="ap-ctrls">
-    <button class="ap-btn" onclick="AP.prev()">⏮</button>
-    <button class="ap-btn ap-play" id="ap-play-btn" onclick="AP.toggle()">▶</button>
-    <button class="ap-btn" onclick="AP.next()">⏭</button>
-  </div>
-  <div class="ap-prog">
-    <div class="ap-bar" id="ap-bar" onclick="AP.seek(event)"><div class="ap-fill" id="ap-fill"></div></div>
-    <div class="ap-times"><span id="ap-cur">0:00</span><span id="ap-dur">—</span></div>
+  <div class="ap-p">
+    <div class="ap-bar" onclick="AP.seek(event)"><div class="ap-fill" id="ap-fill"></div></div>
+    <div class="ap-ti"><span id="ap-cur">0:00</span><span id="ap-dur">—</span></div>
   </div>
   <button class="ap-x" onclick="AP.close()">✕</button>
 </div>
 
-<!-- ══════════════════════════════════════
-     PAGE : ACCUEIL
-══════════════════════════════════════ -->
-<div id="page-home" class="page active">
-  <nav class="navbar">
-    <div class="nav-logo" onclick="navigate('home')">
-      <div class="nav-logo-icon">ب</div>
-      <div class="nav-logo-txt">
-        <span class="nav-logo-ar">البصيرة</span>
-        <span class="nav-logo-fr">Al Basîrah</span>
+<!-- ══ VIDEO MODAL ══ -->
+<div class="mo" id="mo-video">
+  <div class="mb">
+    <div class="mh"><p class="mt" id="mv-t">—</p><button class="mx" onclick="closeMo('mo-video')">✕</button></div>
+    <div class="mbody">
+      <div id="mv-screen" style="aspect-ratio:16/9;background:var(--dark);border-radius:var(--rm);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-bottom:12px" onclick="mvPlay()">
+        <span style="font-size:3rem">🎬</span>
+        <span style="color:rgba(255,255,255,.45);font-size:.78rem;font-weight:700">Appuyer pour lire</span>
+      </div>
+      <p id="mv-meta" style="font-size:.77rem;color:var(--muted);font-weight:700;margin-bottom:9px"></p>
+      <p id="mv-desc" style="font-size:.8rem;color:var(--sub);line-height:1.75;background:var(--bg);padding:10px;border-radius:var(--rm);margin-bottom:11px"></p>
+      <div id="mv-url-wrap" style="display:none;margin-bottom:11px">
+        <a id="mv-url-link" href="#" target="_blank" class="btn btn-r btn-block">▶ Ouvrir sur YouTube / plateforme</a>
+      </div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <button class="btn btn-r btn-sm" onclick="mvPlay()">▶ Regarder</button>
+        <button class="btn btn-ghost btn-sm" onclick="toast('↓ Téléchargement…')">↓ Télécharger</button>
+        <button class="btn btn-ghost btn-sm" onclick="share(document.getElementById('mv-t').textContent)">🔗 Partager</button>
       </div>
     </div>
-    <div class="nav-actions" id="nav-actions-home">
-      <button class="btn btn-outline-b btn-sm" onclick="navigate('connexion')">Connexion</button>
-      <button class="btn btn-green btn-sm" onclick="navigate('inscription')">S'inscrire</button>
+  </div>
+</div>
+
+<!-- ══ LIVE MODAL ══ -->
+<div class="mo" id="mo-live">
+  <div class="mb" style="max-height:95vh">
+    <div class="mh"><p class="mt" id="ml-t">📡 Live</p><button class="mx" onclick="closeMo('mo-live')">✕</button></div>
+    <div class="mbody" style="padding:12px">
+      <div class="ls-box">
+        <div class="ls-overlay">
+          <span style="font-size:2.5rem">📡</span>
+          <span id="ml-stitle" style="color:#fff;font-size:.88rem;font-weight:800;text-align:center;padding:0 20px"></span>
+          <div style="display:flex;align-items:center;gap:5px"><div class="ldot"></div><span id="ml-vw" style="color:rgba(255,255,255,.7);font-size:.72rem;font-weight:700">0 auditeurs</span></div>
+        </div>
+        <div class="ls-ext" id="ml-ext-wrap"><a id="ml-ext" href="#" target="_blank" class="btn btn-r btn-sm">▶ Ouvrir le live</a></div>
+      </div>
+      <div class="lc-wrap">
+        <p style="font-size:.75rem;font-weight:800;color:var(--sub);margin-bottom:7px">💬 Chat</p>
+        <div class="lc-list" id="lc-list">
+          <div class="lc-msg"><strong>Système</strong> Bienvenue dans le live 🤲</div>
+        </div>
+        <div class="lc-in">
+          <input class="inp" id="lc-inp" placeholder="Votre message…" style="font-size:.8rem" onkeydown="if(event.key==='Enter')sendMsg()"/>
+          <button class="btn btn-g btn-sm" onclick="sendMsg()">Envoyer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ PAGE : ACCUEIL ══════════════════════ -->
+<div id="pg-home" class="page active">
+  <nav class="navbar">
+    <div class="nav-logo" onclick="go('home')">
+      <div class="nav-ico">ب</div>
+      <div class="nav-txt"><span class="nar">البصيرة</span><span class="nfr">Al Basîrah</span></div>
+    </div>
+    <div class="nav-right" id="nav-auth">
+      <button class="btn btn-ob btn-sm" onclick="go('login')">Connexion</button>
+      <button class="btn btn-g btn-sm" onclick="go('register')">S'inscrire</button>
     </div>
   </nav>
 
-  <!-- Hero -->
   <div class="hero">
-    <div class="hero-content">
-      <div class="hero-pill"><div class="hero-dot"></div>Plateforme islamique salafi</div>
-      <span class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
-      <h1 class="hero-h1"><span class="green">Al Basîrah</span><br><span class="blue">La Voie du Savoir</span></h1>
+    <div class="hero-c">
+      <div class="hero-pill"><div class="ldot" style="background:var(--g1)"></div>Plateforme islamique salafi</div>
+      <span class="bism">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
+      <h1 class="hero-h1"><span class="gr">Al Basîrah</span><br><span class="bl">La Voie du Savoir</span></h1>
       <span class="hero-sub">مكتبة السلف الصالح الرقمية</span>
       <p class="hero-desc">Cours audio, livres, vidéos et sessions en direct des savants bien guidés selon le manhaj salafi.</p>
       <div class="hero-btns">
-        <button class="btn btn-green" onclick="navigate('savants')">👨‍🏫 Savants</button>
-        <button class="btn btn-blue" onclick="navigate('bibliotheque')">📚 Bibliothèque</button>
-        <button class="btn btn-red" onclick="navigate('live')">📡 Live</button>
+        <button class="btn btn-g" onclick="go('scholars')">👨‍🏫 Savants</button>
+        <button class="btn btn-b" onclick="go('library')">📚 Bibliothèque</button>
+        <button class="btn btn-r" onclick="go('live')">📡 Live</button>
       </div>
       <div class="hero-stats">
-        <div><span class="hs-n" style="color:var(--g1)" id="hs-books">…</span><span class="hs-l">Livres</span></div>
-        <div><span class="hs-n" style="color:var(--b1)" id="hs-audio">…</span><span class="hs-l">Cours</span></div>
-        <div><span class="hs-n" style="color:var(--r1)" id="hs-sch">…</span><span class="hs-l">Savants</span></div>
+        <div><span class="hsn" style="color:var(--g1)" id="hs-b">0</span><span class="hsl">Livres</span></div>
+        <div><span class="hsn" style="color:var(--b1)" id="hs-a">0</span><span class="hsl">Cours</span></div>
+        <div><span class="hsn" style="color:var(--r1)" id="hs-s">0</span><span class="hsl">Savants</span></div>
       </div>
     </div>
   </div>
 
-  <!-- Stats bar -->
-  <div class="stats-bar" id="stats-bar">
-    <div class="stat-item"><span class="stat-n" style="color:var(--g1)" id="st-books">…</span><span class="stat-l">Livres</span></div>
-    <div class="stat-item"><span class="stat-n" style="color:var(--b1)" id="st-audio">…</span><span class="stat-l">Audio</span></div>
-    <div class="stat-item"><span class="stat-n" style="color:var(--r1)" id="st-vids">…</span><span class="stat-l">Vidéos</span></div>
-    <div class="stat-item"><span class="stat-n" style="color:var(--c1)" id="st-sch">…</span><span class="stat-l">Savants</span></div>
+  <div class="sbar">
+    <div class="sbi"><span class="sbn" style="color:var(--g1)" id="sb-b">0</span><span class="sbl">Livres</span></div>
+    <div class="sbi"><span class="sbn" style="color:var(--b1)" id="sb-a">0</span><span class="sbl">Audio</span></div>
+    <div class="sbi"><span class="sbn" style="color:var(--r1)" id="sb-v">0</span><span class="sbl">Vidéos</span></div>
+    <div class="sbi"><span class="sbn" style="color:var(--c1)" id="sb-s">0</span><span class="sbl">Savants</span></div>
   </div>
 
   <!-- Live banner -->
-  <div class="sec sec-white" id="home-live-sec" style="display:none">
-    <div class="sec-head"><div><span class="sec-eyebrow" style="color:var(--r1)">✦ بث مباشر</span><p class="sec-title">📡 En <span style="color:var(--r1)">Direct</span></p></div><span class="sec-link" onclick="navigate('live')">Voir tout →</span></div>
-    <div id="home-live-content"></div>
-  </div>
-
-  <!-- Savants -->
-  <div class="sec sec-bg">
-    <div class="sec-head"><div><span class="sec-eyebrow" style="color:var(--g1)">✦ الشيوخ</span><p class="sec-title">👨‍🏫 Nos <span>Savants</span></p></div><span class="sec-link" onclick="navigate('savants')">Voir tous →</span></div>
-    <div class="scroll-x" id="home-scholars"></div>
-  </div>
-
-  <!-- Bibliothèque preview -->
-  <div class="sec sec-white">
-    <div class="sec-head"><div><span class="sec-eyebrow" style="color:var(--b1)">✦ المكتبة</span><p class="sec-title">📚 Bibliothèque <span>Numérique</span></p></div><span class="sec-link" onclick="navigate('bibliotheque')">Tout →</span></div>
-    <div class="tabs" id="home-lib-tabs">
-      <button class="tab-btn active" onclick="homeLibTab('books',this)">📚 Livres</button>
-      <button class="tab-btn" onclick="homeLibTab('audio',this)">🎧 Audio</button>
-      <button class="tab-btn" onclick="homeLibTab('video',this)">🎬 Vidéos</button>
+  <div id="home-live-sec" style="display:none">
+    <div class="sec">
+      <div class="sh"><div><span class="ey" style="color:var(--r1)">✦ بث مباشر</span><p class="st">📡 En <span style="color:var(--r1)">Direct</span></p></div><span class="sl" onclick="go('live')">Voir →</span></div>
+      <div id="home-live"></div>
     </div>
-    <div style="padding-top:12px" id="home-lib-content"></div>
+  </div>
+
+  <!-- Savants scroll -->
+  <div class="sec sec-white">
+    <div class="sh"><div><span class="ey" style="color:var(--g1)">✦ الشيوخ</span><p class="st">👨‍🏫 Savants</p></div><span class="sl" onclick="go('scholars')">Tous →</span></div>
+    <div class="scrollx" id="home-sch">
+      <div class="empty" style="width:100%"><span class="ei">👨‍🏫</span><h3>Aucun savant</h3><p>Ajoutez des savants via votre espace admin</p></div>
+    </div>
+  </div>
+
+  <!-- Récents -->
+  <div class="sec">
+    <div class="sh"><div><span class="ey" style="color:var(--b1)">✦ جديد</span><p class="st">📚 Ajouts récents</p></div><span class="sl" onclick="go('library')">Tout →</span></div>
+    <div class="tabs" id="home-tabs">
+      <button class="tab active" onclick="homeTab('books',this)">📚 Livres</button>
+      <button class="tab" onclick="homeTab('audio',this)">🎧 Audio</button>
+      <button class="tab" onclick="homeTab('video',this)">🎬 Vidéos</button>
+    </div>
+    <div style="padding-top:10px" id="home-content">
+      <div class="empty"><span class="ei">📚</span><h3>Aucun contenu</h3><p>Le contenu que vous ajoutez apparaîtra ici</p></div>
+    </div>
   </div>
 
   <!-- Catégories -->
-  <div class="sec sec-bg">
-    <div class="sec-head"><div><span class="sec-eyebrow" style="color:var(--c1)">✦ التصنيفات</span><p class="sec-title">🏷️ <span>Catégories</span></p></div></div>
-    <div class="grid-3" id="home-cats"></div>
+  <div class="sec sec-white">
+    <div class="sh"><div><span class="ey" style="color:var(--c1)">✦ التصنيفات</span><p class="st">🏷️ Catégories</p></div></div>
+    <div class="g3" id="home-cats">
+      <div class="empty" style="grid-column:1/-1"><span class="ei">🏷️</span><h3>Aucune catégorie</h3><p>Créez des catégories dans votre panel admin</p></div>
+    </div>
   </div>
 
   <!-- Quote -->
-  <div style="background:linear-gradient(135deg,var(--g2),var(--b2),var(--c2));padding:32px 16px;text-align:center;position:relative;overflow:hidden">
-    <p style="font-family:'Noto Naskh Arabic',serif;font-size:1.2rem;font-weight:700;color:#fff;line-height:2;margin-bottom:6px">طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ</p>
-    <p style="font-size:.85rem;font-style:italic;font-weight:700;color:rgba(255,255,255,.85)">"La recherche du savoir est une obligation pour tout musulman."</p>
-    <span style="display:block;margin-top:8px;font-size:.65rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.5)">— Ibn Mâjah · رواه ابن ماجه</span>
+  <div style="background:linear-gradient(135deg,var(--g2),var(--b2),var(--c2));padding:28px 14px;text-align:center">
+    <p style="font-family:'Noto Naskh Arabic',serif;font-size:1.1rem;font-weight:700;color:#fff;line-height:2;margin-bottom:5px">طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ</p>
+    <p style="font-size:.82rem;font-style:italic;font-weight:700;color:rgba(255,255,255,.85)">"La recherche du savoir est une obligation pour tout musulman."</p>
+    <span style="display:block;margin-top:7px;font-size:.62rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.5)">— Ibn Mâjah · رواه ابن ماجه</span>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     PAGE : SAVANTS
-══════════════════════════════════════ -->
-<div id="page-savants" class="page">
+<!-- ══════════════════════ PAGE : SAVANTS ══════════════════════ -->
+<div id="pg-scholars" class="page">
   <nav class="navbar">
-    <button class="btn btn-ghost btn-sm" onclick="navigate('home')">← Retour</button>
-    <span style="font-size:.9rem;font-weight:900">👨‍🏫 Savants</span>
+    <button class="btn btn-ghost btn-sm" onclick="go('home')">← Retour</button>
+    <span style="font-size:.88rem;font-weight:900">👨‍🏫 Savants</span>
     <div style="width:70px"></div>
   </nav>
-  <div style="padding:70px 16px 16px">
-    <div class="search-bar" style="margin-bottom:12px">
-      <span>🔍</span>
-      <input type="text" placeholder="Rechercher un savant…" id="sch-search" oninput="filterScholars(this.value)"/>
-    </div>
+  <div style="padding:68px 14px 14px">
+    <div class="srch"><span>🔍</span><input type="text" placeholder="Rechercher un savant…" id="sch-q" oninput="renderScholars()"/></div>
     <div class="chips" id="sch-chips">
-      <div class="chip active" onclick="filterSchCat('all',this)">🌐 Tous</div>
-      <div class="chip" onclick="filterSchCat('contemporain',this)">🕌 Contemporains</div>
-      <div class="chip" onclick="filterSchCat('ancien',this)">📜 Anciens</div>
-      <div class="chip" onclick="filterSchCat('hadith',this)">📿 Hadith</div>
-      <div class="chip" onclick="filterSchCat('rapporteur',this)">📖 Rapporteurs</div>
+      <div class="chip active" data-cat="all" onclick="setCat(this)">🌐 Tous</div>
+      <!-- chips dynamiques -->
     </div>
-    <div class="grid-2" id="scholars-grid"></div>
+    <div class="g2" id="sch-grid">
+      <div class="empty" style="grid-column:1/-1"><span class="ei">👨‍🏫</span><h3>Aucun savant</h3><p>Ajoutez des savants via votre espace admin</p></div>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     PAGE : PROFIL SAVANT
-══════════════════════════════════════ -->
-<div id="page-savant" class="page">
+<!-- ══════════════════════ PAGE : PROFIL SAVANT ══════════════════════ -->
+<div id="pg-savant" class="page">
   <nav class="navbar">
-    <button class="btn btn-ghost btn-sm" onclick="navigate('savants')">← Savants</button>
-    <span style="font-size:.85rem;font-weight:800" id="savant-nav-name">—</span>
-    <button class="btn btn-ghost btn-sm" onclick="shareScholar()">🔗</button>
+    <button class="btn btn-ghost btn-sm" onclick="go('scholars')">← Savants</button>
+    <span style="font-size:.82rem;font-weight:800;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="sv-nav">—</span>
+    <button class="btn-icon" onclick="share(S.currentScholar?.name_fr||'')">🔗</button>
   </nav>
-  <div style="padding-top:60px">
-    <!-- Scholar header -->
-    <div style="background:linear-gradient(135deg,#0A2A1A,#0A1F2E);padding:20px 16px 24px;text-align:center">
-      <div class="sc-av" style="width:80px;height:80px;font-size:2rem;margin:0 auto 12px" id="sv-av">—</div>
-      <div class="sc-live-pip" id="sv-live-pip" style="display:none;position:static;margin:0 auto 8px;justify-content:center;display:flex;gap:5px;align-items:center">
-        <span class="badge badge-live" style="display:flex;align-items:center;gap:4px"><div class="live-dot"></div>EN DIRECT</span>
+  <div style="padding-top:58px">
+    <div style="background:linear-gradient(135deg,#071D2A,#0A1F2E);padding:18px 14px 22px;text-align:center">
+      <div class="sc-av" style="width:76px;height:76px;font-size:2rem;margin:0 auto 11px" id="sv-av">?</div>
+      <div id="sv-live-badge" style="display:none;justify-content:center;margin-bottom:8px;display:none">
+        <span class="badge badge-live" style="display:inline-flex;align-items:center;gap:4px"><div class="ldot" style="background:#fff;width:5px;height:5px"></div>EN DIRECT</span>
       </div>
-      <p style="font-family:'Noto Naskh Arabic',serif;font-size:1.2rem;font-weight:700;color:#fff" id="sv-name-ar">—</p>
-      <p style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);margin-top:2px" id="sv-name-fr">—</p>
-      <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px" id="sv-tags"></div>
-      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px" id="sv-counts"></div>
-      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px" id="sv-actions"></div>
+      <p style="font-family:'Noto Naskh Arabic',serif;font-size:1.15rem;font-weight:700;color:#fff" id="sv-nar">—</p>
+      <p style="font-size:.8rem;font-weight:600;color:rgba(255,255,255,.65);margin-top:2px" id="sv-nfr">—</p>
+      <div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-top:8px" id="sv-tags"></div>
+      <div style="display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:11px" id="sv-cnts"></div>
+      <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:13px" id="sv-acts"></div>
     </div>
-    <!-- Tabs -->
-    <div class="tabs" style="background:var(--white);padding:0 8px" id="savant-tabs">
-      <button class="tab-btn active" onclick="savantTab('books',this)">📚 Livres <span class="tab-cnt" id="sv-cnt-books">0</span></button>
-      <button class="tab-btn" onclick="savantTab('audio',this)">🎧 Audio <span class="tab-cnt" id="sv-cnt-audio">0</span></button>
-      <button class="tab-btn" onclick="savantTab('video',this)">🎬 Vidéos <span class="tab-cnt" id="sv-cnt-video">0</span></button>
-      <button class="tab-btn" onclick="savantTab('bio',this)">📖 Bio</button>
+    <div class="tabs" id="sv-tabs">
+      <button class="tab active" onclick="svTab('books',this)">📚 Livres <span style="font-size:.6rem;background:var(--bg);color:var(--muted);padding:.1rem .4rem;border-radius:20px" id="sv-nb">0</span></button>
+      <button class="tab" onclick="svTab('audio',this)">🎧 Audio <span style="font-size:.6rem;background:var(--bg);color:var(--muted);padding:.1rem .4rem;border-radius:20px" id="sv-na">0</span></button>
+      <button class="tab" onclick="svTab('video',this)">🎬 Vidéos <span style="font-size:.6rem;background:var(--bg);color:var(--muted);padding:.1rem .4rem;border-radius:20px" id="sv-nv">0</span></button>
+      <button class="tab" onclick="svTab('bio',this)">📖 Bio</button>
     </div>
-    <div style="padding:14px 16px">
-      <!-- LIVE panel -->
-      <div id="sv-live-panel" style="display:none;margin-bottom:14px">
-        <div class="live-card" id="sv-live-card">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
-            <span class="badge badge-live" style="display:flex;align-items:center;gap:4px"><div class="live-dot"></div>EN DIRECT</span>
-          </div>
-          <p class="lc-title" id="sv-live-title">—</p>
-          <p class="lc-meta" id="sv-live-meta">—</p>
-          <div style="display:flex;gap:8px;margin-top:10px">
-            <button class="btn btn-red" onclick="joinLive()">▶ Rejoindre le Live</button>
-            <button class="btn btn-ghost btn-sm" onclick="setReminder()">🔔 Rappel</button>
-          </div>
-        </div>
-      </div>
-      <!-- Search in panel -->
-      <div class="search-bar" style="margin-bottom:12px">
-        <span>🔍</span>
-        <input type="text" placeholder="Rechercher…" oninput="filterSavantContent(this.value)"/>
-      </div>
+    <div style="padding:12px 14px">
+      <div id="sv-live-panel" style="display:none;margin-bottom:12px"></div>
+      <div class="srch"><span>🔍</span><input type="text" placeholder="Rechercher…" oninput="svFilter(this.value)"/></div>
       <div id="sv-books" class="tab-panel active"></div>
       <div id="sv-audio" class="tab-panel"></div>
       <div id="sv-video" class="tab-panel"></div>
       <div id="sv-bio" class="tab-panel">
-        <div style="background:var(--white);border-radius:var(--r);padding:16px;border:1.5px solid var(--line)">
-          <p style="font-size:.85rem;font-weight:600;color:var(--sub);line-height:1.85" id="sv-bio-text">—</p>
-        </div>
+        <div class="card" style="padding:14px"><p style="font-size:.83rem;font-weight:600;color:var(--sub);line-height:1.85" id="sv-bio-t">—</p></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     PAGE : BIBLIOTHÈQUE
-══════════════════════════════════════ -->
-<div id="page-bibliotheque" class="page">
+<!-- ══════════════════════ PAGE : BIBLIOTHÈQUE ══════════════════════ -->
+<div id="pg-library" class="page">
   <nav class="navbar">
-    <button class="btn btn-ghost btn-sm" onclick="navigate('home')">← Retour</button>
-    <span style="font-size:.9rem;font-weight:900">📚 Bibliothèque</span>
+    <button class="btn btn-ghost btn-sm" onclick="go('home')">← Retour</button>
+    <span style="font-size:.88rem;font-weight:900">📚 Bibliothèque</span>
     <div style="width:70px"></div>
   </nav>
-  <div style="padding:70px 16px 16px">
+  <div style="padding:68px 14px 14px">
     <div class="tabs" id="lib-tabs">
-      <button class="tab-btn active" onclick="libTab('books',this)">📚 Livres <span class="tab-cnt" id="lb-cnt-books">0</span></button>
-      <button class="tab-btn" onclick="libTab('audio',this)">🎧 Audio <span class="tab-cnt" id="lb-cnt-audio">0</span></button>
-      <button class="tab-btn" onclick="libTab('video',this)">🎬 Vidéos <span class="tab-cnt" id="lb-cnt-video">0</span></button>
+      <button class="tab active" onclick="libTab('books',this)">📚 Livres <span style="font-size:.6rem;background:var(--bg);color:var(--muted);padding:.1rem .4rem;border-radius:20px" id="lb-nb">0</span></button>
+      <button class="tab" onclick="libTab('audio',this)">🎧 Audio <span style="font-size:.6rem;background:var(--bg);color:var(--muted);padding:.1rem .4rem;border-radius:20px" id="lb-na">0</span></button>
+      <button class="tab" onclick="libTab('video',this)">🎬 Vidéos <span style="font-size:.6rem;background:var(--bg);color:var(--muted);padding:.1rem .4rem;border-radius:20px" id="lb-nv">0</span></button>
     </div>
-    <div style="padding:12px 0">
-      <div class="search-bar" style="margin-bottom:12px">
-        <span>🔍</span>
-        <input type="text" placeholder="Rechercher…" id="lib-search" oninput="filterLib(this.value)"/>
+    <div style="padding-top:12px">
+      <div class="srch"><span>🔍</span><input type="text" placeholder="Rechercher…" id="lib-q" oninput="renderLib()"/></div>
+      <div class="chips" id="lib-chips"></div>
+      <div id="lib-content">
+        <div class="empty"><span class="ei">📚</span><h3>Aucun contenu</h3><p>Le contenu apparaîtra ici une fois ajouté</p></div>
       </div>
-      <div class="chips" id="lib-cats"></div>
-      <div id="lib-books" class="tab-panel active"></div>
-      <div id="lib-audio" class="tab-panel"></div>
-      <div id="lib-video" class="tab-panel"></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     PAGE : LIVE
-══════════════════════════════════════ -->
-<div id="page-live" class="page">
+<!-- ══════════════════════ PAGE : LIVE ══════════════════════ -->
+<div id="pg-live" class="page">
   <nav class="navbar">
-    <button class="btn btn-ghost btn-sm" onclick="navigate('home')">← Retour</button>
-    <span style="font-size:.9rem;font-weight:900">📡 En Direct</span>
+    <button class="btn btn-ghost btn-sm" onclick="go('home')">← Retour</button>
+    <span style="font-size:.88rem;font-weight:900">📡 En Direct</span>
     <div style="width:70px"></div>
   </nav>
-  <div style="padding:70px 16px 16px">
-    <div id="live-now-section" style="margin-bottom:18px"></div>
-    <div class="sec-head" style="margin-bottom:10px"><p class="sec-title">📅 Prochaines sessions</p></div>
-    <div id="upcoming-sessions"></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     PAGE : CONNEXION
-══════════════════════════════════════ -->
-<div id="page-connexion" class="page">
-  <div class="auth-wrap">
-    <div class="auth-card">
-      <div class="auth-logo-wrap">
-        <div class="auth-logo-ico">ب</div>
-        <div class="auth-name">البصيرة — Al Basîrah</div>
-      </div>
-      <h2 class="auth-title">Connexion</h2>
-      <p class="auth-sub">Accédez à votre espace</p>
-      <div class="auth-err" id="login-err"></div>
-      <div class="auth-ok" id="login-ok"></div>
-      <div class="form-group">
-        <label class="input-label">Email</label>
-        <input type="email" class="input" id="login-email" placeholder="votre@email.com"/>
-      </div>
-      <div class="form-group">
-        <label class="input-label">Mot de passe</label>
-        <input type="password" class="input" id="login-pwd" placeholder="••••••••"/>
-      </div>
-      <button class="btn btn-green btn-block btn-lg" id="login-btn" onclick="doLogin()">🔐 Se connecter</button>
-      <div class="auth-divider">ou</div>
-      <button class="btn btn-ghost btn-block" onclick="showToast('🌐 Connexion Google…')">🌐 Continuer avec Google</button>
-      <div class="auth-switch">Pas de compte ? <a onclick="navigate('inscription')">S'inscrire →</a></div>
-      <div class="auth-back"><a onclick="navigate('home')">← Retour à l'accueil</a></div>
+  <div style="padding:68px 14px 14px">
+    <div id="live-now" style="margin-bottom:16px"></div>
+    <div class="sh"><p class="st">📅 Prochaines sessions</p></div>
+    <div id="upcoming">
+      <div class="empty"><span class="ei">📅</span><h3>Aucune session planifiée</h3><p>Ajoutez des sessions dans votre panel admin</p></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     PAGE : INSCRIPTION
-══════════════════════════════════════ -->
-<div id="page-inscription" class="page">
+<!-- ══════════════════════ PAGE : CONNEXION ══════════════════════ -->
+<div id="pg-login" class="page">
   <div class="auth-wrap">
     <div class="auth-card">
-      <div class="auth-logo-wrap">
-        <div class="auth-logo-ico">ب</div>
-        <div class="auth-name">البصيرة — Al Basîrah</div>
-      </div>
-      <h2 class="auth-title">Créer un compte</h2>
+      <div class="auth-logo"><div class="auth-av">ب</div><div class="auth-name">البصيرة — Al Basîrah</div></div>
+      <h2 class="auth-ttl">Connexion</h2>
+      <p class="auth-sub">Accédez à votre espace</p>
+      <div id="le" class="auth-msg auth-err"></div>
+      <div id="lo" class="auth-msg auth-ok"></div>
+      <div class="fg"><label class="inp-lbl">Email</label><input type="email" class="inp" id="l-email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <div class="fg"><label class="inp-lbl">Mot de passe</label><input type="password" class="inp" id="l-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <button class="btn btn-g btn-block btn-lg" id="l-btn" onclick="doLogin()">🔐 Se connecter</button>
+      <div class="auth-div">ou</div>
+      <button class="btn btn-ghost btn-block" onclick="toast('🌐 Connexion Google bientôt disponible')">🌐 Continuer avec Google</button>
+      <div class="auth-sw">Pas de compte ? <a onclick="go('register')">S'inscrire →</a></div>
+      <div class="auth-bk"><a onclick="go('home')">← Retour à l'accueil</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ PAGE : INSCRIPTION ══════════════════════ -->
+<div id="pg-register" class="page">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo"><div class="auth-av">ب</div><div class="auth-name">البصيرة — Al Basîrah</div></div>
+      <h2 class="auth-ttl">Créer un compte</h2>
       <p class="auth-sub">Rejoignez Al Basîrah gratuitement</p>
-      <div class="auth-err" id="reg-err"></div>
-      <div class="auth-ok" id="reg-ok"></div>
-      <div class="form-group">
-        <label class="input-label">Prénom & Nom</label>
-        <input type="text" class="input" id="reg-name" placeholder="Votre nom"/>
-      </div>
-      <div class="form-group">
-        <label class="input-label">Email</label>
-        <input type="email" class="input" id="reg-email" placeholder="votre@email.com"/>
-      </div>
-      <div class="form-group">
-        <label class="input-label">Mot de passe (min. 6 caractères)</label>
-        <input type="password" class="input" id="reg-pwd" placeholder="••••••••" minlength="6"/>
-      </div>
-      <div class="form-group">
-        <label class="input-label">Pays</label>
-        <select class="input" id="reg-country">
+      <div id="re" class="auth-msg auth-err"></div>
+      <div id="ro" class="auth-msg auth-ok"></div>
+      <div class="fg"><label class="inp-lbl">Prénom & Nom *</label><input type="text" class="inp" id="r-name" placeholder="Votre nom"/></div>
+      <div class="fg"><label class="inp-lbl">Email *</label><input type="email" class="inp" id="r-email" placeholder="votre@email.com"/></div>
+      <div class="fg"><label class="inp-lbl">Mot de passe * (min. 6 car.)</label><input type="password" class="inp" id="r-pwd" placeholder="••••••••"/></div>
+      <div class="fg"><label class="inp-lbl">Pays</label>
+        <select class="inp" id="r-country">
           <option value="">Choisir…</option>
-          <option>Cameroun</option><option>Sénégal</option><option>Mali</option>
-          <option>Côte d'Ivoire</option><option>Guinée</option><option>Burkina Faso</option>
-          <option>France</option><option>Belgique</option><option>Maroc</option>
-          <option>Algérie</option><option>Tunisie</option><option>Autre</option>
+          <option>Cameroun</option><option>Sénégal</option><option>Mali</option><option>Guinée</option>
+          <option>Côte d'Ivoire</option><option>Burkina Faso</option><option>Niger</option>
+          <option>France</option><option>Belgique</option><option>Suisse</option>
+          <option>Maroc</option><option>Algérie</option><option>Tunisie</option>
+          <option>Mauritanie</option><option>Autre</option>
         </select>
       </div>
-      <button class="btn btn-green btn-block btn-lg" id="reg-btn" onclick="doRegister()">✅ Créer mon compte</button>
-      <div class="auth-switch">Déjà un compte ? <a onclick="navigate('connexion')">Se connecter →</a></div>
-      <div class="auth-back"><a onclick="navigate('home')">← Retour à l'accueil</a></div>
+      <button class="btn btn-g btn-block btn-lg" id="r-btn" onclick="doRegister()">✅ Créer mon compte</button>
+      <div class="auth-sw">Déjà un compte ? <a onclick="go('login')">Se connecter →</a></div>
+      <div class="auth-bk"><a onclick="go('home')">← Retour à l'accueil</a></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     PAGE : PROFIL
-══════════════════════════════════════ -->
-<div id="page-profil" class="page">
+<!-- ══════════════════════ PAGE : MON ESPACE ══════════════════════ -->
+<div id="pg-profile" class="page">
   <nav class="navbar">
-    <button class="btn btn-ghost btn-sm" onclick="navigate('home')">← Retour</button>
-    <span style="font-size:.9rem;font-weight:900">👤 Mon Profil</span>
-    <button class="btn btn-ghost btn-sm" onclick="doLogout()">Déco.</button>
+    <button class="btn btn-ghost btn-sm" onclick="go('home')">← Retour</button>
+    <span style="font-size:.88rem;font-weight:900">👤 Mon Espace</span>
+    <button class="btn btn-ghost btn-sm" id="logout-btn" onclick="doLogout()">Déco.</button>
   </nav>
-  <div style="padding-top:60px">
-    <div class="profil-hero">
-      <div class="profil-av" id="profil-av">👤</div>
-      <p class="profil-name" id="profil-name">—</p>
-      <p class="profil-email" id="profil-email">—</p>
-      <div style="display:flex;gap:10px;justify-content:center;margin-top:16px" id="profil-stats">
-        <div class="profil-stat"><span class="ps-n" id="ps-favs">0</span><span class="ps-l">Favoris</span></div>
-        <div class="profil-stat"><span class="ps-n" id="ps-follows">0</span><span class="ps-l">Savants suivis</span></div>
+  <div style="padding-top:58px">
+    <div class="pf-hero">
+      <div class="pf-av" id="pf-av">👤</div>
+      <p class="pf-name" id="pf-name">—</p>
+      <p class="pf-email" id="pf-email">—</p>
+      <div class="pf-stats">
+        <div class="pf-s"><span class="pf-sn" id="pf-favs">0</span><span class="pf-sl">Favoris</span></div>
+        <div class="pf-s"><span class="pf-sn" id="pf-follows">0</span><span class="pf-sl">Savants suivis</span></div>
       </div>
     </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="admin-panel" style="display:none">
+      <div class="sec">
+        <div class="sh"><p class="st" style="color:var(--r1)">⚙️ Panel Administrateur</p></div>
+
+        <!-- Ajouter Savant -->
+        <div class="admin-box">
+          <div class="admin-hd">👨‍🏫 Ajouter un Savant</div>
+          <div class="admin-body">
+            <div class="fg"><label class="inp-lbl">Nom en arabe *</label><input class="inp" id="s-nar" placeholder="الشيخ …"/></div>
+            <div class="fg"><label class="inp-lbl">Nom en français *</label><input class="inp" id="s-nfr" placeholder="Cheikh …"/></div>
+            <div class="fg"><label class="inp-lbl">Initiale arabe (pour avatar) *</label><input class="inp" id="s-init" placeholder="ا" maxlength="2"/></div>
+            <div class="fg"><label class="inp-lbl">Pays</label><input class="inp" id="s-country" placeholder="Ex: Arabie Saoudite"/></div>
+            <div class="fg"><label class="inp-lbl">Époque / Années</label><input class="inp" id="s-era" placeholder="Ex: 1910–1999"/></div>
+            <div class="fg"><label class="inp-lbl">Catégorie</label>
+              <select class="inp" id="s-cat">
+                <option value="contemporain">🕌 Contemporain</option>
+                <option value="ancien">📜 Savant ancien</option>
+                <option value="hadith">📿 Spécialiste Hadith</option>
+                <option value="rapporteur">📖 Rapporteur Hadith</option>
+              </select>
+            </div>
+            <div class="fg"><label class="inp-lbl">Tags (séparés par virgule)</label><input class="inp" id="s-tags" placeholder="Aqida, Fiqh, Hadith"/></div>
+            <div class="fg"><label class="inp-lbl">Biographie</label><textarea class="inp" id="s-bio" placeholder="Biographie du savant…" rows="4"></textarea></div>
+            <button class="btn btn-g btn-block" onclick="addScholar()">➕ Ajouter le savant</button>
+          </div>
+        </div>
+
+        <!-- Ajouter Catégorie -->
+        <div class="admin-box">
+          <div class="admin-hd">🏷️ Créer une Catégorie</div>
+          <div class="admin-body">
+            <div class="fg"><label class="inp-lbl">Nom en arabe *</label><input class="inp" id="cat-ar" placeholder="العقيدة"/></div>
+            <div class="fg"><label class="inp-lbl">Nom en français *</label><input class="inp" id="cat-fr" placeholder="Aqida"/></div>
+            <div class="fg"><label class="inp-lbl">Emoji</label><input class="inp" id="cat-emoji" placeholder="☝️" maxlength="4"/></div>
+            <div class="fg"><label class="inp-lbl">Couleur</label>
+              <select class="inp" id="cat-color">
+                <option value="green">🟢 Vert (WhatsApp)</option>
+                <option value="blue">🔵 Bleu (Telegram)</option>
+                <option value="red">🔴 Rouge (TikTok)</option>
+                <option value="cyan">🩵 Cyan</option>
+                <option value="orange">🟠 Orange</option>
+              </select>
+            </div>
+            <button class="btn btn-b btn-block" onclick="addCategory()">➕ Créer la catégorie</button>
+          </div>
+        </div>
+
+        <!-- Ajouter Livre / PDF / Ebook -->
+        <div class="admin-box">
+          <div class="admin-hd">📚 Ajouter un Livre / PDF / Ebook</div>
+          <div class="admin-body">
+            <div class="fg"><label class="inp-lbl">Titre *</label><input class="inp" id="b-title" placeholder="Titre du livre"/></div>
+            <div class="fg"><label class="inp-lbl">Auteur</label><input class="inp" id="b-author" placeholder="Nom de l'auteur"/></div>
+            <div class="fg"><label class="inp-lbl">Savant lié</label><select class="inp" id="b-scholar"><option value="">— Aucun —</option></select></div>
+            <div class="fg"><label class="inp-lbl">Catégorie</label><select class="inp" id="b-cat"><option value="">— Choisir —</option></select></div>
+            <div class="fg"><label class="inp-lbl">Type de fichier</label>
+              <select class="inp" id="b-type">
+                <option value="pdf">📄 PDF</option>
+                <option value="ebook">📱 Ebook (EPUB)</option>
+                <option value="word">📝 Word (DOCX)</option>
+                <option value="autre">📎 Autre</option>
+              </select>
+            </div>
+            <div class="fg"><label class="inp-lbl">Nombre de pages</label><input class="inp" type="number" id="b-pages" placeholder="Ex: 120" min="1"/></div>
+            <div class="fg"><label class="inp-lbl">Lien de téléchargement (URL)</label><input class="inp" id="b-url" placeholder="https://…"/></div>
+            <div class="fg">
+              <label class="inp-lbl">Ou uploader le fichier</label>
+              <label class="file-btn" id="b-file-lbl" for="b-file">📎 Cliquer pour choisir un fichier PDF/EPUB/DOCX</label>
+              <input type="file" class="file-inp" id="b-file" accept=".pdf,.epub,.docx" onchange="fileChosen('b-file-lbl',this)"/>
+            </div>
+            <div class="fg"><label class="inp-lbl">Description</label><textarea class="inp" id="b-desc" placeholder="Description du livre…" rows="3"></textarea></div>
+            <div class="fg"><label class="inp-lbl">Emoji (icône)</label><input class="inp" id="b-emoji" placeholder="📗" maxlength="4"/></div>
+            <label style="display:flex;align-items:center;gap:7px;font-size:.8rem;font-weight:700;color:var(--sub);margin-bottom:12px;cursor:pointer">
+              <input type="checkbox" id="b-new" style="accent-color:var(--r1)"/> Marquer comme NOUVEAU
+            </label>
+            <button class="btn btn-g btn-block" onclick="addBook()">➕ Ajouter le livre</button>
+          </div>
+        </div>
+
+        <!-- Ajouter Audio -->
+        <div class="admin-box">
+          <div class="admin-hd">🎧 Ajouter un Cours Audio</div>
+          <div class="admin-body">
+            <div class="fg"><label class="inp-lbl">Titre *</label><input class="inp" id="a-title" placeholder="Titre du cours"/></div>
+            <div class="fg"><label class="inp-lbl">Savant</label><select class="inp" id="a-scholar"><option value="">— Aucun —</option></select></div>
+            <div class="fg"><label class="inp-lbl">Catégorie</label><select class="inp" id="a-cat"><option value="">— Choisir —</option></select></div>
+            <div class="fg"><label class="inp-lbl">Nombre d'épisodes</label><input class="inp" type="number" id="a-eps" placeholder="Ex: 12" min="1"/></div>
+            <div class="fg"><label class="inp-lbl">Durée totale</label><input class="inp" id="a-dur" placeholder="Ex: 8h 30min"/></div>
+            <div class="fg"><label class="inp-lbl">Lien audio / playlist (URL)</label><input class="inp" id="a-url" placeholder="https://…"/></div>
+            <div class="fg">
+              <label class="inp-lbl">Ou uploader le fichier audio</label>
+              <label class="file-btn" id="a-file-lbl" for="a-file">🎵 Cliquer pour choisir un fichier MP3/AAC/M4A</label>
+              <input type="file" class="file-inp" id="a-file" accept=".mp3,.aac,.m4a,.ogg" onchange="fileChosen('a-file-lbl',this)"/>
+            </div>
+            <div class="fg"><label class="inp-lbl">Description</label><textarea class="inp" id="a-desc" placeholder="Description du cours…" rows="3"></textarea></div>
+            <div class="fg"><label class="inp-lbl">Emoji</label><input class="inp" id="a-emoji" placeholder="🎧" maxlength="4"/></div>
+            <button class="btn btn-b btn-block" onclick="addAudio()">➕ Ajouter le cours audio</button>
+          </div>
+        </div>
+
+        <!-- Ajouter Vidéo -->
+        <div class="admin-box">
+          <div class="admin-hd">🎬 Ajouter une Vidéo</div>
+          <div class="admin-body">
+            <div class="fg"><label class="inp-lbl">Titre *</label><input class="inp" id="v-title" placeholder="Titre de la vidéo"/></div>
+            <div class="fg"><label class="inp-lbl">Savant</label><select class="inp" id="v-scholar"><option value="">— Aucun —</option></select></div>
+            <div class="fg"><label class="inp-lbl">Catégorie</label><select class="inp" id="v-cat"><option value="">— Choisir —</option></select></div>
+            <div class="fg"><label class="inp-lbl">Durée</label><input class="inp" id="v-dur" placeholder="Ex: 1h 24min"/></div>
+            <div class="fg"><label class="inp-lbl">Lien YouTube / Vimeo / autre (URL) *</label><input class="inp" id="v-url" placeholder="https://youtube.com/watch?v=…"/></div>
+            <div class="fg">
+              <label class="inp-lbl">Ou uploader la vidéo</label>
+              <label class="file-btn" id="v-file-lbl" for="v-file">🎬 Cliquer pour choisir un fichier MP4/MOV/WebM</label>
+              <input type="file" class="file-inp" id="v-file" accept=".mp4,.mov,.webm,.avi" onchange="fileChosen('v-file-lbl',this)"/>
+            </div>
+            <div class="fg"><label class="inp-lbl">Description</label><textarea class="inp" id="v-desc" placeholder="Description de la vidéo…" rows="3"></textarea></div>
+            <div class="fg"><label class="inp-lbl">Emoji</label><input class="inp" id="v-emoji" placeholder="🎬" maxlength="4"/></div>
+            <button class="btn btn-r btn-block" onclick="addVideo()">➕ Ajouter la vidéo</button>
+          </div>
+        </div>
+
+        <!-- Ajouter Session Live -->
+        <div class="admin-box">
+          <div class="admin-hd" style="color:var(--r1)">📡 Publier une Session Live</div>
+          <div class="admin-body">
+            <div class="fg"><label class="inp-lbl">Titre de la session *</label><input class="inp" id="lv-title" placeholder="Ex: Cours sur l'Aqida — Séance 1"/></div>
+            <div class="fg"><label class="inp-lbl">Savant</label><select class="inp" id="lv-scholar"><option value="">— Aucun —</option></select></div>
+            <div class="fg"><label class="inp-lbl">Nom du savant (si non listé)</label><input class="inp" id="lv-sname" placeholder="Nom du savant"/></div>
+            <div class="fg"><label class="inp-lbl">Date & Heure *</label><input class="inp" type="datetime-local" id="lv-date"/></div>
+            <div class="fg"><label class="inp-lbl">Lien du stream * (YouTube Live, TikTok Live, etc.)</label><input class="inp" id="lv-url" placeholder="https://youtube.com/live/…"/></div>
+            <div class="fg"><label class="inp-lbl">Statut</label>
+              <select class="inp" id="lv-status">
+                <option value="upcoming">📅 Planifié (à venir)</option>
+                <option value="live">🔴 En direct maintenant</option>
+              </select>
+            </div>
+            <div class="fg"><label class="inp-lbl">Nombre d'auditeurs estimé</label><input class="inp" type="number" id="lv-vw" placeholder="0" min="0"/></div>
+            <button class="btn btn-r btn-block" onclick="addLive()">📡 Publier la session</button>
+            <p style="font-size:.72rem;color:var(--muted);margin-top:8px;text-align:center">Pour mettre fin à un live : rendez-vous dans Supabase et changez le statut en "ended"</p>
+          </div>
+        </div>
+
+        <!-- Gérer les sections -->
+        <div class="admin-box">
+          <div class="admin-hd">📋 Mes contenus ajoutés</div>
+          <div class="admin-body">
+            <div id="admin-content-list">
+              <div class="spin"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Favoris -->
     <div class="sec">
-      <div class="admin-form" id="admin-section" style="display:none">
-        <h3>⚙️ Ajouter du contenu</h3>
-        <div class="tabs">
-          <button class="tab-btn active" onclick="adminTab('livre',this)">📚 Livre</button>
-          <button class="tab-btn" onclick="adminTab('audio',this)">🎧 Audio</button>
-          <button class="tab-btn" onclick="adminTab('video',this)">🎬 Vidéo</button>
-          <button class="tab-btn" onclick="adminTab('live',this)">📡 Live</button>
-        </div>
-        <div id="admin-livre" class="tab-panel active" style="padding-top:12px">
-          <div class="form-group"><label class="input-label">Titre</label><input class="input" id="book-title" placeholder="Titre du livre"/></div>
-          <div class="form-group"><label class="input-label">Auteur</label><input class="input" id="book-author" placeholder="Nom de l'auteur"/></div>
-          <div class="form-group"><label class="input-label">Savant</label><select class="input" id="book-scholar"><option value="">Aucun</option></select></div>
-          <div class="form-group"><label class="input-label">Catégorie</label>
-            <select class="input" id="book-cat"><option value="Aqida">Aqida</option><option value="Fiqh">Fiqh</option><option value="Hadith">Hadith</option><option value="Tafsir">Tafsir</option><option value="Manhaj">Manhaj</option><option value="Tazkiya">Tazkiya</option><option value="Arabe">Arabe</option><option value="Sira">Sîra</option></select>
-          </div>
-          <div class="form-group"><label class="input-label">Nombre de pages</label><input class="input" type="number" id="book-pages" placeholder="Ex: 120"/></div>
-          <div class="form-group"><label class="input-label">Description</label><textarea class="input" id="book-desc" rows="3" placeholder="Description…"></textarea></div>
-          <button class="btn btn-green btn-block" onclick="addBook()">➕ Ajouter le livre</button>
-        </div>
-        <div id="admin-audio" class="tab-panel" style="padding-top:12px">
-          <div class="form-group"><label class="input-label">Titre du cours</label><input class="input" id="audio-title" placeholder="Titre"/></div>
-          <div class="form-group"><label class="input-label">Savant</label><select class="input" id="audio-scholar"><option value="">Aucun</option></select></div>
-          <div class="form-group"><label class="input-label">Catégorie</label><select class="input" id="audio-cat"><option value="Tawhid">Tawhid</option><option value="Aqida">Aqida</option><option value="Hadith">Hadith</option><option value="Fiqh">Fiqh</option><option value="Tafsir">Tafsir</option><option value="Sîra">Sîra</option></select></div>
-          <div class="form-group"><label class="input-label">Nombre d'épisodes</label><input class="input" type="number" id="audio-eps" placeholder="Ex: 12"/></div>
-          <div class="form-group"><label class="input-label">Durée totale</label><input class="input" id="audio-dur" placeholder="Ex: 8h"/></div>
-          <div class="form-group"><label class="input-label">Description</label><textarea class="input" id="audio-desc" rows="3" placeholder="Description…"></textarea></div>
-          <button class="btn btn-blue btn-block" onclick="addAudio()">➕ Ajouter le cours audio</button>
-        </div>
-        <div id="admin-video" class="tab-panel" style="padding-top:12px">
-          <div class="form-group"><label class="input-label">Titre de la vidéo</label><input class="input" id="video-title" placeholder="Titre"/></div>
-          <div class="form-group"><label class="input-label">Savant</label><select class="input" id="video-scholar"><option value="">Aucun</option></select></div>
-          <div class="form-group"><label class="input-label">Catégorie</label><select class="input" id="video-cat"><option value="Cours">Cours</option><option value="Conférence">Conférence</option><option value="Fatwas">Fatwas</option><option value="Manhaj">Manhaj</option><option value="Famille">Famille</option><option value="Fiqh">Fiqh</option></select></div>
-          <div class="form-group"><label class="input-label">Durée</label><input class="input" id="video-dur" placeholder="Ex: 1h 24min"/></div>
-          <div class="form-group"><label class="input-label">Lien YouTube (optionnel)</label><input class="input" id="video-url" placeholder="https://youtube.com/…"/></div>
-          <div class="form-group"><label class="input-label">Description</label><textarea class="input" id="video-desc" rows="3" placeholder="Description…"></textarea></div>
-          <button class="btn btn-red btn-block" onclick="addVideo()">➕ Ajouter la vidéo</button>
-        </div>
-        <div id="admin-live" class="tab-panel" style="padding-top:12px">
-          <div class="form-group"><label class="input-label">Titre de la session</label><input class="input" id="live-title" placeholder="Ex: Cours sur l'Aqida — Séance 1"/></div>
-          <div class="form-group"><label class="input-label">Savant</label><select class="input" id="live-scholar"><option value="">Aucun</option></select></div>
-          <div class="form-group"><label class="input-label">Nom du savant (si non listé)</label><input class="input" id="live-sch-name" placeholder="Nom du savant"/></div>
-          <div class="form-group"><label class="input-label">Date & Heure</label><input class="input" type="datetime-local" id="live-date"/></div>
-          <div class="form-group"><label class="input-label">Lien du stream (YouTube Live, etc.)</label><input class="input" id="live-url" placeholder="https://youtube.com/live/…"/></div>
-          <div class="form-group"><label class="input-label">Statut</label>
-            <select class="input" id="live-status">
-              <option value="upcoming">Planifié</option>
-              <option value="live">En direct maintenant</option>
-            </select>
-          </div>
-          <button class="btn btn-red btn-block" onclick="addLive()">📡 Publier la session live</button>
-        </div>
-      </div>
-      <div class="admin-form" style="background:var(--white)">
-        <h3>❤️ Mes favoris</h3>
-        <div id="profil-favs"><div class="empty"><span class="empty-ico">❤️</span><h3>Aucun favori</h3><p>Aimez des contenus pour les retrouver ici</p></div></div>
-      </div>
-      <div style="margin-top:14px">
-        <button class="btn btn-ghost btn-block" onclick="doLogout()">🚪 Se déconnecter</button>
+      <div class="sh"><p class="st">❤️ Mes favoris</p></div>
+      <div id="pf-favs-list">
+        <div class="empty"><span class="ei">❤️</span><h3>Aucun favori</h3><p>Aimez des contenus pour les retrouver ici</p></div>
       </div>
     </div>
+
+    <div class="sec"><button class="btn btn-ghost btn-block" onclick="doLogout()">🚪 Se déconnecter</button></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     MODALS
-══════════════════════════════════════ -->
-<!-- VIDEO MODAL -->
-<div class="modal-ov" id="modal-video">
-  <div class="modal-box">
-    <div class="modal-header">
-      <p class="modal-title" id="mv-title">—</p>
-      <button class="modal-x" onclick="closeModal('modal-video')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div id="mv-player" style="aspect-ratio:16/9;background:var(--dark);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-bottom:12px" onclick="showToast('▶ Lecture lancée !')">
-        <span style="font-size:3rem">🎬</span>
-        <span style="color:rgba(255,255,255,.5);font-size:.8rem;font-weight:700">Appuyer pour lire</span>
-      </div>
-      <p id="mv-meta" style="font-size:.8rem;color:var(--muted);font-weight:700;margin-bottom:10px"></p>
-      <p id="mv-desc" style="font-size:.82rem;color:var(--sub);line-height:1.75;background:var(--bg);padding:10px;border-radius:var(--r2x);margin-bottom:12px"></p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-red" onclick="showToast('▶ Lecture démarrée')">▶ Regarder</button>
-        <button class="btn btn-blue btn-sm" onclick="showToast('↓ Téléchargement…')">↓ Télécharger</button>
-        <button class="btn btn-ghost btn-sm" onclick="shareContent(document.getElementById('mv-title').textContent)">🔗 Partager</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- LIVE STREAM MODAL -->
-<div class="modal-ov" id="modal-live">
-  <div class="modal-box" style="max-height:95vh">
-    <div class="modal-header">
-      <p class="modal-title" id="ml-title">📡 En Direct</p>
-      <button class="modal-x" onclick="closeModal('modal-live')">✕</button>
-    </div>
-    <div class="modal-body" style="padding:12px">
-      <div class="live-stream-box" style="max-height:50vh;margin-bottom:12px">
-        <div class="live-stream-overlay" id="live-overlay">
-          <span style="font-size:2.5rem">📡</span>
-          <span style="color:#fff;font-size:.9rem;font-weight:800" id="ml-stream-title">—</span>
-          <div style="display:flex;align-items:center;gap:5px">
-            <div class="live-dot"></div>
-            <span style="color:rgba(255,255,255,.7);font-size:.75rem;font-weight:700" id="ml-viewers">0 auditeurs</span>
-          </div>
-          <a id="ml-ext-link" href="#" target="_blank" class="btn btn-red" style="margin-top:6px">▶ Ouvrir le live</a>
-        </div>
-      </div>
-      <!-- Chat -->
-      <div style="margin-bottom:8px">
-        <p style="font-size:.78rem;font-weight:800;color:var(--sub);margin-bottom:6px">💬 Chat live</p>
-        <div class="live-chat" id="live-chat">
-          <div class="live-msg"><strong>Abdou</strong> BarakAllahu fik pour ce cours 🤲</div>
-          <div class="live-msg"><strong>Moussa</strong> Qu'Allah récompense le Cheikh</div>
-          <div class="live-msg"><strong>Ibrahim</strong> Jazakumullahu khayran</div>
-        </div>
-        <div class="live-input-row">
-          <input class="input" id="live-chat-input" placeholder="Votre message…" style="flex:1;font-size:.82rem" onkeydown="if(event.key==='Enter')sendLiveMsg()"/>
-          <button class="btn btn-green btn-sm" onclick="sendLiveMsg()">Envoyer</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav" id="bottom-nav">
-  <button class="bnav-item active" onclick="navigate('home')" data-page="home">
-    <span class="bi-ico">🏠</span><span class="bi-lbl">Accueil</span>
-  </button>
-  <button class="bnav-item" onclick="navigate('savants')" data-page="savants">
-    <span class="bi-ico">👨‍🏫</span><span class="bi-lbl">Savants</span>
-  </button>
-  <button class="bnav-item" onclick="navigate('bibliotheque')" data-page="bibliotheque">
-    <span class="bi-ico">📚</span><span class="bi-lbl">Bibliothèque</span>
-  </button>
-  <button class="bnav-item" onclick="navigate('live')" data-page="live">
-    <span class="bi-ico">📡</span><span class="bi-lbl">Live</span>
-  </button>
-  <button class="bnav-item" onclick="navigate('profil')" data-page="profil">
-    <span class="bi-ico">👤</span><span class="bi-lbl">Moi</span>
-  </button>
+<!-- ══ BOTTOM NAV ══ -->
+<nav class="bnav" id="bnav">
+  <button class="bnav-btn active" data-pg="home" onclick="go('home')"><span class="ico">🏠</span><span class="lbl">Accueil</span></button>
+  <button class="bnav-btn" data-pg="scholars" onclick="go('scholars')"><span class="ico">👨‍🏫</span><span class="lbl">Savants</span></button>
+  <button class="bnav-btn" data-pg="library" onclick="go('library')"><span class="ico">📚</span><span class="lbl">Biblio.</span></button>
+  <button class="bnav-btn" data-pg="live" onclick="go('live')"><span class="ico">📡</span><span class="lbl">Live</span></button>
+  <button class="bnav-btn" data-pg="profile" onclick="go('profile')"><span class="ico">👤</span><span class="lbl">Moi</span></button>
 </nav>
 
 <script>
-/* ═══════════════════════════════════════════════
-   SUPABASE INIT
-═══════════════════════════════════════════════ */
-const SUPA_URL = 'https://mutdtyifvcrkiouudwhr.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11dGR0eWlmdmNya2lvdXVkd2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5ODEwODcsImV4cCI6MjA4OTU1NzA4N30.l08pEalpQ50QN4xVuDp5hyan7hwXprHOeCo0nrCA4vU';
-const DB = supabase.createClient(SUPA_URL, SUPA_KEY);
+/* ══ SUPABASE ══ */
+const DB = supabase.createClient(
+  'https://mutdtyifvcrkiouudwhr.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11dGR0eWlmdmNya2lvdXVkd2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5ODEwODcsImV4cCI6MjA4OTU1NzA4N30.l08pEalpQ50QN4xVuDp5hyan7hwXprHOeCo0nrCA4vU'
+);
 
-/* ═══ STATE ═══ */
-const STATE = {
+/* ══ STATE ══ */
+const S = {
   user: null, profile: null, isAdmin: false,
-  scholars: [], books: [], audios: [], videos: [], lives: [],
-  favs: JSON.parse(localStorage.getItem('ab_favs') || '{}'),
-  currentScholar: null, currentLibType: 'books',
+  scholars: [], books: [], audios: [], videos: [], lives: [], cats: [],
+  favs: JSON.parse(localStorage.getItem('ab_favs')||'{}'),
+  follows: JSON.parse(localStorage.getItem('ab_follows')||'{}'),
+  schCat: 'all', libType: 'books',
+  currentScholar: null,
 };
 
-/* ═══ UTILS ═══ */
-let _toastT;
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(_toastT);
-  _toastT = setTimeout(() => el.classList.remove('show'), 2500);
-}
-function fmt(n) {
-  if (!n) return '0';
-  return n >= 1000 ? (n/1000).toFixed(1).replace('.0','')+'K' : String(n);
-}
-function fmtTime(s) {
-  const m = Math.floor(s/60), sec = s%60;
-  return `${m}:${String(sec).padStart(2,'0')}`;
-}
-function s(str) { return String(str||'').replace(/'/g,"\\'").replace(/"/g,'&quot;').substring(0,80); }
-const AV_COLORS = [
-  'linear-gradient(135deg,#25D366,#128C7E)',
-  'linear-gradient(135deg,#2AABEE,#0D47A1)',
-  'linear-gradient(135deg,#E53935,#B71C1C)',
-  'linear-gradient(135deg,#00BCD4,#00838F)',
-  'linear-gradient(135deg,#128C7E,#2AABEE)',
-  'linear-gradient(135deg,#E53935,#00BCD4)',
-];
-const BAR_COLORS = [
-  '#25D366','#2AABEE','#E53935','#00BCD4','#128C7E','#1A7FBA'
-];
-function avColor(i) { return AV_COLORS[i % AV_COLORS.length]; }
+/* ══ UTILS ══ */
+let _tt;
+function toast(m){ const e=document.getElementById('toast'); e.innerHTML=m; e.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>e.classList.remove('show'),2500); }
+function fmt(n){ if(!n)return '0'; return n>=1000?(n/1000).toFixed(1).replace('.0','')+'K':String(n); }
+function fmtT(s){ const m=Math.floor(s/60),sc=s%60; return `${m}:${String(sc).padStart(2,'0')}`; }
+function esc(s){ return String(s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;').substring(0,100); }
+function el(id){ return document.getElementById(id); }
+function share(t){ if(navigator.share){navigator.share({title:t,url:location.href})}else if(navigator.clipboard){navigator.clipboard.writeText(location.href); toast('🔗 Lien copié !')}else toast('🔗 Lien copié !'); }
 
-/* ═══ NAVIGATION ═══ */
-function navigate(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
-  const pg = document.getElementById('page-'+page);
-  if (pg) pg.classList.add('active');
-  const bnav = document.querySelector(`.bnav-item[data-page="${page}"]`);
-  if (bnav) bnav.classList.add('active');
-  // Show/hide bottom nav on auth pages
-  const noNav = ['connexion','inscription'];
-  document.getElementById('bottom-nav').style.display = noNav.includes(page) ? 'none' : 'flex';
+const AV_G = ['linear-gradient(135deg,#25D366,#128C7E)','linear-gradient(135deg,#2AABEE,#1565C0)','linear-gradient(135deg,#E53935,#B71C1C)','linear-gradient(135deg,#00BCD4,#00838F)','linear-gradient(135deg,#128C7E,#2AABEE)','linear-gradient(135deg,#FF6F00,#E53935)'];
+const BAR_C = ['#25D366','#2AABEE','#E53935','#00BCD4','#128C7E','#FF6F00'];
+function avG(i){ return AV_G[i%AV_G.length]; }
+const CAT_COL = {green:['rgba(37,211,102,.1)','var(--g2)'],blue:['rgba(42,171,238,.1)','var(--b2)'],red:['rgba(229,57,53,.09)','var(--r1)'],cyan:['rgba(0,188,212,.1)','var(--c2)'],orange:['rgba(255,111,0,.1)','var(--o1)']};
+
+/* ══ NAVIGATE ══ */
+function go(pg){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
+  const noNav = ['login','register'];
+  el('bnav').style.display = noNav.includes(pg) ? 'none' : 'flex';
+  el('ap').style.bottom = noNav.includes(pg) ? '0' : '60px';
+  const pEl = el('pg-'+pg);
+  if(pEl){ pEl.classList.add('active'); }
+  const bEl = document.querySelector(`.bnav-btn[data-pg="${pg}"]`);
+  if(bEl) bEl.classList.add('active');
   window.scrollTo(0,0);
-  // Lazy load
-  if (page === 'savants') renderScholarsPage();
-  if (page === 'bibliotheque') renderLib();
-  if (page === 'live') renderLivePage();
-  if (page === 'profil') renderProfil();
+  if(pg==='scholars') renderScholars();
+  if(pg==='library') renderLib();
+  if(pg==='live') renderLive();
+  if(pg==='profile') renderProfile();
 }
 
-/* ═══ MODAL ═══ */
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-ov').forEach(ov => {
-  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
-});
+/* ══ MODAL ══ */
+function closeMo(id){ el(id).classList.remove('open'); }
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 
-/* ═══ AUTH ═══ */
-async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pwd = document.getElementById('login-pwd').value;
-  const err = document.getElementById('login-err');
-  const ok = document.getElementById('login-ok');
-  err.style.display = 'none'; ok.style.display = 'none';
-  if (!email || !pwd) { err.textContent = '⚠️ Veuillez remplir tous les champs.'; err.style.display = 'block'; return; }
-  const btn = document.getElementById('login-btn');
-  btn.textContent = '⏳ Connexion…'; btn.disabled = true;
-  try {
-    const { data, error } = await DB.auth.signInWithPassword({ email, password: pwd });
-    if (error) throw error;
-    STATE.user = data.user;
-    ok.textContent = '✅ Connecté ! Redirection…'; ok.style.display = 'block';
-    setTimeout(() => { navigate('home'); updateNavAuth(); loadProfil(); }, 800);
-  } catch(e) {
-    err.textContent = '❌ ' + (e.message === 'Invalid login credentials' ? 'Email ou mot de passe incorrect.' : e.message);
-    err.style.display = 'block';
-  } finally { btn.textContent = '🔐 Se connecter'; btn.disabled = false; }
+/* ══ AUTH ══ */
+async function doLogin(){
+  const email=el('l-email').value.trim(), pwd=el('l-pwd').value;
+  const errEl=el('le'), okEl=el('lo');
+  errEl.style.display='none'; okEl.style.display='none';
+  if(!email||!pwd){errEl.textContent='⚠️ Remplissez tous les champs.';errEl.style.display='block';return;}
+  const btn=el('l-btn'); btn.textContent='⏳ Connexion…'; btn.disabled=true;
+  try{
+    const {data,error}=await DB.auth.signInWithPassword({email,password:pwd});
+    if(error) throw error;
+    S.user=data.user;
+    okEl.textContent='✅ Connecté ! Redirection…'; okEl.style.display='block';
+    await loadProfile();
+    setTimeout(()=>{go('home'); updateNavAuth();},700);
+  }catch(e){
+    const msg=e.message.includes('Invalid login credentials')?'Email ou mot de passe incorrect.':e.message;
+    errEl.textContent='❌ '+msg; errEl.style.display='block';
+  }finally{btn.textContent='🔐 Se connecter'; btn.disabled=false;}
 }
 
-async function doRegister() {
-  const name = document.getElementById('reg-name').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const pwd = document.getElementById('reg-pwd').value;
-  const country = document.getElementById('reg-country').value;
-  const err = document.getElementById('reg-err');
-  const ok = document.getElementById('reg-ok');
-  err.style.display = 'none'; ok.style.display = 'none';
-  if (!name || !email || !pwd) { err.textContent = '⚠️ Veuillez remplir tous les champs obligatoires.'; err.style.display = 'block'; return; }
-  if (pwd.length < 6) { err.textContent = '⚠️ Mot de passe trop court (min. 6 caractères).'; err.style.display = 'block'; return; }
-  const btn = document.getElementById('reg-btn');
-  btn.textContent = '⏳ Création…'; btn.disabled = true;
-  try {
-    const { data, error } = await DB.auth.signUp({
-      email, password: pwd,
-      options: { data: { full_name: name, country } }
-    });
-    if (error) throw error;
-    if (data.user && !data.session) {
-      ok.textContent = '✅ Compte créé ! Vérifiez votre email pour confirmer.';
-    } else {
-      ok.textContent = '✅ Compte créé ! Connexion automatique…';
-      STATE.user = data.user;
-      setTimeout(() => { navigate('home'); updateNavAuth(); loadProfil(); }, 1200);
+async function doRegister(){
+  const name=el('r-name').value.trim(), email=el('r-email').value.trim(), pwd=el('r-pwd').value, country=el('r-country').value;
+  const errEl=el('re'), okEl=el('ro');
+  errEl.style.display='none'; okEl.style.display='none';
+  if(!name||!email||!pwd){errEl.textContent='⚠️ Nom, email et mot de passe sont requis.';errEl.style.display='block';return;}
+  if(pwd.length<6){errEl.textContent='⚠️ Mot de passe trop court (minimum 6 caractères).';errEl.style.display='block';return;}
+  const btn=el('r-btn'); btn.textContent='⏳ Création…'; btn.disabled=true;
+  try{
+    const {data,error}=await DB.auth.signUp({email,password:pwd,options:{data:{full_name:name,country}}});
+    if(error) throw error;
+    if(data.user&&!data.session){
+      okEl.textContent='✅ Compte créé ! Vérifiez votre email pour confirmer puis reconnectez-vous.';
+      okEl.style.display='block';
+    }else{
+      S.user=data.user;
+      okEl.textContent='✅ Compte créé avec succès !'; okEl.style.display='block';
+      await loadProfile();
+      setTimeout(()=>{go('home'); updateNavAuth();},900);
     }
-    ok.style.display = 'block';
-  } catch(e) {
-    const msg = e.message.includes('already registered') ? 'Cet email est déjà utilisé.' : e.message;
-    err.textContent = '❌ ' + msg; err.style.display = 'block';
-  } finally { btn.textContent = '✅ Créer mon compte'; btn.disabled = false; }
+  }catch(e){
+    const msg=e.message.includes('already registered')?'Cet email est déjà utilisé. Essayez de vous connecter.':e.message;
+    errEl.textContent='❌ '+msg; errEl.style.display='block';
+  }finally{btn.textContent='✅ Créer mon compte'; btn.disabled=false;}
 }
 
-async function doLogout() {
+async function doLogout(){
   await DB.auth.signOut();
-  STATE.user = null; STATE.profile = null; STATE.isAdmin = false;
+  S.user=null; S.profile=null; S.isAdmin=false;
   updateNavAuth();
-  navigate('home');
-  showToast('👋 Déconnecté');
+  go('home');
+  toast('👋 Déconnecté');
 }
 
-function updateNavAuth() {
-  const actions = document.getElementById('nav-actions-home');
-  if (STATE.user) {
-    actions.innerHTML = `<button class="btn btn-green btn-sm" onclick="navigate('profil')">👤 Mon espace</button>`;
-  } else {
-    actions.innerHTML = `
-      <button class="btn btn-outline-b btn-sm" onclick="navigate('connexion')">Connexion</button>
-      <button class="btn btn-green btn-sm" onclick="navigate('inscription')">S'inscrire</button>`;
+function updateNavAuth(){
+  const nav=el('nav-auth');
+  if(S.user){
+    nav.innerHTML=`<button class="btn btn-g btn-sm" onclick="go('profile')">👤 Mon espace</button>`;
+  }else{
+    nav.innerHTML=`<button class="btn btn-ob btn-sm" onclick="go('login')">Connexion</button><button class="btn btn-g btn-sm" onclick="go('register')">S'inscrire</button>`;
   }
 }
 
-/* ═══ LOAD DATA FROM SUPABASE ═══ */
-async function loadAll() {
-  try {
-    const [s, b, a, v, l] = await Promise.all([
+async function loadProfile(){
+  if(!S.user)return;
+  try{
+    const {data}=await DB.from('profiles').select('*').eq('id',S.user.id).single();
+    if(data){S.profile=data; S.isAdmin=data.is_admin||false;}
+  }catch{}
+}
+
+/* ══ LOAD ALL DATA ══ */
+async function loadAll(){
+  try{
+    const [sc,b,a,v,l,c]=await Promise.all([
       DB.from('scholars').select('*').order('name_fr'),
-      DB.from('books').select('*').order('created_at', {ascending:false}),
-      DB.from('audios').select('*').order('created_at', {ascending:false}),
-      DB.from('videos').select('*').order('created_at', {ascending:false}),
+      DB.from('books').select('*').order('created_at',{ascending:false}),
+      DB.from('audios').select('*').order('created_at',{ascending:false}),
+      DB.from('videos').select('*').order('created_at',{ascending:false}),
       DB.from('live_sessions').select('*').order('scheduled_at'),
+      DB.from('categories').select('*').order('label_fr'),
     ]);
-    if (s.data?.length) STATE.scholars = s.data;
-    if (b.data?.length) STATE.books = b.data;
-    if (a.data?.length) STATE.audios = a.data;
-    if (v.data?.length) STATE.videos = v.data;
-    if (l.data?.length) STATE.lives = l.data;
-  } catch(e) { console.warn('DB load error:', e); }
-  // Fallback if empty
-  if (!STATE.scholars.length) STATE.scholars = FALLBACK.scholars;
-  if (!STATE.books.length) STATE.books = FALLBACK.books;
-  if (!STATE.audios.length) STATE.audios = FALLBACK.audios;
-  if (!STATE.videos.length) STATE.videos = FALLBACK.videos;
-  if (!STATE.lives.length) STATE.lives = FALLBACK.lives;
+    S.scholars = sc.data||[];
+    S.books    = b.data||[];
+    S.audios   = a.data||[];
+    S.videos   = v.data||[];
+    S.lives    = l.data||[];
+    S.cats     = c.data||[];
+  }catch(e){console.warn('DB error:',e.message);}
   renderHome();
   updateStats();
-  fillScholarSelects();
+  fillSelects();
 }
 
-function updateStats() {
-  const b = STATE.books.length, a = STATE.audios.length, v = STATE.videos.length, s = STATE.scholars.length;
-  ['books','audio','vids','sch'].forEach((k,i) => {
-    const val = [b,a,v,s][i];
-    ['st-'+k, 'hs-'+(['books','audio','sch','sch'][i])].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = val + '+';
-    });
-  });
-  document.getElementById('hs-books').textContent = b+'+';
-  document.getElementById('hs-audio').textContent = a+'+';
-  document.getElementById('hs-sch').textContent = s+'+';
+function updateStats(){
+  const nb=S.books.length, na=S.audios.length, nv=S.videos.length, ns=S.scholars.length;
+  ['sb-b','hs-b'].forEach(id=>{const e=el(id);if(e)e.textContent=nb;});
+  ['sb-a','hs-a'].forEach(id=>{const e=el(id);if(e)e.textContent=na;});
+  ['sb-v'].forEach(id=>{const e=el(id);if(e)e.textContent=nv;});
+  ['sb-s','hs-s'].forEach(id=>{const e=el(id);if(e)e.textContent=ns;});
 }
 
-/* ═══ HOME RENDER ═══ */
-function renderHome() {
+/* ══ HOME ══ */
+function renderHome(){
   renderHomeScholars();
-  renderHomeLib('books');
-  renderHomeCats();
   renderHomeLive();
+  homeTab('books', document.querySelector('#home-tabs .tab.active'));
+  renderHomeCats();
 }
 
-function renderHomeScholars() {
-  const el = document.getElementById('home-scholars');
-  el.innerHTML = STATE.scholars.slice(0,8).map((sc,i) => `
-    <div style="min-width:130px;flex-shrink:0" class="sc-card" onclick="openScholar('${s(sc.id)}')">
-      <div class="sc-card-top" style="background:${BAR_COLORS[i%6]}"></div>
-      ${sc.is_live ? `<div class="sc-live-pip" style="position:absolute;top:8px;right:8px"><span class="badge badge-live" style="display:flex;align-items:center;gap:3px;font-size:.58rem"><div class="live-dot" style="width:5px;height:5px"></div>LIVE</span></div>` : ''}
-      <div class="sc-av" style="width:52px;height:52px;font-size:1.2rem;background:${avColor(i)}">${sc.initial||'?'}</div>
-      <p class="sc-name-ar" style="font-size:.78rem">${sc.name_ar||sc.name||'—'}</p>
-      <p class="sc-name-fr" style="font-size:.64rem">${(sc.name_fr||'').split(' ').slice(0,3).join(' ')}</p>
+function renderHomeScholars(){
+  const c=el('home-sch');
+  if(!S.scholars.length){c.innerHTML='<div class="empty" style="width:100%"><span class="ei">👨‍🏫</span><h3>Aucun savant</h3><p>Ajoutez des savants via votre panel admin</p></div>';return;}
+  c.innerHTML=S.scholars.slice(0,10).map((s,i)=>`
+    <div style="min-width:120px;flex-shrink:0" class="sc" onclick="openScholar('${esc(s.id)}')">
+      <div class="sc-bar" style="background:${BAR_C[i%6]}"></div>
+      ${s.is_live?`<div style="position:absolute;top:6px;right:6px"><span class="badge badge-live" style="font-size:.55rem;display:inline-flex;align-items:center;gap:3px"><div class="ldot" style="background:#fff;width:4px;height:4px"></div>LIVE</span></div>`:''}
+      <div class="sc-av" style="width:52px;height:52px;font-size:1.3rem;background:${avG(i)}">${s.initial||'?'}</div>
+      <p class="sc-nar" style="font-size:.75rem">${s.name_ar||s.name||'—'}</p>
+      <p class="sc-nfr" style="font-size:.62rem">${(s.name_fr||'').split(' ').slice(0,3).join(' ')}</p>
     </div>`).join('');
 }
 
-function homeLibTab(type, btn) {
-  document.querySelectorAll('#home-lib-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderHomeLib(type);
-}
-
-function renderHomeLib(type) {
-  const el = document.getElementById('home-lib-content');
-  const data = type === 'books' ? STATE.books : type === 'audio' ? STATE.audios : STATE.videos;
-  el.innerHTML = data.slice(0,4).map(item => renderContentItem(item, type)).join('') +
-    `<div style="text-align:center;margin-top:10px"><button class="btn btn-ghost" onclick="navigate('bibliotheque')">Voir tout →</button></div>`;
-}
-
-function renderHomeCats() {
-  const cats = [
-    {slug:'aqida',ar:'العقيدة',fr:'Aqida',emoji:'☝️',col:'rgba(37,211,102,.1)',tc:'var(--g2)'},
-    {slug:'fiqh',ar:'الفقه',fr:'Fiqh',emoji:'⚖️',col:'rgba(42,171,238,.1)',tc:'var(--b2)'},
-    {slug:'hadith',ar:'الحديث',fr:'Hadith',emoji:'📜',col:'rgba(0,188,212,.1)',tc:'var(--c2)'},
-    {slug:'tafsir',ar:'التفسير',fr:'Tafsir',emoji:'📖',col:'rgba(229,57,53,.09)',tc:'var(--r1)'},
-    {slug:'manhaj',ar:'المنهج',fr:'Manhaj',emoji:'🛤️',col:'rgba(42,171,238,.1)',tc:'var(--b2)'},
-    {slug:'tazkiya',ar:'التزكية',fr:'Tazkiya',emoji:'🌿',col:'rgba(37,211,102,.1)',tc:'var(--g2)'},
-  ];
-  document.getElementById('home-cats').innerHTML = cats.map(c => `
-    <div class="cat-card" onclick="navigate('bibliotheque')">
-      <div class="cat-ico" style="background:${c.col}">${c.emoji}</div>
-      <p class="cat-ar">${c.ar}</p>
-      <span class="cat-fr">${c.fr}</span>
-    </div>`).join('');
-}
-
-function renderHomeLive() {
-  const live = STATE.lives.filter(l => l.status === 'live');
-  const sec = document.getElementById('home-live-sec');
-  if (!live.length) { sec.style.display = 'none'; return; }
-  sec.style.display = 'block';
-  document.getElementById('home-live-content').innerHTML = live.map(l => `
-    <div class="live-card" onclick="openLiveStream(${l.id},'${s(l.title)}',${l.viewers||0},'${s(l.stream_url||'')}')">
+function renderHomeLive(){
+  const live=S.lives.filter(l=>l.status==='live');
+  const sec=el('home-live-sec');
+  if(!live.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  el('home-live').innerHTML=live.slice(0,2).map(l=>`
+    <div class="live-card" onclick="openLive(${l.id},'${esc(l.title)}',${l.viewers||0},'${esc(l.stream_url||'')}','${esc(l.scholar_name||'')}')">
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px">
-        <span class="badge badge-live" style="display:flex;align-items:center;gap:4px"><div class="live-dot"></div>EN DIRECT</span>
+        <span class="badge badge-live" style="display:inline-flex;align-items:center;gap:3px"><div class="ldot" style="background:#fff;width:5px;height:5px"></div>EN DIRECT</span>
       </div>
-      <p class="lc-title">${l.title}</p>
-      <p class="lc-meta">${l.scholar_name||'Savant'}</p>
-      <p class="lc-viewers">👁 ${fmt(l.viewers||0)} auditeurs</p>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn btn-red btn-sm">▶ Rejoindre</button>
-        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();setReminder()">🔔</button>
+      <p class="live-title">${l.title}</p>
+      <p class="live-meta">${l.scholar_name||''}</p>
+      <p class="live-vw">👁 ${fmt(l.viewers||0)} auditeurs</p>
+      <div style="display:flex;gap:7px;margin-top:9px">
+        <button class="btn btn-r btn-sm">▶ Rejoindre</button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('🔔 Rappel activé !')">🔔</button>
       </div>
     </div>`).join('');
 }
 
-/* ═══ CONTENT ITEM RENDERER ═══ */
-function renderContentItem(item, type) {
-  const isBook = type === 'books', isAudio = type === 'audio' || type === 'audios';
-  const thBg = isBook ? 'rgba(37,211,102,.1)' : isAudio ? 'rgba(42,171,238,.1)' : 'rgba(229,57,53,.09)';
-  const emoji = item.emoji || (isBook ? '📗' : isAudio ? '🎧' : '🎬');
-  const catCol = isBook ? 'badge-green' : isAudio ? 'badge-blue' : 'badge-red';
-  const meta = isBook
-    ? `📄 ${item.pages||'—'} p. · ↓ ${fmt(item.downloads||item.dl||0)}`
-    : isAudio
-    ? `🎵 ${item.episodes||item.eps||'—'} ép. · ⏱ ${item.duration||item.dur||'—'} · ▶ ${fmt(item.plays||0)}`
-    : `⏱ ${item.duration||item.dur||'—'} · 👁 ${fmt(item.views||0)}`;
-  const fk = (isBook?'b':isAudio?'a':'v') + item.id;
-  const isFav = STATE.favs[fk];
-  const mainBtn = isBook
-    ? `<button class="btn btn-green btn-sm" onclick="event.stopPropagation();showToast('↓ Téléchargement : ${s(item.title)}')">↓ PDF</button>`
-    : isAudio
-    ? `<button class="btn btn-blue btn-sm" id="abtn-${item.id}" onclick="event.stopPropagation();playAudio(${item.id},'${s(item.title)}','${s(item.author_name||item.author||'')}',this)">▶ Écouter</button>`
-    : `<button class="btn btn-red btn-sm" onclick="event.stopPropagation();openVideo('${s(item.title)}','${s(item.author_name||item.author||'')}','${item.duration||item.dur||''}',${item.views||0},'${s(item.description||'')}')">▶ Regarder</button>`;
-  return `<div class="content-item" id="ci-${fk}" data-title="${(item.title||'').toLowerCase()}">
-    <div class="ci-thumb" style="background:${thBg}">${emoji}</div>
+function homeTab(type, btn){
+  if(!btn) return;
+  document.querySelectorAll('#home-tabs .tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const data = type==='books'?S.books:type==='audio'?S.audios:S.videos;
+  const c=el('home-content');
+  if(!data.length){c.innerHTML='<div class="empty"><span class="ei">'+(type==='books'?'📚':type==='audio'?'🎧':'🎬')+'</span><h3>Aucun contenu</h3><p>Ajoutez du contenu via votre panel admin</p></div>';return;}
+  c.innerHTML=data.slice(0,4).map(item=>renderCI(item,type)).join('');
+}
+
+function renderHomeCats(){
+  const c=el('home-cats');
+  if(!S.cats.length){c.innerHTML='<div class="empty" style="grid-column:1/-1"><span class="ei">🏷️</span><h3>Aucune catégorie</h3><p>Créez des catégories dans votre panel admin</p></div>';return;}
+  c.innerHTML=S.cats.slice(0,6).map(cat=>{
+    const cols=CAT_COL[cat.color]||CAT_COL.green;
+    return `<div class="catc" onclick="go('library')">
+      <div class="catc-ico" style="background:${cols[0]}">${cat.emoji||'📚'}</div>
+      <p class="catc-ar">${cat.label_ar||'—'}</p>
+      <span class="catc-fr">${cat.label_fr||'—'}</span>
+      <span class="catc-cnt" style="color:${cols[1]}">${cat.content_count||0}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ══ CONTENT ITEM RENDER ══ */
+function renderCI(item, type){
+  const isB=type==='books'||type==='book', isA=type==='audio', isV=type==='video'||type==='videos';
+  const thBg=isB?'rgba(37,211,102,.1)':isA?'rgba(42,171,238,.1)':'rgba(229,57,53,.09)';
+  const emoji=item.emoji||(isB?'📗':isA?'🎧':'🎬');
+  const badgeCls=isB?'bg-g':isA?'bg-b':'bg-r';
+  const fk=(isB?'b':isA?'a':'v')+item.id;
+  const isFav=S.favs[fk]||false;
+  const meta=isB?`📄 ${item.pages||'—'} p. · ↓ ${fmt(item.downloads||0)}`:
+              isA?`🎵 ${item.episodes||'—'} ép. · ⏱ ${item.duration||'—'} · ▶ ${fmt(item.plays||0)}`:
+                  `⏱ ${item.duration||'—'} · 👁 ${fmt(item.views||0)}`;
+  const mainBtn=isB
+    ?`<button class="btn btn-g btn-sm" onclick="event.stopPropagation();dlBook(${item.id},'${esc(item.file_url||item.book_url||'')}','${esc(item.title)}')">↓ ${item.file_type||'PDF'}</button>`
+    :isA
+    ?`<button class="btn btn-b btn-sm" id="pb-${item.id}" onclick="event.stopPropagation();playAudio(${item.id},'${esc(item.title)}','${esc(item.author_name||'')}','${esc(item.file_url||item.audio_url||'')}',this)">▶ Écouter</button>`
+    :`<button class="btn btn-r btn-sm" onclick="event.stopPropagation();openVideo('${esc(item.title)}','${esc(item.author_name||'')}','${item.duration||''}',${item.views||0},'${esc(item.description||'')}','${esc(item.video_url||'')}')">▶ Regarder</button>`;
+  return `<div class="ci" data-title="${(item.title||'').toLowerCase()}" data-cat="${(item.category||'').toLowerCase()}">
+    <div class="ci-th" style="background:${thBg}">${emoji}</div>
     <div class="ci-body">
-      <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px">
-        <span class="badge ${catCol}">${item.category||item.cat||'—'}</span>
-        ${item.is_new||item.isnew ? '<span class="badge badge-red" style="font-size:.55rem">NOUVEAU</span>' : ''}
+      <div class="ci-top">
+        <span class="badge ${badgeCls}">${item.category||'—'}</span>
+        ${item.is_new?'<span class="badge bg-r" style="font-size:.55rem">NOUVEAU</span>':''}
+        ${item.file_type&&isB?`<span class="badge bg-o">${item.file_type.toUpperCase()}</span>`:''}
       </div>
       <p class="ci-title">${item.title||'—'}</p>
+      ${item.author_name?`<div style="font-size:.68rem;color:var(--muted);font-weight:600;margin-bottom:3px">👤 ${item.author_name}</div>`:''}
       <div class="ci-meta">${meta}</div>
-      <div class="ci-actions">
+      <div class="ci-acts">
         ${mainBtn}
-        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();shareContent('${s(item.title)}')">🔗</button>
-        <button class="btn btn-ghost btn-sm" id="fav-${fk}" onclick="event.stopPropagation();toggleFav('${fk}',this)">${isFav?'❤️':'🤍'}</button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();share('${esc(item.title)}')">🔗</button>
+        <button class="btn btn-ghost btn-sm" id="fv-${fk}" onclick="event.stopPropagation();toggleFav('${fk}',this)">${isFav?'❤️':'🤍'}</button>
       </div>
     </div>
   </div>`;
 }
 
-/* ═══ SCHOLARS PAGE ═══ */
-let schCat = 'all';
-function renderScholarsPage(q='') {
-  let list = schCat === 'all' ? STATE.scholars : STATE.scholars.filter(sc => sc.category === schCat);
-  if (q) list = list.filter(sc => (sc.name_fr||'').toLowerCase().includes(q.toLowerCase()) || (sc.name_ar||'').includes(q));
-  const el = document.getElementById('scholars-grid');
-  if (!list.length) { el.innerHTML = `<div class="empty" style="grid-column:1/-1"><span class="empty-ico">🔍</span><h3>Aucun résultat</h3></div>`; return; }
-  el.innerHTML = list.map((sc,i) => `
-    <div class="sc-card" onclick="openScholar('${s(sc.id)}')">
-      <div class="sc-card-top" style="background:${BAR_COLORS[i%6]}"></div>
-      ${sc.is_live ? `<div class="sc-live-pip"><span class="badge badge-live" style="display:flex;align-items:center;gap:3px;font-size:.58rem"><div class="live-dot" style="width:5px;height:5px"></div>LIVE</span></div>` : ''}
-      <div class="sc-av" style="background:${avColor(i)}">${sc.initial||'?'}</div>
-      <p class="sc-name-ar">${sc.name_ar||sc.name||'—'}</p>
-      <p class="sc-name-fr">${sc.name_fr||'—'}</p>
-      <p class="sc-country">🌍 ${sc.country||'—'} · ${sc.era||'—'}</p>
-      <div class="sc-tags">${(sc.tags||[]).slice(0,2).map(t=>`<span class="badge badge-green">${t}</span>`).join('')}</div>
-      <div class="sc-counts">
-        ${sc.books_count?`<span class="badge badge-green">📚 ${sc.books_count}</span>`:''}
-        ${sc.audios_count?`<span class="badge badge-blue">🎧 ${sc.audios_count}</span>`:''}
-        ${sc.videos_count?`<span class="badge badge-red">🎬 ${sc.videos_count}</span>`:''}
+/* ══ SCHOLARS ══ */
+function renderScholars(){
+  const q=el('sch-q')?.value?.toLowerCase()||'';
+  let list=S.scholars;
+  if(S.schCat!=='all') list=list.filter(s=>s.category===S.schCat);
+  if(q) list=list.filter(s=>(s.name_fr||'').toLowerCase().includes(q)||(s.name_ar||'').includes(q));
+  // Chips dynamiques
+  const cats=['all','contemporain','ancien','hadith','rapporteur'];
+  el('sch-chips').innerHTML=cats.map(c=>`<div class="chip${S.schCat===c?' active':''}" data-cat="${c}" onclick="setCat(this)">${c==='all'?'🌐 Tous':c==='contemporain'?'🕌 Contemporains':c==='ancien'?'📜 Anciens':c==='hadith'?'📿 Hadith':'📖 Rapporteurs'}</div>`).join('');
+  const g=el('sch-grid');
+  if(!list.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><span class="ei">🔍</span><h3>Aucun résultat</h3></div>';return;}
+  g.innerHTML=list.map((s,i)=>`
+    <div class="sc" onclick="openScholar('${esc(s.id)}')">
+      <div class="sc-bar" style="background:${BAR_C[i%6]}"></div>
+      ${s.is_live?`<div style="position:absolute;top:7px;right:7px"><span class="badge badge-live" style="font-size:.55rem;display:inline-flex;align-items:center;gap:3px"><div class="ldot" style="background:#fff;width:4px;height:4px"></div>LIVE</span></div>`:''}
+      <div class="sc-av" style="background:${avG(i)}">${s.initial||'?'}</div>
+      <p class="sc-nar">${s.name_ar||'—'}</p>
+      <p class="sc-nfr">${s.name_fr||'—'}</p>
+      <p style="font-size:.62rem;color:var(--muted);margin-bottom:5px">🌍 ${s.country||'—'} · ${s.era||'—'}</p>
+      <div class="sc-cnts">
+        ${s.books_count?`<span class="badge bg-g">📚 ${s.books_count}</span>`:''}
+        ${s.audios_count?`<span class="badge bg-b">🎧 ${s.audios_count}</span>`:''}
+        ${s.videos_count?`<span class="badge bg-r">🎬 ${s.videos_count}</span>`:''}
       </div>
-      <button class="sc-action">Voir ses cours →</button>
+      <button class="sc-btn">Voir ses cours →</button>
     </div>`).join('');
 }
 
-function filterScholars(q) { renderScholarsPage(q); }
-function filterSchCat(cat, btn) {
-  schCat = cat;
-  document.querySelectorAll('#sch-chips .chip').forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
-  renderScholarsPage(document.getElementById('sch-search').value);
+function setCat(btn){
+  S.schCat=btn.dataset.cat;
+  renderScholars();
 }
 
-/* ═══ SCHOLAR PROFILE ═══ */
-async function openScholar(id) {
-  const sc = STATE.scholars.find(x => x.id === id || String(x.id) === String(id));
-  if (!sc) return;
-  STATE.currentScholar = sc;
-  navigate('savant');
-  // Header
-  const idx = STATE.scholars.indexOf(sc);
-  document.getElementById('savant-nav-name').textContent = (sc.name_fr||'').split(' ').slice(0,3).join(' ');
-  const avEl = document.getElementById('sv-av');
-  avEl.textContent = sc.initial||'?';
-  avEl.style.background = avColor(idx);
-  document.getElementById('sv-name-ar').textContent = sc.name_ar||sc.name||'—';
-  document.getElementById('sv-name-fr').textContent = sc.name_fr||'—';
-  // Live pip
-  const pip = document.getElementById('sv-live-pip');
-  const livePanel = document.getElementById('sv-live-panel');
-  if (sc.is_live) {
-    pip.style.display = 'flex'; livePanel.style.display = 'block';
-    document.getElementById('sv-live-title').textContent = sc.live_title||'Cours en direct';
-    document.getElementById('sv-live-meta').textContent = `👁 ${fmt(sc.live_viewers||0)} auditeurs`;
-    // Add live tab
-    let lt = document.getElementById('sv-tab-live');
-    if (!lt) {
-      lt = document.createElement('button');
-      lt.id = 'sv-tab-live'; lt.className = 'tab-btn';
-      lt.style.color = 'var(--r1)';
-      lt.innerHTML = `<div class="live-dot" style="width:6px;height:6px;margin-right:3px"></div>Live`;
-      lt.onclick = function() { savantTab('live-panel', this); };
-      document.getElementById('savant-tabs').prepend(lt);
-    }
-  } else {
-    pip.style.display = 'none'; livePanel.style.display = 'none';
-  }
+/* ══ SCHOLAR PROFILE ══ */
+async function openScholar(id){
+  const sc=S.scholars.find(s=>String(s.id)===String(id));
+  if(!sc) return;
+  S.currentScholar=sc;
+  go('savant');
+  const idx=S.scholars.indexOf(sc);
+  el('sv-nav').textContent=(sc.name_fr||'').split(' ').slice(0,3).join(' ');
+  const av=el('sv-av'); av.textContent=sc.initial||'?'; av.style.background=avG(idx);
+  el('sv-nar').textContent=sc.name_ar||sc.name||'—';
+  el('sv-nfr').textContent=sc.name_fr||'—';
+  // Live badge
+  const lbadge=el('sv-live-badge');
+  lbadge.style.display=sc.is_live?'flex':'none';
   // Tags
-  document.getElementById('sv-tags').innerHTML = (sc.tags||[]).map(t => `<span class="badge badge-green">${t}</span>`).join('');
+  const tags=(sc.tags||[]).map?sc.tags:[];
+  el('sv-tags').innerHTML=tags.slice(0,3).map(t=>`<span class="badge bg-g">${t}</span>`).join('');
   // Counts
-  document.getElementById('sv-counts').innerHTML = `
-    ${sc.books_count?`<span class="badge badge-green" style="font-size:.72rem">📚 ${sc.books_count} livres</span>`:''}
-    ${sc.audios_count?`<span class="badge badge-blue" style="font-size:.72rem">🎧 ${sc.audios_count} cours</span>`:''}
-    ${sc.videos_count?`<span class="badge badge-red" style="font-size:.72rem">🎬 ${sc.videos_count} vidéos</span>`:''}`;
+  el('sv-cnts').innerHTML=`
+    ${sc.books_count?`<span class="badge bg-g">📚 ${sc.books_count} livres</span>`:''}
+    ${sc.audios_count?`<span class="badge bg-b">🎧 ${sc.audios_count} cours</span>`:''}
+    ${sc.videos_count?`<span class="badge bg-r">🎬 ${sc.videos_count} vidéos</span>`:''}`;
   // Actions
-  const isFollowed = JSON.parse(localStorage.getItem('ab_follows')||'{}')[id];
-  document.getElementById('sv-actions').innerHTML = `
-    <button class="btn btn-green btn-sm" id="sv-follow-btn" onclick="toggleFollow('${id}',this)">${isFollowed?'✅ Suivi':'➕ Suivre'}</button>
-    ${sc.is_live?`<button class="btn btn-red btn-sm" onclick="openLiveStream(null,'${s(sc.live_title||'')}',${sc.live_viewers||0},'')">📡 Live</button>`:''}
-    <button class="btn btn-ghost btn-sm" onclick="shareScholar()">🔗</button>`;
+  const isF=S.follows[sc.id]||false;
+  el('sv-acts').innerHTML=`
+    <button class="btn btn-g btn-sm" id="sv-follow" onclick="toggleFollow('${sc.id}',this)">${isF?'✅ Suivi':'➕ Suivre'}</button>
+    ${sc.is_live?`<button class="btn btn-r btn-sm" onclick="openLive(null,'${esc(sc.live_title||'')}',${sc.live_viewers||0},'${esc(sc.live_url||'')}','${esc(sc.name_fr||'')}')">📡 Live</button>`:''}
+    <button class="btn btn-ghost btn-sm" onclick="share('${esc(sc.name_fr||'')}')">🔗</button>`;
   // Bio
-  document.getElementById('sv-bio-text').textContent = sc.bio || `Biographie de ${sc.name_fr||sc.name} non disponible.`;
-  // Load content
-  loadScholarContent(id);
-}
-
-async function loadScholarContent(id) {
-  let books = STATE.books.filter(b => b.scholar_id === id);
-  let audios = STATE.audios.filter(a => a.scholar_id === id);
-  let videos = STATE.videos.filter(v => v.scholar_id === id);
-  // If empty try DB
-  if (!books.length && !audios.length && !videos.length) {
-    try {
-      const [b,a,v] = await Promise.all([
-        DB.from('books').select('*').eq('scholar_id', id),
-        DB.from('audios').select('*').eq('scholar_id', id),
-        DB.from('videos').select('*').eq('scholar_id', id),
+  el('sv-bio-t').textContent=sc.bio||`Biographie de ${sc.name_fr||sc.name} non disponible.`;
+  // Live panel
+  const lp=el('sv-live-panel');
+  if(sc.is_live){
+    lp.style.display='block';
+    lp.innerHTML=`<div class="live-card">
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:7px"><span class="badge badge-live" style="display:inline-flex;align-items:center;gap:3px"><div class="ldot" style="background:#fff;width:5px;height:5px"></div>EN DIRECT</span></div>
+      <p class="live-title">${sc.live_title||'Cours en direct'}</p>
+      <p class="live-meta">${sc.name_fr||''}</p>
+      <p class="live-vw">👁 ${fmt(sc.live_viewers||0)} auditeurs</p>
+      <div style="display:flex;gap:7px;margin-top:9px">
+        <button class="btn btn-r btn-sm" onclick="openLive(null,'${esc(sc.live_title||'')}',${sc.live_viewers||0},'${esc(sc.live_url||'')}','${esc(sc.name_fr||'')}')">▶ Rejoindre le Live</button>
+        <button class="btn btn-ghost btn-sm" onclick="toast('🔔 Rappel activé !')">🔔 Rappel</button>
+      </div>
+    </div>`;
+  }else lp.style.display='none';
+  // Content
+  let books=S.books.filter(b=>String(b.scholar_id)===String(id));
+  let audios=S.audios.filter(a=>String(a.scholar_id)===String(id));
+  let videos=S.videos.filter(v=>String(v.scholar_id)===String(id));
+  if(!books.length&&!audios.length&&!videos.length){
+    try{
+      const [b,a,v]=await Promise.all([
+        DB.from('books').select('*').eq('scholar_id',id),
+        DB.from('audios').select('*').eq('scholar_id',id),
+        DB.from('videos').select('*').eq('scholar_id',id),
       ]);
-      books = b.data||[]; audios = a.data||[]; videos = v.data||[];
-    } catch {}
+      books=b.data||[]; audios=a.data||[]; videos=v.data||[];
+    }catch{}
   }
-  document.getElementById('sv-cnt-books').textContent = books.length;
-  document.getElementById('sv-cnt-audio').textContent = audios.length;
-  document.getElementById('sv-cnt-video').textContent = videos.length;
-  const bEl = document.getElementById('sv-books');
-  const aEl = document.getElementById('sv-audio');
-  const vEl = document.getElementById('sv-video');
-  bEl.innerHTML = books.length ? books.map(b => renderContentItem(b,'books')).join('') : `<div class="empty"><span class="empty-ico">📚</span><h3>Aucun livre</h3><p>Contenu à venir</p></div>`;
-  aEl.innerHTML = audios.length ? audios.map(a => renderContentItem(a,'audio')).join('') : `<div class="empty"><span class="empty-ico">🎧</span><h3>Aucun cours audio</h3><p>Contenu à venir</p></div>`;
-  vEl.innerHTML = videos.length ? videos.map(v => renderContentItem(v,'video')).join('') : `<div class="empty"><span class="empty-ico">🎬</span><h3>Aucune vidéo</h3><p>Contenu à venir</p></div>`;
+  el('sv-nb').textContent=books.length;
+  el('sv-na').textContent=audios.length;
+  el('sv-nv').textContent=videos.length;
+  el('sv-books').innerHTML=books.length?books.map(b=>renderCI(b,'books')).join(''):'<div class="empty"><span class="ei">📚</span><h3>Aucun livre</h3><p>Pas encore de livre pour ce savant</p></div>';
+  el('sv-audio').innerHTML=audios.length?audios.map(a=>renderCI(a,'audio')).join(''):'<div class="empty"><span class="ei">🎧</span><h3>Aucun cours audio</h3><p>Pas encore de cours audio</p></div>';
+  el('sv-video').innerHTML=videos.length?videos.map(v=>renderCI(v,'video')).join(''):'<div class="empty"><span class="ei">🎬</span><h3>Aucune vidéo</h3><p>Pas encore de vidéo</p></div>';
 }
-
-function savantTab(name, btn) {
-  const ids = ['sv-books','sv-audio','sv-video','sv-bio'];
-  ids.forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove('active'); });
-  document.querySelectorAll('#savant-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-  const target = document.getElementById('sv-'+name);
-  if (target) target.classList.add('active');
+function svTab(n,btn){
+  ['sv-books','sv-audio','sv-video','sv-bio'].forEach(id=>{const e=el(id);if(e)e.classList.remove('active');});
+  document.querySelectorAll('#sv-tabs .tab').forEach(b=>b.classList.remove('active'));
+  const e=el('sv-'+n); if(e) e.classList.add('active');
   btn.classList.add('active');
 }
-
-function filterSavantContent(q) {
-  document.querySelectorAll('#sv-books .content-item, #sv-audio .content-item, #sv-video .content-item').forEach(el => {
-    el.style.display = (el.dataset.title||'').includes(q.toLowerCase()) ? '' : 'none';
-  });
+function svFilter(q){
+  document.querySelectorAll('#sv-books .ci,#sv-audio .ci,#sv-video .ci').forEach(e=>{e.style.display=(e.dataset.title||'').includes(q.toLowerCase())?'':'none';});
 }
 
-/* ═══ LIBRARY ═══ */
-let libType = 'books';
-function renderLib(type) {
-  if (type) libType = type;
-  const data = libType === 'books' ? STATE.books : libType === 'audio' ? STATE.audios : STATE.videos;
-  document.getElementById('lb-cnt-books').textContent = STATE.books.length;
-  document.getElementById('lb-cnt-audio').textContent = STATE.audios.length;
-  document.getElementById('lb-cnt-video').textContent = STATE.videos.length;
-  // Cats
-  const cats = [...new Set(data.map(d => d.category||d.cat).filter(Boolean))];
-  document.getElementById('lib-cats').innerHTML =
-    `<div class="chip active" onclick="libFilterCat('all',this)">Tous</div>` +
-    cats.map(c => `<div class="chip" onclick="libFilterCat('${c}',this)">${c}</div>`).join('');
-  renderLibContent(data);
+/* ══ LIBRARY ══ */
+function renderLib(){
+  const q=el('lib-q')?.value?.toLowerCase()||'';
+  const data=S.libType==='books'?S.books:S.libType==='audio'?S.audios:S.videos;
+  el('lb-nb').textContent=S.books.length;
+  el('lb-na').textContent=S.audios.length;
+  el('lb-nv').textContent=S.videos.length;
+  // Chips catégories
+  const cats=[...new Set(data.map(d=>d.category).filter(Boolean))];
+  el('lib-chips').innerHTML=`<div class="chip active" onclick="libCat('',this)">Tous</div>`+cats.map(c=>`<div class="chip" onclick="libCat('${c}',this)">${c}</div>`).join('');
+  const filtered=q?data.filter(d=>(d.title||'').toLowerCase().includes(q)):data;
+  const c=el('lib-content');
+  if(!filtered.length){c.innerHTML='<div class="empty"><span class="ei">'+(S.libType==='books'?'📚':S.libType==='audio'?'🎧':'🎬')+'</span><h3>Aucun contenu</h3><p>Ajoutez du contenu via votre panel admin</p></div>';return;}
+  c.innerHTML=filtered.map(item=>renderCI(item,S.libType)).join('');
 }
-
-function renderLibContent(data) {
-  ['books','audio','video'].forEach(t => {
-    const el = document.getElementById('lib-'+t);
-    if (!el) return;
-    el.classList.remove('active');
-  });
-  const el = document.getElementById('lib-'+libType);
-  if (el) { el.classList.add('active'); el.innerHTML = data.map(item => renderContentItem(item, libType)).join(''); }
-}
-
-function libTab(type, btn) {
-  libType = type;
-  document.querySelectorAll('#lib-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+function libTab(t,btn){
+  S.libType=t;
+  document.querySelectorAll('#lib-tabs .tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  renderLib(type);
+  renderLib();
 }
-
-function libFilterCat(cat, btn) {
-  document.querySelectorAll('#lib-cats .chip').forEach(c => c.classList.remove('active'));
+function libCat(cat,btn){
+  document.querySelectorAll('#lib-chips .chip').forEach(c=>c.classList.remove('active'));
   btn.classList.add('active');
-  const data = libType === 'books' ? STATE.books : libType === 'audio' ? STATE.audios : STATE.videos;
-  const filtered = cat === 'all' ? data : data.filter(d => (d.category||d.cat) === cat);
-  renderLibContent(filtered);
+  const data=S.libType==='books'?S.books:S.libType==='audio'?S.audios:S.videos;
+  const filtered=cat?data.filter(d=>d.category===cat):data;
+  const c=el('lib-content');
+  c.innerHTML=filtered.map(item=>renderCI(item,S.libType)).join('')||'<div class="empty"><span class="ei">🔍</span><h3>Aucun résultat</h3></div>';
 }
 
-function filterLib(q) {
-  document.querySelectorAll('#lib-books .content-item, #lib-audio .content-item, #lib-video .content-item').forEach(el => {
-    el.style.display = (el.dataset.title||'').includes(q.toLowerCase()) ? '' : 'none';
-  });
+/* ══ LIVE ══ */
+function renderLive(){
+  const live=S.lives.filter(l=>l.status==='live');
+  const upc=S.lives.filter(l=>l.status==='upcoming');
+  const ln=el('live-now');
+  if(!live.length){ln.innerHTML='<div style="background:var(--white);border-radius:var(--r);border:1.5px solid var(--line);padding:14px;margin-bottom:14px;text-align:center"><p style="font-size:.82rem;color:var(--muted);font-weight:600">📅 Aucun live en ce moment. Consultez les sessions planifiées ci-dessous.</p></div>';}
+  else{ln.innerHTML=live.map(l=>`
+    <div class="live-card" onclick="openLive(${l.id},'${esc(l.title)}',${l.viewers||0},'${esc(l.stream_url||'')}','${esc(l.scholar_name||'')}')">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px">
+        <span class="badge badge-live" style="display:inline-flex;align-items:center;gap:3px"><div class="ldot" style="background:#fff;width:5px;height:5px"></div>EN DIRECT</span>
+      </div>
+      <p class="live-title">${l.title}</p>
+      <p class="live-meta">${l.scholar_name||''}</p>
+      <p class="live-vw">👁 ${fmt(l.viewers||0)} auditeurs en ligne</p>
+      <div style="display:flex;gap:7px;margin-top:9px">
+        <button class="btn btn-r btn-sm">▶ Rejoindre</button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('🔔 Rappel activé !')">🔔</button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();share('${esc(l.title)}')">🔗</button>
+      </div>
+    </div>`).join('');}
+  const uc=el('upcoming');
+  if(!upc.length){uc.innerHTML='<div class="empty"><span class="ei">📅</span><h3>Aucune session planifiée</h3><p>Ajoutez des sessions dans votre panel admin</p></div>';return;}
+  const DCOLS=[{bg:'rgba(37,211,102,.1)',d:'var(--g1)',m:'var(--g2)'},{bg:'rgba(42,171,238,.1)',d:'var(--b1)',m:'var(--b2)'},{bg:'rgba(229,57,53,.09)',d:'var(--r1)',m:'var(--r2)'}];
+  uc.innerHTML=upc.map((l,i)=>{
+    const dc=DCOLS[i%3];
+    const d=l.scheduled_at?new Date(l.scheduled_at):null;
+    const day=d?d.getDate():'—', mon=d?d.toLocaleDateString('fr',{month:'short'}).toUpperCase():'—', t=d?d.toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'}):'—';
+    return `<div class="upc">
+      <div class="upc-date" style="background:${dc.bg}">
+        <span class="upc-day" style="color:${dc.d}">${day}</span>
+        <span class="upc-mon" style="color:${dc.m}">${mon}</span>
+      </div>
+      <div class="upc-info">
+        <p class="upc-title">${l.title}</p>
+        <p class="upc-sch">👨‍🏫 ${l.scholar_name||'—'}</p>
+        <p class="upc-time">🕗 ${t}</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <button class="btn btn-ghost btn-sm" onclick="notifToggle(this)">🔔</button>
+        <button class="btn btn-ghost btn-sm" onclick="share('${esc(l.title)}')">🔗</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function notifToggle(btn){btn.textContent=btn.textContent==='🔔'?'✅':'🔔'; toast(btn.textContent==='✅'?'🔔 Rappel activé !':'🔕 Rappel annulé');}
+function openLive(id,title,viewers,url,sch){
+  el('ml-t').textContent=title||'En Direct';
+  el('ml-stitle').textContent=title||'—';
+  el('ml-vw').textContent=fmt(viewers||0)+' auditeurs';
+  const ext=el('ml-ext'), wrap=el('ml-ext-wrap');
+  if(url&&url!=='null'&&url.startsWith('http')){ext.href=url;wrap.style.display='block';}
+  else wrap.style.display='none';
+  el('mo-live').classList.add('open');
+}
+function sendMsg(){
+  const inp=el('lc-inp'), msg=inp.value.trim(); if(!msg)return;
+  const name=S.profile?.full_name||S.user?.user_metadata?.full_name||'Visiteur';
+  const div=document.createElement('div'); div.className='lc-msg';
+  div.innerHTML=`<strong>${name}</strong> ${msg}`;
+  const list=el('lc-list'); list.appendChild(div); list.scrollTop=list.scrollHeight;
+  inp.value='';
 }
 
-/* ═══ LIVE PAGE ═══ */
-function renderLivePage() {
-  const live = STATE.lives.filter(l => l.status === 'live');
-  const upcoming = STATE.lives.filter(l => l.status === 'upcoming');
-  const COLS = [
-    {bg:'rgba(37,211,102,.1)',d:'var(--g1)',m:'var(--g2)'},
-    {bg:'rgba(42,171,238,.1)',d:'var(--b1)',m:'var(--b2)'},
-    {bg:'rgba(229,57,53,.09)',d:'var(--r1)',m:'var(--r2)'},
-  ];
-  document.getElementById('live-now-section').innerHTML = live.length
-    ? live.map(l => `
-      <div class="live-card" onclick="openLiveStream(${l.id},'${s(l.title)}',${l.viewers||0},'${s(l.stream_url||'')}')">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px">
-          <span class="badge badge-live" style="display:flex;align-items:center;gap:4px"><div class="live-dot"></div>EN DIRECT</span>
-        </div>
-        <p class="lc-title">${l.title}</p>
-        <p class="lc-meta">${l.scholar_name||'Savant'}</p>
-        <p class="lc-viewers">👁 ${fmt(l.viewers||0)} auditeurs en ligne</p>
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button class="btn btn-red">▶ Rejoindre</button>
-          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();setReminder()">🔔 Rappel</button>
-          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();shareContent('${s(l.title)}')">🔗</button>
-        </div>
-      </div>`) .join('')
-    : `<div class="live-card" style="border-color:rgba(42,171,238,.25)"><p style="font-size:.82rem;color:var(--muted);font-weight:600">Aucun live en ce moment. Consultez les prochaines sessions ci-dessous.</p></div>`;
-
-  document.getElementById('upcoming-sessions').innerHTML = upcoming.length
-    ? upcoming.map((l,i) => {
-        const c = COLS[i%3];
-        const d = l.scheduled_at ? new Date(l.scheduled_at) : null;
-        const day = d ? d.getDate() : '—';
-        const mon = d ? d.toLocaleDateString('fr', {month:'short'}).toUpperCase() : '—';
-        const time = d ? d.toLocaleTimeString('fr', {hour:'2-digit',minute:'2-digit'}) : '—';
-        return `<div class="upcoming-card">
-          <div class="uc-date" style="background:${c.bg}">
-            <span class="uc-day" style="color:${c.d}">${day}</span>
-            <span class="uc-mon" style="color:${c.m}">${mon}</span>
-          </div>
-          <div class="uc-info">
-            <p class="uc-title">${l.title}</p>
-            <p class="uc-sch">👨‍🏫 ${l.scholar_name||'—'}</p>
-            <p class="uc-time">🕗 ${time}</p>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="toggleNotifBtn(this)">🔔</button>
-        </div>`;
-      }).join('')
-    : `<div class="empty"><span class="empty-ico">📅</span><h3>Aucune session planifiée</h3><p>Revenez bientôt</p></div>`;
-}
-
-function openLiveStream(id, title, viewers, url) {
-  document.getElementById('ml-title').textContent = title || 'En Direct';
-  document.getElementById('ml-stream-title').textContent = title || '—';
-  document.getElementById('ml-viewers').textContent = fmt(viewers||0) + ' auditeurs';
-  const extLink = document.getElementById('ml-ext-link');
-  if (url && url !== 'null' && url.startsWith('http')) {
-    extLink.href = url; extLink.style.display = 'flex';
-  } else {
-    extLink.style.display = 'none';
-  }
-  document.getElementById('modal-live').classList.add('open');
-}
-
-function joinLive() {
-  const sc = STATE.currentScholar;
-  const live = STATE.lives.find(l => l.status === 'live' && l.scholar_id === (sc?.id));
-  openLiveStream(null, sc?.live_title||'Live', sc?.live_viewers||0, '');
-}
-
-function sendLiveMsg() {
-  const inp = document.getElementById('live-chat-input');
-  const msg = inp.value.trim();
-  if (!msg) return;
-  const chat = document.getElementById('live-chat');
-  const name = STATE.profile?.full_name || 'Visiteur';
-  const div = document.createElement('div');
-  div.className = 'live-msg';
-  div.innerHTML = `<strong>${name}</strong> ${msg}`;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-  inp.value = '';
-}
-
-/* ═══ AUDIO PLAYER ═══ */
-const AP = {
-  playing: false, cur: 0, dur: 1920, timer: null, cardId: null,
-  load(id, title, author, cardId) {
-    if (this.cardId) {
-      const old = document.getElementById('abtn-'+this.cardId);
-      if (old) old.textContent = '▶ Écouter';
-      const oci = document.getElementById('ci-a'+this.cardId);
-      if (oci) oci.classList.remove('playing-ring');
-    }
-    this.cardId = id;
-    document.getElementById('ap-title').textContent = title.substring(0,50);
-    document.getElementById('ap-auth').textContent = author;
-    document.getElementById('ap-dur').textContent = '32:00';
-    document.getElementById('ap-fill').style.width = '0%';
-    document.getElementById('ap-cur').textContent = '0:00';
-    document.getElementById('audio-player').classList.add('open');
-    this.cur = 0; this.playing = true;
-    document.getElementById('ap-play-btn').textContent = '⏸';
-    const ci = document.getElementById('ci-a'+id);
-    if (ci) ci.classList.add('playing-ring');
+/* ══ AUDIO PLAYER ══ */
+const AP={
+  playing:false, cur:0, dur:3840, timer:null, id:null,
+  load(id,title,author,url,cardId){
+    if(this.id){const ob=el('pb-'+this.id);if(ob)ob.textContent='▶ Écouter';}
+    this.id=id; this.cur=0;
+    el('ap-t').textContent=title.substring(0,50);
+    el('ap-a').textContent=author||'—';
+    el('ap-dur').textContent='64:00';
+    el('ap-fill').style.width='0%';
+    el('ap-btn').textContent='⏸';
+    el('ap').classList.add('open');
+    this.playing=true;
     clearInterval(this.timer);
-    this.timer = setInterval(() => {
-      if (!this.playing) return;
+    this.timer=setInterval(()=>{
+      if(!this.playing)return;
       this.cur++;
-      const pct = (this.cur/this.dur*100).toFixed(1);
-      document.getElementById('ap-fill').style.width = pct+'%';
-      document.getElementById('ap-cur').textContent = fmtTime(this.cur);
-      if (this.cur >= this.dur) { clearInterval(this.timer); showToast('✅ Lecture terminée'); }
-    }, 1000);
+      el('ap-fill').style.width=(this.cur/this.dur*100).toFixed(1)+'%';
+      el('ap-cur').textContent=fmtT(this.cur);
+      if(this.cur>=this.dur){clearInterval(this.timer);toast('✅ Lecture terminée');}
+    },1000);
   },
-  toggle() {
-    this.playing = !this.playing;
-    document.getElementById('ap-play-btn').textContent = this.playing ? '⏸' : '▶';
-  },
-  seek(e) {
-    const bar = document.getElementById('ap-bar');
-    const pct = Math.max(0, Math.min(1, e.offsetX/bar.offsetWidth));
-    this.cur = Math.floor(pct*this.dur);
-    document.getElementById('ap-fill').style.width = (pct*100).toFixed(1)+'%';
-    document.getElementById('ap-cur').textContent = fmtTime(this.cur);
-  },
-  prev() { this.cur = 0; document.getElementById('ap-fill').style.width='0%'; document.getElementById('ap-cur').textContent='0:00'; },
-  next() { this.close(); showToast('⏭ Épisode suivant'); },
-  close() {
-    clearInterval(this.timer); this.playing = false;
-    document.getElementById('audio-player').classList.remove('open');
-    document.getElementById('ap-play-btn').textContent = '▶';
-    if (this.cardId) {
-      const btn = document.getElementById('abtn-'+this.cardId);
-      if (btn) btn.textContent = '▶ Écouter';
-      const ci = document.getElementById('ci-a'+this.cardId);
-      if (ci) ci.classList.remove('playing-ring');
-    }
-  }
+  toggle(){this.playing=!this.playing; el('ap-btn').textContent=this.playing?'⏸':'▶';},
+  seek(e){const bar=el('ap').querySelector('.ap-bar');const p=Math.max(0,Math.min(1,e.offsetX/bar.offsetWidth));this.cur=Math.floor(p*this.dur);el('ap-fill').style.width=(p*100).toFixed(1)+'%';el('ap-cur').textContent=fmtT(this.cur);},
+  step(s){this.cur=Math.max(0,Math.min(this.dur,this.cur+s));el('ap-fill').style.width=(this.cur/this.dur*100).toFixed(1)+'%';el('ap-cur').textContent=fmtT(this.cur);toast((s>0?'+':'')+s+'s');},
+  close(){clearInterval(this.timer);this.playing=false;el('ap').classList.remove('open');el('ap-btn').textContent='▶';if(this.id){const ob=el('pb-'+this.id);if(ob)ob.textContent='▶ Écouter';}}
 };
 
-function playAudio(id, title, author, btn) {
-  if (AP.cardId === id && AP.playing) { AP.toggle(); btn.textContent='▶ Écouter'; return; }
-  AP.load(id, title, author, id);
-  btn.textContent = '⏸ Pause';
-  showToast('▶ ' + title.substring(0,30) + '…');
+function playAudio(id,title,author,url,btn){
+  if(AP.id===id&&AP.playing){AP.toggle();btn.textContent='▶ Écouter';return;}
+  AP.load(id,title,author,url,id);
+  btn.textContent='⏸ Pause';
+  toast('▶ '+title.substring(0,35)+'…');
+  // Incrémenter le compteur
+  try{DB.rpc('inc_plays',{aid:id});}catch{}
 }
 
-/* ═══ VIDEO ═══ */
-function openVideo(title, author, dur, views, desc) {
-  document.getElementById('mv-title').textContent = title;
-  document.getElementById('mv-meta').textContent = `👨‍🏫 ${author} · ⏱ ${dur} · 👁 ${fmt(views)} vues`;
-  document.getElementById('mv-desc').textContent = desc || 'Cliquez sur l\'écran pour lancer la lecture.';
-  document.getElementById('modal-video').classList.add('open');
+/* ══ VIDEO ══ */
+function openVideo(title,author,dur,views,desc,url){
+  el('mv-t').textContent=title;
+  el('mv-meta').textContent=`👤 ${author||'—'} · ⏱ ${dur||'—'} · 👁 ${fmt(views||0)} vues`;
+  el('mv-desc').textContent=desc||'Cliquez sur l\'écran pour lancer la lecture.';
+  const urlW=el('mv-url-wrap'), urlL=el('mv-url-link');
+  if(url&&url.startsWith('http')){urlW.style.display='block'; urlL.href=url;}
+  else urlW.style.display='none';
+  el('mo-video').classList.add('open');
+  try{DB.rpc('inc_views',{vid:0});}catch{}
+}
+function mvPlay(){toast('▶ Lecture lancée !');}
+
+/* ══ DOWNLOAD BOOK ══ */
+function dlBook(id,url,title){
+  if(url&&url.startsWith('http')){window.open(url,'_blank');}
+  else toast('↓ Téléchargement de : '+title.substring(0,30)+'…');
+  try{DB.rpc('inc_downloads',{bid:id});}catch{}
 }
 
-/* ═══ FAVORITES ═══ */
-function toggleFav(key, btn) {
-  STATE.favs[key] = !STATE.favs[key];
-  localStorage.setItem('ab_favs', JSON.stringify(STATE.favs));
-  btn.textContent = STATE.favs[key] ? '❤️' : '🤍';
-  showToast(STATE.favs[key] ? '❤️ Ajouté aux favoris' : '💔 Retiré des favoris');
+/* ══ FAV / FOLLOW ══ */
+function toggleFav(key,btn){
+  S.favs[key]=!S.favs[key];
+  localStorage.setItem('ab_favs',JSON.stringify(S.favs));
+  btn.textContent=S.favs[key]?'❤️':'🤍';
+  toast(S.favs[key]?'❤️ Ajouté aux favoris':'💔 Retiré des favoris');
+}
+function toggleFollow(id,btn){
+  S.follows[id]=!S.follows[id];
+  localStorage.setItem('ab_follows',JSON.stringify(S.follows));
+  btn.textContent=S.follows[id]?'✅ Suivi':'➕ Suivre';
+  toast(S.follows[id]?'✅ Vous suivez ce savant':'❌ Suivi retiré');
 }
 
-/* ═══ FOLLOW ═══ */
-function toggleFollow(id, btn) {
-  const f = JSON.parse(localStorage.getItem('ab_follows')||'{}');
-  f[id] = !f[id];
-  localStorage.setItem('ab_follows', JSON.stringify(f));
-  btn.textContent = f[id] ? '✅ Suivi' : '➕ Suivre';
-  showToast(f[id] ? '✅ Vous suivez ce savant' : '❌ Suivi retiré');
+/* ══ PROFIL ══ */
+function renderProfile(){
+  if(!S.user){go('login');return;}
+  const name=S.profile?.full_name||S.user.user_metadata?.full_name||'Utilisateur';
+  el('pf-av').textContent=name.charAt(0).toUpperCase();
+  el('pf-name').textContent=name;
+  el('pf-email').textContent=S.user.email||'—';
+  el('pf-favs').textContent=Object.values(S.favs).filter(Boolean).length;
+  el('pf-follows').textContent=Object.values(S.follows).filter(Boolean).length;
+  el('admin-panel').style.display=S.isAdmin?'block':'none';
+  // Favoris list
+  const favKeys=Object.entries(S.favs).filter(([,v])=>v).map(([k])=>k);
+  const fl=el('pf-favs-list');
+  if(!favKeys.length){fl.innerHTML='<div class="empty"><span class="ei">❤️</span><h3>Aucun favori</h3><p>Aimez des contenus pour les retrouver ici</p></div>';return;}
+  const items=favKeys.map(k=>{
+    const t=k[0]==='b'?'books':k[0]==='a'?'audio':'video';
+    const id=parseInt(k.substring(1));
+    const arr=t==='books'?S.books:t==='audio'?S.audios:S.videos;
+    const item=arr.find(d=>d.id===id);
+    return item?renderCI(item,t):'';
+  }).filter(Boolean);
+  fl.innerHTML=items.join('')||'<div class="empty"><span class="ei">❤️</span><h3>Aucun favori</h3></div>';
+  // Admin content list
+  if(S.isAdmin) loadAdminContentList();
 }
 
-/* ═══ SHARE ═══ */
-function shareContent(title) {
-  const url = window.location.href;
-  if (navigator.share) { navigator.share({title, url}); }
-  else if (navigator.clipboard) { navigator.clipboard.writeText(url); showToast('🔗 Lien copié !'); }
-  else showToast('🔗 Lien copié !');
-}
-function shareScholar() { shareContent(STATE.currentScholar?.name_fr || 'Al Basîrah'); }
-
-/* ═══ REMINDER ═══ */
-function setReminder() { showToast('🔔 Rappel activé !'); }
-function toggleNotifBtn(btn) {
-  const active = btn.textContent === '✅';
-  btn.textContent = active ? '🔔' : '✅';
-  showToast(active ? '🔕 Rappel annulé' : '🔔 Rappel activé !');
-}
-
-/* ═══ PROFIL ═══ */
-async function loadProfil() {
-  if (!STATE.user) return;
-  try {
-    const { data } = await DB.from('profiles').select('*').eq('id', STATE.user.id).single();
-    if (data) { STATE.profile = data; STATE.isAdmin = data.is_admin || false; }
-  } catch {}
+async function loadAdminContentList(){
+  const c=el('admin-content-list');
+  c.innerHTML='<div class="spin"></div>';
+  try{
+    const [b,a,v,sc,lv]=await Promise.all([
+      DB.from('books').select('id,title,category').order('created_at',{ascending:false}).limit(5),
+      DB.from('audios').select('id,title,category').order('created_at',{ascending:false}).limit(5),
+      DB.from('videos').select('id,title,category').order('created_at',{ascending:false}).limit(5),
+      DB.from('scholars').select('id,name_fr').order('name_fr').limit(10),
+      DB.from('live_sessions').select('id,title,status').order('created_at',{ascending:false}).limit(5),
+    ]);
+    const render=(data,emoji,type)=>data?.map(d=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)"><span style="font-size:.78rem;font-weight:700;color:var(--txt)">${emoji} ${d.title||d.name_fr||'—'}</span><button class="btn btn-ghost btn-sm" style="font-size:.65rem" onclick="delItem('${type}',${d.id},this)">🗑️</button></div>`).join('')||'<p style="font-size:.76rem;color:var(--muted)">Vide</p>';
+    c.innerHTML=`
+      <p style="font-size:.75rem;font-weight:800;color:var(--sub);margin-bottom:8px">Derniers ajouts :</p>
+      ${render(sc.data,'👨‍🏫','scholars')}
+      ${render(b.data,'📗','books')}
+      ${render(a.data,'🎧','audios')}
+      ${render(v.data,'🎬','videos')}
+      ${render(lv.data,'📡','live_sessions')}`;
+  }catch(e){c.innerHTML=`<p style="font-size:.78rem;color:var(--r1)">Erreur : ${e.message}</p>`;}
 }
 
-function renderProfil() {
-  if (!STATE.user) { navigate('connexion'); return; }
-  const name = STATE.profile?.full_name || STATE.user.user_metadata?.full_name || 'Utilisateur';
-  document.getElementById('profil-av').textContent = name.charAt(0).toUpperCase();
-  document.getElementById('profil-name').textContent = name;
-  document.getElementById('profil-email').textContent = STATE.user.email;
-  const favCount = Object.values(STATE.favs).filter(Boolean).length;
-  const followCount = Object.values(JSON.parse(localStorage.getItem('ab_follows')||'{}')).filter(Boolean).length;
-  document.getElementById('ps-favs').textContent = favCount;
-  document.getElementById('ps-follows').textContent = followCount;
-  // Admin section
-  if (STATE.isAdmin) document.getElementById('admin-section').style.display = 'block';
-  else document.getElementById('admin-section').style.display = 'none';
-  // Favs list
-  const favKeys = Object.entries(STATE.favs).filter(([,v])=>v).map(([k])=>k);
-  if (favKeys.length) {
-    const items = favKeys.map(k => {
-      const type = k[0]==='b'?'books':k[0]==='a'?'audio':'video';
-      const id = parseInt(k.substring(1));
-      const data = STATE[type==='books'?'books':type==='audio'?'audios':'videos'];
-      const item = data.find(d=>d.id===id);
-      return item ? renderContentItem(item, type) : '';
-    }).filter(Boolean);
-    document.getElementById('profil-favs').innerHTML = items.join('') || '<div class="empty"><span class="empty-ico">❤️</span><h3>Aucun favori</h3></div>';
+async function delItem(table,id,btn){
+  if(!confirm('Supprimer cet élément ?'))return;
+  try{
+    const {error}=await DB.from(table).delete().eq('id',id);
+    if(error)throw error;
+    btn.closest('div').remove();
+    await loadAll();
+    toast('🗑️ Supprimé');
+  }catch(e){toast('❌ '+e.message);}
+}
+
+/* ══ ADMIN ADD ══ */
+function fileChosen(lblId,inp){
+  const lbl=el(lblId);
+  if(inp.files?.length){lbl.textContent='✅ '+inp.files[0].name; lbl.classList.add('has-file');}
+  else{lbl.classList.remove('has-file');}
+}
+
+async function uploadFile(inp, bucket){
+  if(!inp.files?.length) return null;
+  const file=inp.files[0];
+  const ext=file.name.split('.').pop();
+  const path=`${Date.now()}-${Math.random().toString(36).substring(2)}.${ext}`;
+  const {data,error}=await DB.storage.from(bucket).upload(path,file,{upsert:false});
+  if(error) throw error;
+  const {data:urlData}=DB.storage.from(bucket).getPublicUrl(path);
+  return urlData.publicUrl;
+}
+
+async function addScholar(){
+  const nar=el('s-nar').value.trim(), nfr=el('s-nfr').value.trim(), init=el('s-init').value.trim();
+  if(!nar||!nfr||!init){toast('⚠️ Nom arabe, français et initiale sont requis');return;}
+  const id=nfr.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'').substring(0,50)+'-'+Date.now().toString(36);
+  const tags=el('s-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  try{
+    const {error}=await DB.from('scholars').insert({id,name_ar:nar,name_fr:nfr,initial:init,country:el('s-country').value,era:el('s-era').value,category:el('s-cat').value,tags,bio:el('s-bio').value});
+    if(error)throw error;
+    toast('✅ Savant ajouté !');
+    ['s-nar','s-nfr','s-init','s-country','s-era','s-tags','s-bio'].forEach(id=>{const e=el(id);if(e)e.value='';});
+    await loadAll(); renderScholars();
+  }catch(e){toast('❌ '+e.message);}
+}
+
+async function addCategory(){
+  const ar=el('cat-ar').value.trim(), fr=el('cat-fr').value.trim();
+  if(!ar||!fr){toast('⚠️ Noms arabe et français requis');return;}
+  const slug=fr.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
+  try{
+    const {error}=await DB.from('categories').insert({slug,label_ar:ar,label_fr:fr,emoji:el('cat-emoji').value||'📚',color:el('cat-color').value});
+    if(error)throw error;
+    toast('✅ Catégorie créée !');
+    el('cat-ar').value=''; el('cat-fr').value=''; el('cat-emoji').value='';
+    await loadAll(); renderHomeCats();
+  }catch(e){toast('❌ '+e.message);}
+}
+
+async function addBook(){
+  const title=el('b-title').value.trim();
+  if(!title){toast('⚠️ Titre requis');return;}
+  let fileUrl=el('b-url').value.trim();
+  if(!fileUrl){
+    try{fileUrl=await uploadFile(el('b-file'),'books')||null;}
+    catch(e){toast('❌ Upload : '+e.message);return;}
   }
-}
-
-/* ═══ ADMIN TABS ═══ */
-function adminTab(name, btn) {
-  ['livre','audio','video','live'].forEach(t => {
-    const el = document.getElementById('admin-'+t);
-    if (el) el.classList.remove('active');
-  });
-  document.querySelectorAll('.admin-form .tab-btn').forEach(b => b.classList.remove('active'));
-  const el = document.getElementById('admin-'+name);
-  if (el) el.classList.add('active');
-  btn.classList.add('active');
-}
-
-/* ═══ ADMIN ADD CONTENT ═══ */
-async function addBook() {
-  const title = document.getElementById('book-title').value.trim();
-  const author = document.getElementById('book-author').value.trim();
-  if (!title) { showToast('⚠️ Titre requis'); return; }
-  try {
-    const { error } = await DB.from('books').insert({
-      title, author_name: author,
-      scholar_id: document.getElementById('book-scholar').value || null,
-      category: document.getElementById('book-cat').value,
-      pages: parseInt(document.getElementById('book-pages').value)||0,
-      description: document.getElementById('book-desc').value,
-      emoji: '📗',
+  try{
+    const {error}=await DB.from('books').insert({
+      title, author_name:el('b-author').value, scholar_id:el('b-scholar').value||null,
+      category:el('b-cat').value||null, pages:parseInt(el('b-pages').value)||0,
+      file_url:fileUrl, file_type:el('b-type').value,
+      description:el('b-desc').value, emoji:el('b-emoji').value||'📗',
+      is_new:el('b-new').checked
     });
-    if (error) throw error;
-    showToast('✅ Livre ajouté !');
-    document.getElementById('book-title').value = '';
-    document.getElementById('book-author').value = '';
-    const { data } = await DB.from('books').select('*').order('created_at',{ascending:false});
-    if (data) STATE.books = data;
-  } catch(e) { showToast('❌ ' + e.message); }
+    if(error)throw error;
+    toast('✅ Livre ajouté !');
+    ['b-title','b-author','b-url','b-pages','b-desc','b-emoji'].forEach(id=>{const e=el(id);if(e)e.value='';});
+    el('b-new').checked=false; el('b-file-lbl').textContent='📎 Cliquer pour choisir un fichier'; el('b-file-lbl').classList.remove('has-file');
+    await loadAll();
+  }catch(e){toast('❌ '+e.message);}
 }
 
-async function addAudio() {
-  const title = document.getElementById('audio-title').value.trim();
-  if (!title) { showToast('⚠️ Titre requis'); return; }
-  try {
-    const { error } = await DB.from('audios').insert({
-      title,
-      scholar_id: document.getElementById('audio-scholar').value || null,
-      category: document.getElementById('audio-cat').value,
-      episodes: parseInt(document.getElementById('audio-eps').value)||1,
-      duration: document.getElementById('audio-dur').value,
-      description: document.getElementById('audio-desc').value,
-      emoji: '🎧',
-    });
-    if (error) throw error;
-    showToast('✅ Cours audio ajouté !');
-    document.getElementById('audio-title').value = '';
-    const { data } = await DB.from('audios').select('*').order('created_at',{ascending:false});
-    if (data) STATE.audios = data;
-  } catch(e) { showToast('❌ ' + e.message); }
-}
-
-async function addVideo() {
-  const title = document.getElementById('video-title').value.trim();
-  if (!title) { showToast('⚠️ Titre requis'); return; }
-  try {
-    const { error } = await DB.from('videos').insert({
-      title,
-      scholar_id: document.getElementById('video-scholar').value || null,
-      category: document.getElementById('video-cat').value,
-      duration: document.getElementById('video-dur').value,
-      video_url: document.getElementById('video-url').value,
-      description: document.getElementById('video-desc').value,
-      emoji: '🎬',
-    });
-    if (error) throw error;
-    showToast('✅ Vidéo ajoutée !');
-    document.getElementById('video-title').value = '';
-    const { data } = await DB.from('videos').select('*').order('created_at',{ascending:false});
-    if (data) STATE.videos = data;
-  } catch(e) { showToast('❌ ' + e.message); }
-}
-
-async function addLive() {
-  const title = document.getElementById('live-title').value.trim();
-  if (!title) { showToast('⚠️ Titre requis'); return; }
-  const schName = document.getElementById('live-sch-name').value || '';
-  const sc = document.getElementById('live-scholar').value;
-  const scholar = STATE.scholars.find(s => s.id === sc);
-  try {
-    const { error } = await DB.from('live_sessions').insert({
-      title,
-      scholar_id: sc || null,
-      scholar_name: schName || scholar?.name_fr || '',
-      scheduled_at: document.getElementById('live-date').value || new Date().toISOString(),
-      stream_url: document.getElementById('live-url').value,
-      status: document.getElementById('live-status').value,
-      emoji: '📡',
-    });
-    if (error) throw error;
-    showToast('✅ Session live publiée !');
-    document.getElementById('live-title').value = '';
-    document.getElementById('live-url').value = '';
-    // Reload
-    const { data } = await DB.from('live_sessions').select('*').order('scheduled_at');
-    if (data) { STATE.lives = data; renderHomeLive(); }
-  } catch(e) { showToast('❌ ' + e.message); }
-}
-
-/* ═══ FILL SCHOLAR SELECTS ═══ */
-function fillScholarSelects() {
-  const selects = ['book-scholar','audio-scholar','video-scholar','live-scholar'];
-  const opts = STATE.scholars.map(sc => `<option value="${sc.id}">${sc.name_fr||sc.name}</option>`).join('');
-  selects.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = '<option value="">— Aucun —</option>' + opts;
-  });
-}
-
-/* ═══ FALLBACK DATA ═══ */
-const FALLBACK = {
-  scholars: [
-    {id:'ibn-baz',name_ar:'الشيخ ابن باز',name_fr:"Cheikh Ibn Bâz",country:'Arabie Saoudite',era:'1910–1999',initial:'ا',category:'contemporain',tags:['Aqida','Tawhid'],books_count:80,audios_count:420,videos_count:180,is_live:false,bio:"Cheikh Ibn Bâz est l'un des plus grands savants du XXème siècle."},
-    {id:'ibn-uthaymin',name_ar:'الشيخ ابن عثيمين',name_fr:"Cheikh Ibn 'Outhaymine",country:'Arabie Saoudite',era:'1929–2001',initial:'ع',category:'contemporain',tags:['Fiqh','Aqida'],books_count:95,audios_count:620,videos_count:210,is_live:false,bio:"Grand faqîh du siècle."},
-    {id:'albani',name_ar:'الشيخ الألباني',name_fr:'Cheikh Al-Albâni',country:'Syrie/Albanie',era:'1914–1999',initial:'ن',category:'hadith',tags:['Hadith','Manhaj'],books_count:60,audios_count:390,videos_count:95,is_live:false,bio:"Plus grand spécialiste du hadîth du XXème siècle."},
-    {id:'fawzan',name_ar:'الشيخ صالح الفوزان',name_fr:'Cheikh Sâlih Al-Fawzân',country:'Arabie Saoudite',era:'1933–',initial:'ص',category:'contemporain',tags:['Fiqh','Aqida'],books_count:70,audios_count:340,videos_count:160,is_live:true,live_title:'Explication du Livre du Tawhid — Séance 14',live_viewers:1340,bio:"Membre du Conseil des Grands Savants d'Arabie Saoudite."},
-    {id:'rabi',name_ar:'الشيخ ربيع المدخلي',name_fr:"Cheikh Rabî' Al-Madkhali",country:'Arabie Saoudite',era:'1931–',initial:'ر',category:'contemporain',tags:['Manhaj','Jarh'],books_count:45,audios_count:270,videos_count:120,is_live:false,bio:"Spécialiste du jarh wa-ta'dîl."},
-    {id:'muqbil',name_ar:'الشيخ مقبل الوادعي',name_fr:"Cheikh Mouqbil Al-Wâdi'î",country:'Yémen',era:'1933–2001',initial:'م',category:'hadith',tags:['Hadith','Manhaj'],books_count:28,audios_count:180,videos_count:60,is_live:false,bio:"Fondateur de Dâr Al-Hadîth à Dammâj."},
-    {id:'ibn-taymiyya',name_ar:'شيخ الإسلام ابن تيمية',name_fr:'Ibn Taymiyya',country:'Syrie',era:'661–728H',initial:'ا',category:'ancien',tags:['Aqida','Fiqh'],books_count:52,audios_count:0,videos_count:8,is_live:false,bio:"Ibn Taymiyya, Cheikh Al-Islam."},
-    {id:'bukhari',name_ar:'الإمام البخاري',name_fr:'Imam Al-Bukhâri',country:'Boukhara',era:'194–256H',initial:'ب',category:'rapporteur',tags:['Hadith','Sahih'],books_count:15,audios_count:0,videos_count:2,is_live:false,bio:"Auteur du Sahîh Al-Bukhâri."},
-  ],
-  books: [
-    {id:1,title:'Kitâb At-Tawhid',author_name:'Ibn Abd Al-Wahhâb',scholar_id:null,category:'Aqida',pages:120,downloads:22500,emoji:'📗',description:'Le livre fondamental du monothéisme islamique.'},
-    {id:2,title:"Al-'Aqida Al-Wâsitiyya",author_name:'Ibn Taymiyya',scholar_id:'ibn-taymiyya',category:'Aqida',pages:92,downloads:14600,emoji:'📘',description:"Traité fondamental sur les attributs d'Allah."},
-    {id:3,title:'Riyâd As-Sâlihîn',author_name:'An-Nawawi',scholar_id:'bukhari',category:'Hadith',pages:580,downloads:21000,emoji:'📙',description:'Les jardins des vertueux.'},
-    {id:4,title:'Al-Mulakhkhas Al-Fiqhi',author_name:'Al-Fawzân',scholar_id:'fawzan',category:'Fiqh',pages:620,downloads:28000,emoji:'📗',description:'Précis de jurisprudence islamique.'},
-    {id:5,title:'Lumière sur la voie des Salaf',author_name:"Rabî' Al-Madkhali",scholar_id:'rabi',category:'Manhaj',pages:156,downloads:7140,emoji:'📙',description:'Fondements du manhaj salafi.',is_new:true},
-  ],
-  audios: [
-    {id:101,title:'Explication du Kitâb At-Tawhid',author_name:'Cheikh Ibn Bâz',scholar_id:'ibn-baz',category:'Tawhid',episodes:48,duration:'32h',plays:18200,emoji:'🎙️',description:'Série complète en 48 séances.'},
-    {id:102,title:"Sharh Al-'Aqida Al-Wâsitiyya",author_name:"Cheikh Ibn 'Outhaymine",scholar_id:'ibn-uthaymin',category:'Aqida',episodes:35,duration:'28h',plays:14600,emoji:'🎧',description:'Commentaire complet.'},
-    {id:103,title:'Explication des 40 hadiths',author_name:'Cheikh Al-Albâni',scholar_id:'albani',category:'Hadith',episodes:40,duration:'26h',plays:14300,emoji:'🎙️',description:'Les quarante hadiths fondamentaux.'},
-    {id:104,title:'Tafsir de Sourat Al-Baqara',author_name:"Cheikh As-Sa'di",scholar_id:null,category:'Tafsir',episodes:22,duration:'18h',plays:8760,emoji:'🎧',description:'Explication complète.'},
-  ],
-  videos: [
-    {id:201,title:'Les conditions de la Shahada',author_name:'Cheikh Al-Fawzân',scholar_id:'fawzan',category:'Aqida',duration:'1h 24min',views:22100,emoji:'🎬',description:'Les sept conditions de la Shahada.'},
-    {id:202,title:'Le statut de la prière en Islam',author_name:'Cheikh Ibn Bâz',scholar_id:'ibn-baz',category:'Fiqh',duration:'45min',views:31200,emoji:'📹',description:'L\'importance de la prière.'},
-    {id:203,title:'Les déviances des temps modernes',author_name:"Cheikh Rabî' Al-Madkhali",scholar_id:'rabi',category:'Manhaj',duration:'2h 05min',views:15600,emoji:'🎥',description:'Réfutation des déviances.'},
-    {id:204,title:'Éduquer ses enfants en Islam',author_name:'Cheikh Al-Fawzân',scholar_id:'fawzan',category:'Famille',duration:'1h 55min',views:24500,emoji:'🎬',description:'Conseils pratiques.'},
-  ],
-  lives: [
-    {id:1,title:'Explication du Livre du Tawhid — Séance 14',scholar_name:'Cheikh Sâlih Al-Fawzân',scholar_id:'fawzan',scheduled_at:new Date().toISOString(),viewers:1340,status:'live',stream_url:''},
-    {id:2,title:'Les règles du Hadith — Débutants',scholar_name:'Cheikh Abdullah Al-Bukhâri',scholar_id:null,scheduled_at:new Date(Date.now()+2*24*60*60*1000).toISOString(),viewers:0,status:'upcoming'},
-    {id:3,title:"Explication de Al-'Aqida Al-Wâsitiyya",scholar_name:'Cheikh Sâlih Al-Fawzân',scholar_id:'fawzan',scheduled_at:new Date(Date.now()+4*24*60*60*1000).toISOString(),viewers:0,status:'upcoming'},
-    {id:4,title:'Fiqh de la Femme Musulmane — Q&A',scholar_name:'Cheikh Khâlid Al-Marzouqi',scholar_id:null,scheduled_at:new Date(Date.now()+7*24*60*60*1000).toISOString(),viewers:0,status:'upcoming'},
-  ],
-};
-
-/* ═══ INIT ═══ */
-async function init() {
-  // Check auth session
-  const { data: { session } } = await DB.auth.getSession();
-  if (session) {
-    STATE.user = session.user;
-    updateNavAuth();
-    await loadProfil();
+async function addAudio(){
+  const title=el('a-title').value.trim();
+  if(!title){toast('⚠️ Titre requis');return;}
+  let fileUrl=el('a-url').value.trim();
+  if(!fileUrl){
+    try{fileUrl=await uploadFile(el('a-file'),'audio')||null;}
+    catch(e){toast('❌ Upload : '+e.message);return;}
   }
-  // Auth state listener
-  DB.auth.onAuthStateChange((event, session) => {
-    STATE.user = session?.user || null;
+  try{
+    const {error}=await DB.from('audios').insert({
+      title, scholar_id:el('a-scholar').value||null, category:el('a-cat').value||null,
+      episodes:parseInt(el('a-eps').value)||1, duration:el('a-dur').value,
+      file_url:fileUrl, description:el('a-desc').value, emoji:el('a-emoji').value||'🎧'
+    });
+    if(error)throw error;
+    toast('✅ Cours audio ajouté !');
+    ['a-title','a-url','a-eps','a-dur','a-desc','a-emoji'].forEach(id=>{const e=el(id);if(e)e.value='';});
+    el('a-file-lbl').textContent='🎵 Cliquer pour choisir un fichier'; el('a-file-lbl').classList.remove('has-file');
+    await loadAll();
+  }catch(e){toast('❌ '+e.message);}
+}
+
+async function addVideo(){
+  const title=el('v-title').value.trim();
+  if(!title){toast('⚠️ Titre requis');return;}
+  let fileUrl=el('v-url').value.trim();
+  if(!fileUrl){
+    try{fileUrl=await uploadFile(el('v-file'),'videos')||null;}
+    catch(e){toast('❌ Upload : '+e.message);return;}
+  }
+  try{
+    const {error}=await DB.from('videos').insert({
+      title, scholar_id:el('v-scholar').value||null, category:el('v-cat').value||null,
+      duration:el('v-dur').value, video_url:fileUrl,
+      description:el('v-desc').value, emoji:el('v-emoji').value||'🎬'
+    });
+    if(error)throw error;
+    toast('✅ Vidéo ajoutée !');
+    ['v-title','v-url','v-dur','v-desc','v-emoji'].forEach(id=>{const e=el(id);if(e)e.value='';});
+    el('v-file-lbl').textContent='🎬 Cliquer pour choisir un fichier'; el('v-file-lbl').classList.remove('has-file');
+    await loadAll();
+  }catch(e){toast('❌ '+e.message);}
+}
+
+async function addLive(){
+  const title=el('lv-title').value.trim(), date=el('lv-date').value;
+  if(!title||!date){toast('⚠️ Titre et date requis');return;}
+  const sc=el('lv-scholar').value;
+  const scholar=S.scholars.find(s=>s.id===sc);
+  try{
+    const {error}=await DB.from('live_sessions').insert({
+      title, scholar_id:sc||null,
+      scholar_name:el('lv-sname').value||scholar?.name_fr||'',
+      scheduled_at:new Date(date).toISOString(),
+      stream_url:el('lv-url').value, status:el('lv-status').value,
+      viewers:parseInt(el('lv-vw').value)||0, emoji:'📡'
+    });
+    if(error)throw error;
+    toast('✅ Session live publiée !');
+    ['lv-title','lv-sname','lv-url','lv-date','lv-vw'].forEach(id=>{const e=el(id);if(e)e.value='';});
+    await loadAll(); renderLive(); renderHomeLive();
+  }catch(e){toast('❌ '+e.message);}
+}
+
+/* ══ FILL SELECTS ══ */
+function fillSelects(){
+  const schOpts=['<option value="">— Aucun —</option>'].concat(S.scholars.map(s=>`<option value="${s.id}">${s.name_fr||s.name}</option>`)).join('');
+  const catOpts=['<option value="">— Choisir —</option>'].concat(S.cats.map(c=>`<option value="${c.label_fr}">${c.emoji||''} ${c.label_fr}</option>`)).join('');
+  ['b-scholar','a-scholar','v-scholar','lv-scholar'].forEach(id=>{const e=el(id);if(e)e.innerHTML=schOpts;});
+  ['b-cat','a-cat','v-cat'].forEach(id=>{const e=el(id);if(e)e.innerHTML=catOpts;});
+}
+
+/* ══ INIT ══ */
+async function init(){
+  const {data:{session}}=await DB.auth.getSession();
+  if(session){
+    S.user=session.user;
     updateNavAuth();
-    if (event === 'SIGNED_IN') loadProfil();
+    await loadProfile();
+  }
+  DB.auth.onAuthStateChange(async(event,session)=>{
+    S.user=session?.user||null;
+    updateNavAuth();
+    if(event==='SIGNED_IN'){await loadProfile();}
   });
-  // Load data
   await loadAll();
 }
 
