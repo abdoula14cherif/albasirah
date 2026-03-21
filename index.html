@@ -633,7 +633,7 @@ textarea.inp{resize:vertical;min-height:80px}
             </div>
             <div class="fg"><label class="inp-lbl">Tags (séparés par virgule)</label><input class="inp" id="s-tags" placeholder="Aqida, Fiqh, Hadith"/></div>
             <div class="fg"><label class="inp-lbl">Biographie</label><textarea class="inp" id="s-bio" placeholder="Biographie du savant…" rows="4"></textarea></div>
-            <button class="btn btn-g btn-block" onclick="addScholar()">➕ Ajouter le savant</button>
+            <button class="btn btn-g btn-block" id="btn-add-scholar" onclick="addScholar()">➕ Ajouter le savant</button>
           </div>
         </div>
 
@@ -653,7 +653,7 @@ textarea.inp{resize:vertical;min-height:80px}
                 <option value="orange">🟠 Orange</option>
               </select>
             </div>
-            <button class="btn btn-b btn-block" onclick="addCategory()">➕ Créer la catégorie</button>
+            <button class="btn btn-b btn-block" id="btn-add-cat" onclick="addCategory()">➕ Créer la catégorie</button>
           </div>
         </div>
 
@@ -685,7 +685,7 @@ textarea.inp{resize:vertical;min-height:80px}
             <label style="display:flex;align-items:center;gap:7px;font-size:.8rem;font-weight:700;color:var(--sub);margin-bottom:12px;cursor:pointer">
               <input type="checkbox" id="b-new" style="accent-color:var(--r1)"/> Marquer comme NOUVEAU
             </label>
-            <button class="btn btn-g btn-block" onclick="addBook()">➕ Ajouter le livre</button>
+            <button class="btn btn-g btn-block" id="btn-add-book" onclick="addBook()">➕ Ajouter le livre</button>
           </div>
         </div>
 
@@ -706,7 +706,7 @@ textarea.inp{resize:vertical;min-height:80px}
             </div>
             <div class="fg"><label class="inp-lbl">Description</label><textarea class="inp" id="a-desc" placeholder="Description du cours…" rows="3"></textarea></div>
             <div class="fg"><label class="inp-lbl">Emoji</label><input class="inp" id="a-emoji" placeholder="🎧" maxlength="4"/></div>
-            <button class="btn btn-b btn-block" onclick="addAudio()">➕ Ajouter le cours audio</button>
+            <button class="btn btn-b btn-block" id="btn-add-audio" onclick="addAudio()">➕ Ajouter le cours audio</button>
           </div>
         </div>
 
@@ -726,7 +726,7 @@ textarea.inp{resize:vertical;min-height:80px}
             </div>
             <div class="fg"><label class="inp-lbl">Description</label><textarea class="inp" id="v-desc" placeholder="Description de la vidéo…" rows="3"></textarea></div>
             <div class="fg"><label class="inp-lbl">Emoji</label><input class="inp" id="v-emoji" placeholder="🎬" maxlength="4"/></div>
-            <button class="btn btn-r btn-block" onclick="addVideo()">➕ Ajouter la vidéo</button>
+            <button class="btn btn-r btn-block" id="btn-add-video" onclick="addVideo()">➕ Ajouter la vidéo</button>
           </div>
         </div>
 
@@ -746,7 +746,7 @@ textarea.inp{resize:vertical;min-height:80px}
               </select>
             </div>
             <div class="fg"><label class="inp-lbl">Nombre d'auditeurs estimé</label><input class="inp" type="number" id="lv-vw" placeholder="0" min="0"/></div>
-            <button class="btn btn-r btn-block" onclick="addLive()">📡 Publier la session</button>
+            <button class="btn btn-r btn-block" id="btn-add-live" onclick="addLive()">📡 Publier la session</button>
             <p style="font-size:.72rem;color:var(--muted);margin-top:8px;text-align:center">Pour mettre fin à un live : rendez-vous dans Supabase et changez le statut en "ended"</p>
           </div>
         </div>
@@ -1378,131 +1378,239 @@ function fileChosen(lblId,inp){
   else{lbl.classList.remove('has-file');}
 }
 
+/* ══ VÉRIFICATION SESSION ADMIN ══ */
+async function checkAdmin(){
+  // Recharge la session fraîche depuis Supabase
+  const {data:{session}} = await DB.auth.getSession();
+  if(!session){toast('⚠️ Tu dois être connecté'); return false;}
+  S.user = session.user;
+  // Recharge le profil
+  try{
+    const {data,error} = await DB.from('profiles').select('is_admin').eq('id',session.user.id).single();
+    if(error || !data){toast('⚠️ Profil introuvable. Déconnecte-toi et reconnecte-toi.'); return false;}
+    S.isAdmin = data.is_admin || false;
+    if(!S.isAdmin){toast('⚠️ Tu n\'as pas les droits admin.'); return false;}
+  }catch(e){toast('❌ Erreur profil : '+e.message); return false;}
+  return true;
+}
+
+/* ══ UPLOAD FICHIER ══ */
 async function uploadFile(inp, bucket){
-  if(!inp.files?.length) return null;
-  const file=inp.files[0];
-  const ext=file.name.split('.').pop();
-  const path=`${Date.now()}-${Math.random().toString(36).substring(2)}.${ext}`;
-  const {data,error}=await DB.storage.from(bucket).upload(path,file,{upsert:false});
-  if(error) throw error;
-  const {data:urlData}=DB.storage.from(bucket).getPublicUrl(path);
-  return urlData.publicUrl;
+  if(!inp?.files?.length) return null;
+  const file = inp.files[0];
+  const ext  = file.name.split('.').pop().toLowerCase();
+  const path = `${Date.now()}_${Math.random().toString(36).substring(2,8)}.${ext}`;
+  toast('⏳ Upload en cours…');
+  const {data, error} = await DB.storage.from(bucket).upload(path, file, {upsert:true});
+  if(error) throw new Error('Upload échoué : ' + error.message);
+  const {data:pub} = DB.storage.from(bucket).getPublicUrl(path);
+  return pub.publicUrl;
 }
 
+/* ══ BOUTON : bloquer pendant traitement ══ */
+function setBtnLoading(btnId, loading, originalText){
+  const b = el(btnId);
+  if(!b) return;
+  b.disabled = loading;
+  b.textContent = loading ? '⏳ Traitement…' : originalText;
+}
+
+/* ══ ADD SCHOLAR ══ */
 async function addScholar(){
-  const nar=el('s-nar').value.trim(), nfr=el('s-nfr').value.trim(), init=el('s-init').value.trim();
-  if(!nar||!nfr||!init){toast('⚠️ Nom arabe, français et initiale sont requis');return;}
-  const id=nfr.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'').substring(0,50)+'-'+Date.now().toString(36);
-  const tags=el('s-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const nar  = el('s-nar').value.trim();
+  const nfr  = el('s-nfr').value.trim();
+  const init = el('s-init').value.trim();
+  if(!nar||!nfr||!init){toast('⚠️ Nom arabe, français et initiale sont requis'); return;}
+  if(!await checkAdmin()) return;
+  setBtnLoading('btn-add-scholar', true, '➕ Ajouter le savant');
+  const id = nfr.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')
+    .substring(0,40) + '-' + Date.now().toString(36);
+  const tags = el('s-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
   try{
-    const {error}=await DB.from('scholars').insert({id,name_ar:nar,name_fr:nfr,initial:init,country:el('s-country').value,era:el('s-era').value,category:el('s-cat').value,tags,bio:el('s-bio').value});
-    if(error)throw error;
-    toast('✅ Savant ajouté !');
-    ['s-nar','s-nfr','s-init','s-country','s-era','s-tags','s-bio'].forEach(id=>{const e=el(id);if(e)e.value='';});
-    await loadAll(); renderScholars();
-  }catch(e){toast('❌ '+e.message);}
+    const {error} = await DB.from('scholars').insert({
+      id, name_ar:nar, name_fr:nfr, initial:init,
+      country : el('s-country').value.trim() || null,
+      era     : el('s-era').value.trim()     || null,
+      category: el('s-cat').value            || 'contemporain',
+      tags, bio: el('s-bio').value.trim()    || null,
+    });
+    if(error) throw error;
+    toast('✅ Savant ajouté avec succès !');
+    ['s-nar','s-nfr','s-init','s-country','s-era','s-tags','s-bio'].forEach(i=>{const e=el(i);if(e)e.value='';});
+    await loadAll();
+    renderScholars();
+    renderHomeScholars();
+  }catch(e){
+    console.error('addScholar error:', e);
+    toast('❌ Erreur : ' + e.message);
+  }finally{ setBtnLoading('btn-add-scholar', false, '➕ Ajouter le savant'); }
 }
 
+/* ══ ADD CATEGORY ══ */
 async function addCategory(){
-  const ar=el('cat-ar').value.trim(), fr=el('cat-fr').value.trim();
-  if(!ar||!fr){toast('⚠️ Noms arabe et français requis');return;}
-  const slug=fr.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
+  const ar = el('cat-ar').value.trim();
+  const fr = el('cat-fr').value.trim();
+  if(!ar||!fr){toast('⚠️ Noms arabe et français requis'); return;}
+  if(!await checkAdmin()) return;
+  setBtnLoading('btn-add-cat', true, '➕ Créer la catégorie');
+  const slug = fr.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
   try{
-    const {error}=await DB.from('categories').insert({slug,label_ar:ar,label_fr:fr,emoji:el('cat-emoji').value||'📚',color:el('cat-color').value});
-    if(error)throw error;
+    const {error} = await DB.from('categories').insert({
+      slug,
+      label_ar : ar,
+      label_fr : fr,
+      emoji    : el('cat-emoji').value.trim() || '📚',
+      color    : el('cat-color').value        || 'green',
+    });
+    if(error) throw error;
     toast('✅ Catégorie créée !');
     el('cat-ar').value=''; el('cat-fr').value=''; el('cat-emoji').value='';
-    await loadAll(); renderHomeCats();
-  }catch(e){toast('❌ '+e.message);}
+    await loadAll();
+    renderHomeCats();
+    fillSelects();
+  }catch(e){
+    console.error('addCategory error:', e);
+    toast('❌ Erreur : ' + e.message);
+  }finally{ setBtnLoading('btn-add-cat', false, '➕ Créer la catégorie'); }
 }
 
+/* ══ ADD BOOK ══ */
 async function addBook(){
-  const title=el('b-title').value.trim();
-  if(!title){toast('⚠️ Titre requis');return;}
-  let fileUrl=el('b-url').value.trim();
-  if(!fileUrl){
-    try{fileUrl=await uploadFile(el('b-file'),'books')||null;}
-    catch(e){toast('❌ Upload : '+e.message);return;}
-  }
+  const title = el('b-title').value.trim();
+  if(!title){toast('⚠️ Le titre est requis'); return;}
+  if(!await checkAdmin()) return;
+  setBtnLoading('btn-add-book', true, '➕ Ajouter le livre');
+  let fileUrl = el('b-url').value.trim() || null;
   try{
-    const {error}=await DB.from('books').insert({
-      title, author_name:el('b-author').value, scholar_id:el('b-scholar').value||null,
-      category:el('b-cat').value||null, pages:parseInt(el('b-pages').value)||0,
-      file_url:fileUrl, file_type:el('b-type').value,
-      description:el('b-desc').value, emoji:el('b-emoji').value||'📗',
-      is_new:el('b-new').checked
+    if(!fileUrl && el('b-file').files?.length){
+      fileUrl = await uploadFile(el('b-file'), 'books');
+    }
+    const {error} = await DB.from('books').insert({
+      title,
+      author_name : el('b-author').value.trim() || null,
+      scholar_id  : el('b-scholar').value       || null,
+      category    : el('b-cat').value           || null,
+      pages       : parseInt(el('b-pages').value) || 0,
+      file_url    : fileUrl,
+      file_type   : el('b-type').value          || 'pdf',
+      description : el('b-desc').value.trim()  || null,
+      emoji       : el('b-emoji').value.trim()  || '📗',
+      is_new      : el('b-new').checked,
     });
-    if(error)throw error;
-    toast('✅ Livre ajouté !');
-    ['b-title','b-author','b-url','b-pages','b-desc','b-emoji'].forEach(id=>{const e=el(id);if(e)e.value='';});
-    el('b-new').checked=false; el('b-file-lbl').textContent='📎 Cliquer pour choisir un fichier'; el('b-file-lbl').classList.remove('has-file');
+    if(error) throw error;
+    toast('✅ Livre ajouté avec succès !');
+    ['b-title','b-author','b-url','b-pages','b-desc','b-emoji'].forEach(i=>{const e=el(i);if(e)e.value='';});
+    el('b-new').checked = false;
+    el('b-file-lbl').textContent = '📎 Cliquer pour choisir un fichier';
+    el('b-file-lbl').classList.remove('has-file');
     await loadAll();
-  }catch(e){toast('❌ '+e.message);}
+  }catch(e){
+    console.error('addBook error:', e);
+    toast('❌ Erreur : ' + e.message);
+  }finally{ setBtnLoading('btn-add-book', false, '➕ Ajouter le livre'); }
 }
 
+/* ══ ADD AUDIO ══ */
 async function addAudio(){
-  const title=el('a-title').value.trim();
-  if(!title){toast('⚠️ Titre requis');return;}
-  let fileUrl=el('a-url').value.trim();
-  if(!fileUrl){
-    try{fileUrl=await uploadFile(el('a-file'),'audio')||null;}
-    catch(e){toast('❌ Upload : '+e.message);return;}
-  }
+  const title = el('a-title').value.trim();
+  if(!title){toast('⚠️ Le titre est requis'); return;}
+  if(!await checkAdmin()) return;
+  setBtnLoading('btn-add-audio', true, '➕ Ajouter le cours audio');
+  let fileUrl = el('a-url').value.trim() || null;
   try{
-    const {error}=await DB.from('audios').insert({
-      title, scholar_id:el('a-scholar').value||null, category:el('a-cat').value||null,
-      episodes:parseInt(el('a-eps').value)||1, duration:el('a-dur').value,
-      file_url:fileUrl, description:el('a-desc').value, emoji:el('a-emoji').value||'🎧'
+    if(!fileUrl && el('a-file').files?.length){
+      fileUrl = await uploadFile(el('a-file'), 'audio');
+    }
+    const {error} = await DB.from('audios').insert({
+      title,
+      scholar_id  : el('a-scholar').value       || null,
+      category    : el('a-cat').value           || null,
+      episodes    : parseInt(el('a-eps').value) || 1,
+      duration    : el('a-dur').value.trim()    || null,
+      file_url    : fileUrl,
+      description : el('a-desc').value.trim()  || null,
+      emoji       : el('a-emoji').value.trim()  || '🎧',
     });
-    if(error)throw error;
-    toast('✅ Cours audio ajouté !');
-    ['a-title','a-url','a-eps','a-dur','a-desc','a-emoji'].forEach(id=>{const e=el(id);if(e)e.value='';});
-    el('a-file-lbl').textContent='🎵 Cliquer pour choisir un fichier'; el('a-file-lbl').classList.remove('has-file');
+    if(error) throw error;
+    toast('✅ Cours audio ajouté avec succès !');
+    ['a-title','a-url','a-eps','a-dur','a-desc','a-emoji'].forEach(i=>{const e=el(i);if(e)e.value='';});
+    el('a-file-lbl').textContent = '🎵 Cliquer pour choisir un fichier';
+    el('a-file-lbl').classList.remove('has-file');
     await loadAll();
-  }catch(e){toast('❌ '+e.message);}
+  }catch(e){
+    console.error('addAudio error:', e);
+    toast('❌ Erreur : ' + e.message);
+  }finally{ setBtnLoading('btn-add-audio', false, '➕ Ajouter le cours audio'); }
 }
 
+/* ══ ADD VIDEO ══ */
 async function addVideo(){
-  const title=el('v-title').value.trim();
-  if(!title){toast('⚠️ Titre requis');return;}
-  let fileUrl=el('v-url').value.trim();
-  if(!fileUrl){
-    try{fileUrl=await uploadFile(el('v-file'),'videos')||null;}
-    catch(e){toast('❌ Upload : '+e.message);return;}
-  }
+  const title = el('v-title').value.trim();
+  if(!title){toast('⚠️ Le titre est requis'); return;}
+  if(!await checkAdmin()) return;
+  setBtnLoading('btn-add-video', true, '➕ Ajouter la vidéo');
+  let fileUrl = el('v-url').value.trim() || null;
   try{
-    const {error}=await DB.from('videos').insert({
-      title, scholar_id:el('v-scholar').value||null, category:el('v-cat').value||null,
-      duration:el('v-dur').value, video_url:fileUrl,
-      description:el('v-desc').value, emoji:el('v-emoji').value||'🎬'
+    if(!fileUrl && el('v-file').files?.length){
+      fileUrl = await uploadFile(el('v-file'), 'videos');
+    }
+    const {error} = await DB.from('videos').insert({
+      title,
+      scholar_id  : el('v-scholar').value       || null,
+      category    : el('v-cat').value           || null,
+      duration    : el('v-dur').value.trim()    || null,
+      video_url   : fileUrl,
+      description : el('v-desc').value.trim()  || null,
+      emoji       : el('v-emoji').value.trim()  || '🎬',
     });
-    if(error)throw error;
-    toast('✅ Vidéo ajoutée !');
-    ['v-title','v-url','v-dur','v-desc','v-emoji'].forEach(id=>{const e=el(id);if(e)e.value='';});
-    el('v-file-lbl').textContent='🎬 Cliquer pour choisir un fichier'; el('v-file-lbl').classList.remove('has-file');
+    if(error) throw error;
+    toast('✅ Vidéo ajoutée avec succès !');
+    ['v-title','v-url','v-dur','v-desc','v-emoji'].forEach(i=>{const e=el(i);if(e)e.value='';});
+    el('v-file-lbl').textContent = '🎬 Cliquer pour choisir un fichier';
+    el('v-file-lbl').classList.remove('has-file');
     await loadAll();
-  }catch(e){toast('❌ '+e.message);}
+  }catch(e){
+    console.error('addVideo error:', e);
+    toast('❌ Erreur : ' + e.message);
+  }finally{ setBtnLoading('btn-add-video', false, '➕ Ajouter la vidéo'); }
 }
 
+/* ══ ADD LIVE ══ */
 async function addLive(){
-  const title=el('lv-title').value.trim(), date=el('lv-date').value;
-  if(!title||!date){toast('⚠️ Titre et date requis');return;}
-  const sc=el('lv-scholar').value;
-  const scholar=S.scholars.find(s=>s.id===sc);
+  const title = el('lv-title').value.trim();
+  const date  = el('lv-date').value;
+  if(!title){toast('⚠️ Le titre est requis'); return;}
+  if(!date){toast('⚠️ La date est requise'); return;}
+  if(!await checkAdmin()) return;
+  setBtnLoading('btn-add-live', true, '📡 Publier la session');
+  const scId    = el('lv-scholar').value || null;
+  const scName  = el('lv-sname').value.trim();
+  const scholar = S.scholars.find(s => s.id === scId);
   try{
-    const {error}=await DB.from('live_sessions').insert({
-      title, scholar_id:sc||null,
-      scholar_name:el('lv-sname').value||scholar?.name_fr||'',
-      scheduled_at:new Date(date).toISOString(),
-      stream_url:el('lv-url').value, status:el('lv-status').value,
-      viewers:parseInt(el('lv-vw').value)||0, emoji:'📡'
+    const {error} = await DB.from('live_sessions').insert({
+      title,
+      scholar_id   : scId,
+      scholar_name : scName || scholar?.name_fr || '',
+      scheduled_at : new Date(date).toISOString(),
+      stream_url   : el('lv-url').value.trim()    || null,
+      status       : el('lv-status').value         || 'upcoming',
+      viewers      : parseInt(el('lv-vw').value)  || 0,
+      emoji        : '📡',
     });
-    if(error)throw error;
-    toast('✅ Session live publiée !');
-    ['lv-title','lv-sname','lv-url','lv-date','lv-vw'].forEach(id=>{const e=el(id);if(e)e.value='';});
-    await loadAll(); renderLive(); renderHomeLive();
-  }catch(e){toast('❌ '+e.message);}
-}
+    if(error) throw error;
+    toast('✅ Session live publiée avec succès !');
+    ['lv-title','lv-sname','lv-url','lv-date','lv-vw'].forEach(i=>{const e=el(i);if(e)e.value='';});
+    await loadAll();
+    renderLive();
+    renderHomeLive();
+  }catch(e){
+    console.error('addLive error:', e);
+    toast('❌ Erreur : ' + e.message);
+  }finally{ setBtnLoading('btn-add-live', false, '📡 Publier la session'); }
 
 /* ══ FILL SELECTS ══ */
 function fillSelects(){
