@@ -536,7 +536,17 @@ function busy(id,b,lbl){ const e=g(id); if(!e)return; e.disabled=b; e.textConten
 function closeMo(id){ const e=g(id); if(e) e.classList.remove('open'); }
 document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 
-// ─── AUTH CHECK ──────────────────────────────
+// ─── TABLE NAME MAPPING ──────────────────────
+// Les sections ont des noms courts, les vraies tables Supabase ont des noms différents
+const TABLE_MAP = {
+  scholars:   'scholars',
+  books:      'books',
+  audios:     'audios',
+  videos:     'videos',
+  lives:      'live_sessions',
+  categories: 'categories',
+};
+function realTable(section){ return TABLE_MAP[section] || section; }
 async function checkAuth(){
   const {data:{session}} = await SB.auth.getSession();
   if(!session){ window.location.href='index.html'; return; }
@@ -838,7 +848,7 @@ function confirmDelete(table, id, name){
 async function executeDelete(){
   busy('confirm-delete-btn', true, '🗑️ Supprimer définitivement');
   try{
-    const {error} = await SB.from(A.deleteTable).delete().eq('id', A.deleteId);
+    const {error} = await SB.from(realTable(A.deleteTable)).delete().eq('id', A.deleteId);
     if(error) throw error;
     closeMo('mo-confirm');
     toast('✅ Supprimé avec succès');
@@ -1124,7 +1134,7 @@ async function saveEdit(){
       };
     }
 
-    const {error} = await SB.from(t).update(data).eq('id', A.editId);
+    const {error} = await SB.from(realTable(t)).update(data).eq('id', A.editId);
     if(error) throw error;
     closeMo('mo-edit');
     toast('✅ Modifié avec succès !');
