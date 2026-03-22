@@ -425,12 +425,15 @@ textarea.inp{resize:vertical;min-height:72px}
         src="about:blank">
       </iframe>
       <!-- Fallback si iframe bloque -->
-      <div id="pdf-fallback" style="display:none;padding:24px;text-align:center">
-        <span style="font-size:3rem;display:block;margin-bottom:12px">📄</span>
-        <p style="font-size:.85rem;font-weight:700;color:var(--sub);margin-bottom:14px">Ce PDF ne peut pas être affiché directement dans le navigateur.</p>
-        <a id="pdf-dl2" href="#" target="_blank" class="btn btn-g btn-lg">↓ Télécharger le PDF</a>
-        <br><br>
-        <a id="pdf-gview" href="#" target="_blank" class="btn btn-b">🌐 Ouvrir dans Google Drive Viewer</a>
+      <div id="pdf-fallback" style="display:none;padding:28px 20px;text-align:center">
+        <span style="font-size:3.5rem;display:block;margin-bottom:14px">📄</span>
+        <p style="font-size:.9rem;font-weight:800;color:var(--txt);margin-bottom:6px">Impossible d'afficher ce PDF ici</p>
+        <p style="font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:20px;line-height:1.6">Le fichier vient d'une source externe qui bloque l'aperçu intégré.</p>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <a id="pdf-dl2" href="#" target="_blank" class="btn btn-g btn-lg btn-fw">↓ Télécharger le PDF</a>
+          <a id="pdf-gview" href="#" target="_blank" class="btn btn-b btn-fw">🌐 Ouvrir dans Google Drive Viewer</a>
+        </div>
+        <p style="font-size:.7rem;color:var(--muted);margin-top:16px;font-weight:600">💡 Astuce : Pour un affichage direct, uploadez le fichier via Supabase Storage.</p>
       </div>
     </div>
   </div>
@@ -1611,39 +1614,81 @@ function mvLaunch(){
 }
 
 // ─── PDF / LIVRE ────────────────────────────────
+function normalizeUrl(url){
+  if(!url) return null;
+  // Google Drive : convertir /view en /preview
+  var gdrive = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if(gdrive){
+    return {
+      view:     'https://drive.google.com/file/d/'+gdrive[1]+'/preview',
+      download: 'https://drive.google.com/uc?export=download&id='+gdrive[1],
+      type:     'gdrive'
+    };
+  }
+  // Supabase Storage ou lien .pdf direct
+  if(url.includes('supabase') || url.toLowerCase().endsWith('.pdf')){
+    return { view: url, download: url, type: 'direct' };
+  }
+  // Autre → Google Docs Viewer
+  return {
+    view:     'https://docs.google.com/viewer?url='+encodeURIComponent(url)+'&embedded=true',
+    download: url,
+    type:     'external'
+  };
+}
+
 function dlBook(id, url, title){
-  if(!url||!url.startsWith('http')){
-    toast('↓ '+(title||'').substring(0,30)+'…');
-    try{ SB.rpc('inc_downloads',{bid:id}); }catch(e){}
+  if(!url || !url.startsWith('http')){
+    toast('⚠️ Aucun fichier disponible pour ce livre');
     return;
   }
-  // Ouvrir le viewer PDF dans le modal
+  var info = normalizeUrl(url);
+
+  // Remplir le modal PDF
   g('pdf-ttl').textContent = '📄 '+(title||'—');
-  var dl=g('pdf-dl'); if(dl){dl.href=url; dl.download=title||'document';}
-  var dl2=g('pdf-dl2'); if(dl2){dl2.href=url;}
-  var frame=g('pdf-frame');
-  var fallback=g('pdf-fallback');
 
-  // Google Docs Viewer pour les PDFs en ligne
-  var gview='https://docs.google.com/viewer?url='+encodeURIComponent(url)+'&embedded=true';
-  var gviewBtn=g('pdf-gview'); if(gviewBtn) gviewBtn.href='https://docs.google.com/viewer?url='+encodeURIComponent(url);
+  var dlBtn = g('pdf-dl');
+  if(dlBtn){ dlBtn.href = info.download; dlBtn.download = (title||'document')+'.pdf'; }
+  var dl2 = g('pdf-dl2');
+  if(dl2){ dl2.href = info.download; }
+  var gviewBtn = g('pdf-gview');
+  if(gviewBtn){ gviewBtn.href = 'https://docs.google.com/viewer?url='+encodeURIComponent(info.download); }
 
-  // Essayer d'abord d'afficher directement
-  frame.style.display='block';
-  if(fallback) fallback.style.display='none';
+  var frame    = g('pdf-frame');
+  var fallback = g('pdf-fallback');
 
-  // Si c'est un PDF Supabase Storage → affichage direct
-  if(url.includes('supabase')||url.endsWith('.pdf')){
-    frame.src = url;
-  } else {
-    // Sinon Google Viewer
-    frame.src = gview;
-  }
+  frame.style.display    = 'block';
+  if(fallback) fallback.style.display = 'none';
 
-  // Fallback si iframe échoue
+  // Charger dans l iframe
+  frame.src = info.view;
+
+  // Timeout : si rien ne s affiche apres 6 secondes → fallback
+  var fbTimer = setTimeout(function(){
+    frame.style.display = 'none';
+    if(fallback) fallback.style.display = 'block';
+  }, 6000);
+
+  frame.onload = function(){
+    clearTimeout(fbTimer);
+    // Vérifier si la frame affiche bien un PDF et non une page d erreur
+    try {
+      var doc = frame.contentDocument || frame.contentWindow?.document;
+      if(doc && doc.title && (doc.title.includes('Quick Share') || doc.title.includes('Error') || doc.title.includes('403'))){
+        clearTimeout(fbTimer);
+        frame.style.display = 'none';
+        if(fallback) fallback.style.display = 'block';
+      }
+    } catch(e) {
+      // Cross-origin : on ne peut pas lire le contenu → c est normal pour Drive
+      clearTimeout(fbTimer);
+    }
+  };
+
   frame.onerror = function(){
-    frame.style.display='none';
-    if(fallback) fallback.style.display='block';
+    clearTimeout(fbTimer);
+    frame.style.display = 'none';
+    if(fallback) fallback.style.display = 'block';
   };
 
   g('mo-pdf').classList.add('on');
