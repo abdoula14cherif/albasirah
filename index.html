@@ -341,9 +341,13 @@ textarea.inp{resize:vertical;min-height:72px}
 <div id="toast"></div>
 
 <!-- AUDIO PLAYER -->
+<!-- ═══ AUDIO PLAYER REEL ═══ -->
 <div id="ap">
   <div class="ap-ico">🎧</div>
-  <div class="ap-inf"><div class="ap-t" id="ap-t">—</div><div class="ap-a" id="ap-a">—</div></div>
+  <div class="ap-inf">
+    <div class="ap-t" id="ap-t">—</div>
+    <div class="ap-a" id="ap-a">—</div>
+  </div>
   <div class="ap-ctr">
     <button class="ap-b" onclick="APstep(-15)">-15s</button>
     <button class="ap-b ap-play" id="ap-btn" onclick="APtoggle()">▶</button>
@@ -354,25 +358,79 @@ textarea.inp{resize:vertical;min-height:72px}
     <div class="ap-ti"><span id="ap-cur">0:00</span><span id="ap-dur">—</span></div>
   </div>
   <button class="ap-x" onclick="APclose()">✕</button>
+  <!-- Balise audio HTML5 cachee -->
+  <audio id="real-audio" preload="none" style="display:none"
+    onplay="APonPlay()" onpause="APonPause()"
+    ontimeupdate="APonTimeUpdate()" onloadedmetadata="APonMeta()"
+    onerror="APonError()">
+  </audio>
 </div>
 
-<!-- VIDEO MODAL -->
+<!-- ═══ VIDEO MODAL REEL ═══ -->
 <div class="mo" id="mo-vid">
   <div class="mb">
-    <div class="mh"><p class="mt" id="mv-ttl">—</p><button class="mx" onclick="closeMo('mo-vid')">✕</button></div>
-    <div class="mbody">
-      <div style="aspect-ratio:16/9;background:var(--dark);border-radius:var(--radm);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-bottom:11px" onclick="mvLaunch()">
-        <span style="font-size:3rem">🎬</span>
-        <span style="color:rgba(255,255,255,.4);font-size:.76rem;font-weight:700">Appuyer pour lire</span>
+    <div class="mh">
+      <p class="mt" id="mv-ttl">—</p>
+      <button class="mx" onclick="closeMo('mo-vid');stopVideo()">✕</button>
+    </div>
+    <div class="mbody" style="padding:11px">
+      <!-- Player vidéo réel -->
+      <div id="mv-player-wrap" style="position:relative;border-radius:var(--radm);overflow:hidden;background:var(--dark);margin-bottom:11px">
+        <!-- Video HTML5 (fichier direct) -->
+        <video id="mv-video" controls preload="none"
+          style="width:100%;display:none;border-radius:var(--radm)"
+          controlslist="nodownload"
+          onplay="try{SB.rpc('inc_views',{vid:0})}catch(e){}">
+        </video>
+        <!-- Iframe YouTube/externe -->
+        <div id="mv-iframe-wrap" style="aspect-ratio:16/9;display:none">
+          <iframe id="mv-iframe"
+            style="width:100%;height:100%;border:none;border-radius:var(--radm)"
+            allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
+        <!-- Thumbnail / bouton play avant lancement -->
+        <div id="mv-thumb" style="aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;position:relative;overflow:hidden" onclick="mvLaunch()">
+          <div id="mv-thumb-img" style="position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.6)"></div>
+          <div style="position:relative;z-index:1;width:60px;height:60px;border-radius:50%;background:rgba(229,57,53,.9);display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 4px 20px rgba(0,0,0,.4)">▶</div>
+          <p style="position:relative;z-index:1;color:rgba(255,255,255,.8);font-size:.76rem;font-weight:700">Appuyer pour lire</p>
+        </div>
       </div>
-      <p id="mv-meta" style="font-size:.75rem;color:var(--muted);font-weight:700;margin-bottom:8px"></p>
+      <p id="mv-meta" style="font-size:.75rem;color:var(--muted);font-weight:700;margin-bottom:7px"></p>
       <p id="mv-desc" style="font-size:.78rem;color:var(--sub);line-height:1.75;background:var(--bg);padding:9px;border-radius:var(--radm);margin-bottom:10px"></p>
-      <div id="mv-extw" style="display:none;margin-bottom:10px">
-        <a id="mv-extl" href="#" target="_blank" class="btn btn-r btn-fw">▶ Ouvrir sur YouTube</a>
-      </div>
       <div style="display:flex;gap:7px;flex-wrap:wrap">
-        <button class="btn btn-r btn-sm" onclick="mvLaunch()">▶ Regarder</button>
-        <button class="btn btn-out btn-sm" onclick="doShare(g('mv-ttl').textContent)">🔗</button>
+        <button class="btn btn-r btn-sm" onclick="mvLaunch()">▶ Lire</button>
+        <a id="mv-dl" href="#" download class="btn btn-out btn-sm" style="display:none">↓ Télécharger</a>
+        <a id="mv-ext-a" href="#" target="_blank" class="btn btn-out btn-sm" style="display:none">🔗 Ouvrir sur YouTube</a>
+        <button class="btn btn-out btn-sm" onclick="doShare(g('mv-ttl').textContent)">🔗 Partager</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PDF MODAL ═══ -->
+<div class="mo" id="mo-pdf">
+  <div class="mb" style="height:95vh;display:flex;flex-direction:column">
+    <div class="mh">
+      <p class="mt" id="pdf-ttl">📄 —</p>
+      <div style="display:flex;gap:6px">
+        <a id="pdf-dl" href="#" download class="btn btn-g btn-sm">↓ Télécharger</a>
+        <button class="mx" onclick="closeMo('mo-pdf')">✕</button>
+      </div>
+    </div>
+    <!-- Viewer PDF -->
+    <div style="flex:1;position:relative">
+      <iframe id="pdf-frame"
+        style="width:100%;height:100%;border:none"
+        src="about:blank">
+      </iframe>
+      <!-- Fallback si iframe bloque -->
+      <div id="pdf-fallback" style="display:none;padding:24px;text-align:center">
+        <span style="font-size:3rem;display:block;margin-bottom:12px">📄</span>
+        <p style="font-size:.85rem;font-weight:700;color:var(--sub);margin-bottom:14px">Ce PDF ne peut pas être affiché directement dans le navigateur.</p>
+        <a id="pdf-dl2" href="#" target="_blank" class="btn btn-g btn-lg">↓ Télécharger le PDF</a>
+        <br><br>
+        <a id="pdf-gview" href="#" target="_blank" class="btn btn-b">🌐 Ouvrir dans Google Drive Viewer</a>
       </div>
     </div>
   </div>
@@ -1154,7 +1212,7 @@ function renderCI(item, type){
 
   var mainBtn = '';
   if(isB){
-    mainBtn = '<button class="btn btn-g btn-sm" onclick="event.stopPropagation();dlBook('+item.id+',\''+esc(item.file_url||'')+'\',\''+esc(item.title||'')+'\')">↓ '+(item.file_type||'PDF')+'</button>';
+    mainBtn = '<button class="btn btn-g btn-sm" onclick="event.stopPropagation();dlBook('+item.id+',\''+esc(item.file_url||'')+'\',\''+esc(item.title||'')+'\')">📖 '+(item.file_type==='PDF'?'Lire PDF':'Télécharger')+'</button>';
   } else if(isA){
     mainBtn = '<button class="btn btn-b btn-sm" id="pb-'+item.id+'" onclick="event.stopPropagation();playAudio('+item.id+',\''+esc(item.title||'')+'\',\''+esc(item.author_name||'')+'\',\''+esc(item.file_url||'')+'\',this)">▶ Écouter</button>';
   } else {
@@ -1402,70 +1460,193 @@ function sendMsg(){
   inp.value = '';
 }
 
-// ─── AUDIO PLAYER ──────────────────────────────
-var AP_state = { playing:false, cur:0, dur:3600, timer:null, id:null };
+// ─── AUDIO PLAYER REEL ─────────────────────────
+var AP_state = { id:null, url:null };
 
-function APload(id, title, author){
-  if(AP_state.id){ var ob=g('pb-'+AP_state.id); if(ob) ob.textContent='▶ Écouter'; }
-  AP_state.id=id; AP_state.cur=0; AP_state.playing=true;
-  g('ap-t').textContent   = (title||'').substring(0,50);
-  g('ap-a').textContent   = author||'—';
-  g('ap-dur').textContent = '60:00';
-  g('ap-fill').style.width = '0%';
-  g('ap-btn').textContent  = '⏸';
-  g('ap').classList.add('on');
-  clearInterval(AP_state.timer);
-  AP_state.timer = setInterval(function(){
-    if(!AP_state.playing) return;
-    AP_state.cur++;
-    g('ap-fill').style.width = (AP_state.cur/AP_state.dur*100).toFixed(1)+'%';
-    g('ap-cur').textContent  = fmtT(AP_state.cur);
-    if(AP_state.cur >= AP_state.dur){ clearInterval(AP_state.timer); toast('✅ Lecture terminée'); }
-  }, 1000);
+function APonPlay(){ g('ap-btn').textContent='⏸'; }
+function APonPause(){ g('ap-btn').textContent='▶'; }
+function APonMeta(){
+  var a=g('real-audio');
+  if(a&&isFinite(a.duration)) g('ap-dur').textContent=fmtT(Math.floor(a.duration));
 }
-function APtoggle(){ AP_state.playing=!AP_state.playing; g('ap-btn').textContent=AP_state.playing?'⏸':'▶'; }
-function APseek(e){ var trk=g('ap-trk'); var p=Math.max(0,Math.min(1,e.offsetX/trk.offsetWidth)); AP_state.cur=Math.floor(p*AP_state.dur); g('ap-fill').style.width=(p*100).toFixed(1)+'%'; g('ap-cur').textContent=fmtT(AP_state.cur); }
-function APstep(s){ AP_state.cur=Math.max(0,Math.min(AP_state.dur,AP_state.cur+s)); g('ap-fill').style.width=(AP_state.cur/AP_state.dur*100).toFixed(1)+'%'; g('ap-cur').textContent=fmtT(AP_state.cur); toast((s>0?'+':'')+s+'s'); }
-function APclose(){ clearInterval(AP_state.timer); AP_state.playing=false; g('ap').classList.remove('on'); g('ap-btn').textContent='▶'; if(AP_state.id){var ob=g('pb-'+AP_state.id);if(ob)ob.textContent='▶ Écouter';} }
+function APonTimeUpdate(){
+  var a=g('real-audio');
+  if(!a||!isFinite(a.duration)||a.duration===0) return;
+  var pct=(a.currentTime/a.duration*100).toFixed(1);
+  g('ap-fill').style.width=pct+'%';
+  g('ap-cur').textContent=fmtT(Math.floor(a.currentTime));
+}
+function APonError(){ toast('❌ Impossible de lire ce fichier audio'); g('ap-btn').textContent='▶'; }
+
+function APload(id, title, author, url){
+  var audio=g('real-audio');
+  if(!audio) return;
+  if(AP_state.id){ var ob=g('pb-'+AP_state.id); if(ob) ob.textContent='▶ Écouter'; }
+  AP_state.id=id; AP_state.url=url;
+  g('ap-t').textContent=(title||'').substring(0,50);
+  g('ap-a').textContent=author||'—';
+  g('ap-cur').textContent='0:00';
+  g('ap-dur').textContent='—';
+  g('ap-fill').style.width='0%';
+  g('ap').classList.add('on');
+  if(url&&url.startsWith('http')){
+    audio.src=url; audio.load();
+    audio.play().catch(function(){ toast('▶ Appuyez sur lecture'); g('ap-btn').textContent='▶'; });
+  } else {
+    toast('⚠️ Aucun fichier audio pour ce cours');
+  }
+}
+function APtoggle(){
+  var a=g('real-audio'); if(!a) return;
+  if(a.paused) a.play(); else a.pause();
+}
+function APseek(e){
+  var a=g('real-audio'); if(!a||!isFinite(a.duration)) return;
+  var p=Math.max(0,Math.min(1,e.offsetX/g('ap-trk').offsetWidth));
+  a.currentTime=p*a.duration;
+}
+function APstep(s){
+  var a=g('real-audio'); if(!a) return;
+  a.currentTime=Math.max(0,(a.currentTime||0)+s);
+  toast((s>0?'+':'')+s+'s');
+}
+function APclose(){
+  var a=g('real-audio'); if(a){a.pause();a.src='';}
+  g('ap').classList.remove('on');
+  g('ap-btn').textContent='▶';
+  if(AP_state.id){var ob=g('pb-'+AP_state.id);if(ob)ob.textContent='▶ Écouter';}
+  AP_state.id=null;
+}
 
 function playAudio(id, title, author, url, btn){
-  if(AP_state.id===id && AP_state.playing){ APtoggle(); btn.textContent='▶ Écouter'; return; }
-  APload(id, title, author);
-  btn.textContent = '⏸ Pause';
+  var a=g('real-audio');
+  if(AP_state.id===id&&a&&!a.paused){ APtoggle(); btn.textContent='▶ Écouter'; return; }
+  APload(id,title,author,url);
+  btn.textContent='⏸ Pause';
   toast('▶ '+(title||'').substring(0,35)+'…');
   try{ SB.rpc('inc_plays',{aid:id}); }catch(e){}
 }
 
-// ─── VIDEO ─────────────────────────────────────
+// ─── VIDEO REEL ─────────────────────────────────
+var _mvUrl = null;
+
+function isYoutube(url){
+  return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+}
+function isDirectVideo(url){
+  return url && (url.endsWith('.mp4')||url.endsWith('.mov')||url.endsWith('.webm')||url.includes('/object/'));
+}
+function ytEmbedUrl(url){
+  // Extraire l'ID YouTube
+  var m = url.match(/(?:v=|youtu\.be\/|\/embed\/|\/live\/)([a-zA-Z0-9_-]{11})/);
+  if(m) return 'https://www.youtube.com/embed/'+m[1]+'?autoplay=1&rel=0';
+  return url;
+}
+
+function stopVideo(){
+  var vid=g('mv-video'); if(vid){vid.pause();vid.src='';}
+  var ifr=g('mv-iframe'); if(ifr) ifr.src='about:blank';
+}
+
 function openVideo(title, author, dur, views, desc, url, thumb){
-  g('mv-ttl').textContent = title||'—';
+  _mvUrl = url;
+  g('mv-ttl').textContent  = title||'—';
   g('mv-meta').textContent = '👤 '+(author||'—')+' · ⏱ '+(dur||'—')+' · 👁 '+fmt(views||0)+' vues';
   g('mv-desc').textContent = desc||'Appuyez pour lancer la lecture.';
-  // Afficher le thumbnail dans le player si dispo
-  var screen = g('mv-ttl').closest('.mb')?.querySelector('#mv-screen, [onclick="mvLaunch()"]');
-  var mvScr = document.querySelector('#mo-vid [onclick="mvLaunch()"]');
-  if(mvScr && thumb && thumb.startsWith('http')){
-    mvScr.style.backgroundImage = 'url('+thumb+')';
-    mvScr.style.backgroundSize  = 'cover';
-    mvScr.style.backgroundPosition = 'center';
-  } else if(mvScr) {
-    mvScr.style.backgroundImage = '';
+
+  // Reset players
+  stopVideo();
+  g('mv-video').style.display='none';
+  g('mv-iframe-wrap').style.display='none';
+  g('mv-thumb').style.display='flex';
+
+  // Thumbnail
+  var ti=g('mv-thumb-img');
+  if(thumb&&thumb.startsWith('http')){
+    ti.style.backgroundImage='url('+thumb+')';
+    ti.style.display='block';
+  } else {
+    ti.style.backgroundImage='';
+    ti.style.display='none';
   }
-  var ew = g('mv-extw'), el = g('mv-extl');
-  if(url && url.startsWith('http')){ el.href=url; ew.style.display='block'; } else ew.style.display='none';
+
+  // Bouton télécharger (fichier direct seulement)
+  var dlBtn=g('mv-dl');
+  if(dlBtn){
+    if(isDirectVideo(url)){dlBtn.href=url;dlBtn.style.display='inline-flex';}
+    else dlBtn.style.display='none';
+  }
+  // Bouton YouTube
+  var ytBtn=g('mv-ext-a');
+  if(ytBtn){
+    if(isYoutube(url)){ytBtn.href=url;ytBtn.style.display='inline-flex';}
+    else ytBtn.style.display='none';
+  }
+
   g('mo-vid').classList.add('on');
   try{ SB.rpc('inc_views',{vid:0}); }catch(e){}
 }
+
 function mvLaunch(){
-  var url = g('mv-extl')?.href;
-  if(url && url.startsWith('http')) window.open(url,'_blank');
-  else toast('▶ Lecture lancée !');
+  if(!_mvUrl) return;
+  g('mv-thumb').style.display='none';
+
+  if(isDirectVideo(_mvUrl)){
+    // Fichier MP4 direct
+    var vid=g('mv-video');
+    vid.src=_mvUrl;
+    vid.style.display='block';
+    vid.play().catch(function(e){ toast('▶ Appuyez sur lecture'); });
+  } else if(isYoutube(_mvUrl)){
+    // YouTube embed
+    var wrap=g('mv-iframe-wrap');
+    var ifr=g('mv-iframe');
+    ifr.src=ytEmbedUrl(_mvUrl);
+    wrap.style.display='block';
+  } else if(_mvUrl&&_mvUrl.startsWith('http')){
+    // Autre lien externe (TikTok, Vimeo…)
+    window.open(_mvUrl,'_blank');
+    g('mv-thumb').style.display='flex'; // Remettre le thumb
+  }
 }
 
-// ─── BOOK DOWNLOAD ─────────────────────────────
+// ─── PDF / LIVRE ────────────────────────────────
 function dlBook(id, url, title){
-  if(url && url.startsWith('http')) window.open(url,'_blank');
-  else toast('↓ '+(title||'').substring(0,30)+'…');
+  if(!url||!url.startsWith('http')){
+    toast('↓ '+(title||'').substring(0,30)+'…');
+    try{ SB.rpc('inc_downloads',{bid:id}); }catch(e){}
+    return;
+  }
+  // Ouvrir le viewer PDF dans le modal
+  g('pdf-ttl').textContent = '📄 '+(title||'—');
+  var dl=g('pdf-dl'); if(dl){dl.href=url; dl.download=title||'document';}
+  var dl2=g('pdf-dl2'); if(dl2){dl2.href=url;}
+  var frame=g('pdf-frame');
+  var fallback=g('pdf-fallback');
+
+  // Google Docs Viewer pour les PDFs en ligne
+  var gview='https://docs.google.com/viewer?url='+encodeURIComponent(url)+'&embedded=true';
+  var gviewBtn=g('pdf-gview'); if(gviewBtn) gviewBtn.href='https://docs.google.com/viewer?url='+encodeURIComponent(url);
+
+  // Essayer d'abord d'afficher directement
+  frame.style.display='block';
+  if(fallback) fallback.style.display='none';
+
+  // Si c'est un PDF Supabase Storage → affichage direct
+  if(url.includes('supabase')||url.endsWith('.pdf')){
+    frame.src = url;
+  } else {
+    // Sinon Google Viewer
+    frame.src = gview;
+  }
+
+  // Fallback si iframe échoue
+  frame.onerror = function(){
+    frame.style.display='none';
+    if(fallback) fallback.style.display='block';
+  };
+
+  g('mo-pdf').classList.add('on');
   try{ SB.rpc('inc_downloads',{bid:id}); }catch(e){}
 }
 
