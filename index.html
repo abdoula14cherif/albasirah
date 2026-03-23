@@ -20,9 +20,78 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);overf
 button,input,select,textarea{font-family:'Nunito',sans-serif}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--g);border-radius:2px}
 
-/* SCREENS */
-.screen{display:none;min-height:100vh;padding-bottom:68px}
-.screen.on{display:block}
+/* ══ SPLASH SCREEN ══ */
+#splash{
+  position:fixed;inset:0;z-index:99999;
+  background:linear-gradient(160deg,#071D2A 0%,#0A2A1A 50%,#071D2A 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;transition:opacity .6s ease,transform .6s ease;
+}
+#splash.hide{opacity:0;transform:scale(1.04);pointer-events:none;}
+
+/* Logo */
+.sp-gem{
+  width:80px;height:80px;border-radius:22px;
+  background:linear-gradient(135deg,#25D366,#2AABEE);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Noto Naskh Arabic',serif;font-size:2.2rem;color:#fff;font-weight:700;
+  margin-bottom:16px;
+  box-shadow:0 0 0 0 rgba(37,211,102,.4);
+  animation:gemPulse 2s infinite;
+}
+@keyframes gemPulse{
+  0%{box-shadow:0 0 0 0 rgba(37,211,102,.4)}
+  70%{box-shadow:0 0 0 18px rgba(37,211,102,0)}
+  100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}
+}
+.sp-name-ar{
+  font-family:'Noto Naskh Arabic',serif;font-size:1.6rem;font-weight:700;
+  color:#25D366;margin-bottom:4px;text-align:center;
+}
+.sp-name-fr{
+  font-size:.65rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);margin-bottom:40px;
+}
+
+/* Hadith box */
+.sp-hadith-box{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:18px;padding:20px 18px;max-width:380px;width:100%;
+  margin-bottom:32px;min-height:120px;position:relative;
+}
+.sp-hadith-ar{
+  font-family:'Noto Naskh Arabic',serif;font-size:1.05rem;font-weight:700;
+  color:#fff;line-height:2;text-align:right;direction:rtl;
+  margin-bottom:10px;min-height:42px;
+}
+.sp-hadith-fr{
+  font-size:.74rem;font-weight:600;color:rgba(255,255,255,.55);
+  line-height:1.7;text-align:center;font-style:italic;min-height:20px;
+}
+.sp-source{
+  font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  color:#25D366;text-align:center;margin-top:10px;
+}
+/* Curseur clignotant */
+.cursor{
+  display:inline-block;width:2px;height:1.1em;
+  background:#25D366;margin-left:2px;vertical-align:middle;
+  animation:cur .7s infinite;
+}
+@keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Barre de progression */
+.sp-bar-wrap{width:100%;max-width:260px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
+.sp-bar{height:100%;width:0%;background:linear-gradient(90deg,#25D366,#2AABEE);border-radius:2px;transition:width .1s linear;}
+.sp-pct{font-size:.62rem;font-weight:800;color:rgba(255,255,255,.3);margin-top:8px;letter-spacing:.1em;}
+
+/* Étoiles décoratives */
+.sp-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.sp-star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d) infinite var(--delay);}
+@keyframes twinkle{0%,100%{opacity:.1;transform:scale(1)}50%{opacity:.6;transform:scale(1.4)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
 
 /* NAV */
 .nav{position:fixed;top:0;left:0;right:0;z-index:900;height:56px;
@@ -339,6 +408,28 @@ textarea.inp{resize:vertical;min-height:72px}
 <body>
 
 <div id="toast"></div>
+
+<!-- ═══ SPLASH SCREEN ═══ -->
+<div id="splash">
+  <!-- Étoiles décoratives -->
+  <div class="sp-stars" id="sp-stars"></div>
+
+  <!-- Logo -->
+  <div class="sp-gem">ب</div>
+  <p class="sp-name-ar">البصيرة</p>
+  <p class="sp-name-fr">Al Basîrah · La Voie du Savoir</p>
+
+  <!-- Hadith box -->
+  <div class="sp-hadith-box">
+    <div class="sp-hadith-ar" id="sp-ar"></div>
+    <div class="sp-hadith-fr" id="sp-fr"></div>
+    <div class="sp-source" id="sp-src"></div>
+  </div>
+
+  <!-- Barre de chargement -->
+  <div class="sp-bar-wrap"><div class="sp-bar" id="sp-bar"></div></div>
+  <p class="sp-pct" id="sp-pct">Chargement…</p>
+</div>
 
 <!-- AUDIO PLAYER -->
 <!-- ═══ AUDIO PLAYER REEL ═══ -->
@@ -2050,27 +2141,149 @@ async function adminAddLive(){
 }
 
 // ─── INIT ──────────────────────────────────────
+// ═══════════════════════════════════════════════
+//  SPLASH SCREEN
+// ═══════════════════════════════════════════════
+
+var HADITHS = [
+  {
+    ar: 'مَنْ يُرِدِ اللَّهُ بِهِ خَيْرًا يُفَقِّهْهُ فِي الدِّينِ',
+    fr: 'Celui qu\'Allah veut du bien, Il lui accorde la compréhension de la religion.',
+    src: 'Sahih Al-Bukhari · 71'
+  },
+  {
+    ar: 'طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ',
+    fr: 'La recherche du savoir est une obligation pour tout musulman.',
+    src: 'Ibn Majah · Sahih'
+  },
+  {
+    ar: 'خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ',
+    fr: 'Le meilleur d\'entre vous est celui qui apprend le Coran et l\'enseigne.',
+    src: 'Sahih Al-Bukhari · 5027'
+  },
+  {
+    ar: 'إِنَّمَا الْعِلْمُ بِالتَّعَلُّمِ وَإِنَّمَا الْحِلْمُ بِالتَّحَلُّمِ',
+    fr: 'Le savoir ne s\'acquiert que par l\'apprentissage, et la sagesse par son exercice.',
+    src: 'Al-Bukhari — Adab Al-Mufrad'
+  },
+  {
+    ar: 'مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ طَرِيقًا إِلَى الْجَنَّةِ',
+    fr: 'Celui qui emprunte un chemin pour y chercher le savoir, Allah lui facilite un chemin vers le Paradis.',
+    src: 'Sahih Muslim · 2699'
+  },
+  {
+    ar: 'فَضْلُ الْعَالِمِ عَلَى الْعَابِدِ كَفَضْلِ الْقَمَرِ عَلَى سَائِرِ الْكَوَاكِبِ',
+    fr: 'La supériorité du savant sur l\'adorateur est comme la supériorité de la lune sur les étoiles.',
+    src: 'Sunan Abu Dawud · 3641'
+  },
+];
+
+function splashInit(){
+  // Générer les étoiles
+  var stars = g('sp-stars');
+  if(stars){
+    var html = '';
+    for(var i=0;i<25;i++){
+      var size = Math.random()*3+1;
+      var x    = Math.random()*100;
+      var y    = Math.random()*100;
+      var d    = (Math.random()*3+2).toFixed(1)+'s';
+      var del  = (Math.random()*3).toFixed(1)+'s';
+      html += '<div class="sp-star" style="width:'+size+'px;height:'+size+'px;left:'+x+'%;top:'+y+'%;--d:'+d+';--delay:'+del+'"></div>';
+    }
+    stars.innerHTML = html;
+  }
+
+  // Choisir un hadith au hasard
+  var hadith = HADITHS[Math.floor(Math.random() * HADITHS.length)];
+
+  // Lancer l'animation de frappe
+  typeText(hadith);
+}
+
+function typeText(hadith){
+  var arEl  = g('sp-ar');
+  var frEl  = g('sp-fr');
+  var srcEl = g('sp-src');
+  if(!arEl) return;
+
+  // Ajouter curseur
+  arEl.innerHTML = '<span class="cursor"></span>';
+
+  var text  = hadith.ar;
+  var i     = 0;
+  var speed = 45; // ms par caractère
+
+  function typeChar(){
+    if(i < text.length){
+      arEl.innerHTML = text.substring(0, i+1) + '<span class="cursor"></span>';
+      i++;
+      setTimeout(typeChar, speed);
+    } else {
+      // Frappe terminée — retirer curseur, afficher traduction
+      arEl.innerHTML = text;
+      setTimeout(function(){
+        frEl.textContent = hadith.fr;
+        frEl.style.animation = 'fadeInUp .5s ease both';
+        setTimeout(function(){
+          srcEl.textContent = '— ' + hadith.src;
+          srcEl.style.animation = 'fadeInUp .5s ease both';
+        }, 300);
+      }, 200);
+    }
+  }
+  setTimeout(typeChar, 400);
+}
+
+function splashProgress(pct, label){
+  var bar = g('sp-bar');
+  var pEl = g('sp-pct');
+  if(bar) bar.style.width = pct + '%';
+  if(pEl) pEl.textContent = label || 'Chargement…';
+}
+
+function splashHide(){
+  var sp = g('splash');
+  if(!sp) return;
+  setTimeout(function(){
+    sp.classList.add('hide');
+    setTimeout(function(){ sp.style.display='none'; }, 650);
+  }, 600);
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
 async function appInit(){
+  // Lancer le splash
+  splashInit();
+  splashProgress(10, 'Connexion…');
+
   // Charge la session
   var sessRes = await SB.auth.getSession();
+  splashProgress(30, 'Authentification…');
   if(sessRes.data?.session){
     APP.user = sessRes.data.session.user;
     updateNavAuth();
     await loadProfile();
   }
+  splashProgress(50, 'Chargement des données…');
+
   // Écoute les changements
   SB.auth.onAuthStateChange(function(event, session){
     APP.user = session?.user||null;
     updateNavAuth();
-    if(event==='SIGNED_IN'){
-      loadProfile();
-    }
-    if(event==='SIGNED_OUT'){
-      APP.isAdmin = false;
-    }
+    if(event==='SIGNED_IN') loadProfile();
+    if(event==='SIGNED_OUT') APP.isAdmin = false;
   });
+
   // Charge les données
   await loadAll();
+  splashProgress(100, 'Prêt !');
+
+  // Masquer le splash (après que le hadith ait eu le temps de s'afficher)
+  var delay = 4200; // minimum 4.2s pour laisser le temps de lire
+  splashHide();
 }
 
 // Démarrage
