@@ -92,6 +92,19 @@ button,input,select,textarea{font-family:'Nunito',sans-serif}
 @keyframes twinkle{0%,100%{opacity:.1;transform:scale(1)}50%{opacity:.6;transform:scale(1.4)}}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
+/* SCREENS — caché par défaut, visible avec .on */
+.screen{display:none;min-height:100vh;padding-bottom:68px}
+.screen.on{display:block}
+
+/* Pendant le splash : tout cacher sauf le splash lui-même */
+body.splashing > *:not(#splash){
+  visibility:hidden;
+  pointer-events:none;
+}
+body.splashing #splash{
+  visibility:visible;
+  pointer-events:auto;
+}
 
 /* NAV */
 .nav{position:fixed;top:0;left:0;right:0;z-index:900;height:56px;
@@ -405,7 +418,7 @@ textarea.inp{resize:vertical;min-height:72px}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
-<body>
+<body class="splashing">
 
 <div id="toast"></div>
 
@@ -2197,22 +2210,26 @@ function splashInit(){
   // Choisir un hadith au hasard
   var hadith = HADITHS[Math.floor(Math.random() * HADITHS.length)];
 
-  // Lancer l'animation de frappe
-  typeText(hadith);
+  // Lancer la frappe — quand fini, appeler le callback
+  typeText(hadith, function(){
+    if(splashInit._onTypingDone) splashInit._onTypingDone();
+  });
 }
 
-function typeText(hadith){
+function typeText(hadith, onDone){
   var arEl  = g('sp-ar');
   var frEl  = g('sp-fr');
   var srcEl = g('sp-src');
-  if(!arEl) return;
+  if(!arEl){ if(onDone) onDone(); return; }
 
-  // Ajouter curseur
+  // Reset
   arEl.innerHTML = '<span class="cursor"></span>';
+  frEl.textContent = '';
+  srcEl.textContent = '';
 
   var text  = hadith.ar;
   var i     = 0;
-  var speed = 45; // ms par caractère
+  var speed = 55; // ms par caractère — plus lent pour mieux lire
 
   function typeChar(){
     if(i < text.length){
@@ -2220,19 +2237,32 @@ function typeText(hadith){
       i++;
       setTimeout(typeChar, speed);
     } else {
-      // Frappe terminée — retirer curseur, afficher traduction
+      // Frappe arabe terminée
       arEl.innerHTML = text;
+      // Afficher traduction française
       setTimeout(function(){
+        frEl.style.opacity = '0';
         frEl.textContent = hadith.fr;
-        frEl.style.animation = 'fadeInUp .5s ease both';
+        frEl.style.transition = 'opacity .5s ease';
+        setTimeout(function(){ frEl.style.opacity = '1'; }, 50);
+
+        // Afficher source
         setTimeout(function(){
+          srcEl.style.opacity = '0';
           srcEl.textContent = '— ' + hadith.src;
-          srcEl.style.animation = 'fadeInUp .5s ease both';
-        }, 300);
-      }, 200);
+          srcEl.style.transition = 'opacity .5s ease';
+          setTimeout(function(){ srcEl.style.opacity = '1'; }, 50);
+
+          // Attendre 1.5s après la source puis signaler que c'est fini
+          setTimeout(function(){
+            if(onDone) onDone();
+          }, 1500);
+
+        }, 500);
+      }, 300);
     }
   }
-  setTimeout(typeChar, 400);
+  setTimeout(typeChar, 500);
 }
 
 function splashProgress(pct, label){
@@ -2245,19 +2275,40 @@ function splashProgress(pct, label){
 function splashHide(){
   var sp = g('splash');
   if(!sp) return;
-  setTimeout(function(){
-    sp.classList.add('hide');
-    setTimeout(function(){ sp.style.display='none'; }, 650);
-  }, 600);
+  // Retirer la classe splashing → les écrans deviennent visibles
+  document.body.classList.remove('splashing');
+  sp.classList.add('hide');
+  setTimeout(function(){ sp.style.display='none'; }, 700);
 }
 
 // ═══════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════
 async function appInit(){
-  // Lancer le splash
+  // Lancer le splash immédiatement
   splashInit();
-  splashProgress(10, 'Connexion…');
+  splashProgress(5, 'Connexion…');
+
+  // Deux choses en parallèle :
+  // 1) Charger les données
+  // 2) Laisser la frappe du hadith se terminer
+  // → La page ne s'ouvre que quand LES DEUX sont terminés
+
+  var dataReady   = false;
+  var typingDone  = false;
+
+  function tryHide(){
+    if(dataReady && typingDone){
+      splashProgress(100, 'Prêt ! بارك الله فيكم');
+      setTimeout(function(){ splashHide(); }, 600);
+    }
+  }
+
+  // Lancer la frappe — signale quand terminée
+  splashInit._onTypingDone = function(){
+    typingDone = true;
+    tryHide();
+  };
 
   // Charge la session
   var sessRes = await SB.auth.getSession();
@@ -2267,7 +2318,7 @@ async function appInit(){
     updateNavAuth();
     await loadProfile();
   }
-  splashProgress(50, 'Chargement des données…');
+  splashProgress(60, 'Chargement du contenu…');
 
   // Écoute les changements
   SB.auth.onAuthStateChange(function(event, session){
@@ -2279,11 +2330,10 @@ async function appInit(){
 
   // Charge les données
   await loadAll();
-  splashProgress(100, 'Prêt !');
+  splashProgress(90, 'Presque prêt…');
 
-  // Masquer le splash (après que le hadith ait eu le temps de s'afficher)
-  var delay = 4200; // minimum 4.2s pour laisser le temps de lire
-  splashHide();
+  dataReady = true;
+  tryHide();
 }
 
 // Démarrage
