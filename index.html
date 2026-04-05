@@ -93,7 +93,7 @@ button,input,select,textarea{font-family:'Nunito',sans-serif}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
 /* SCREENS — caché par défaut, visible avec .on */
-.screen{display:none;min-height:100vh;padding-bottom:68px}
+.screen{display:none;min-height:100vh;padding-bottom:0}
 .screen.on{display:block}
 
 /* Pendant le splash : tout cacher sauf le splash lui-même */
@@ -636,7 +636,7 @@ textarea.inp{resize:vertical;min-height:72px}
     <div class="g3" id="home-cats"><div class="empty" style="grid-column:1/-1"><span class="ei">🏷️</span><h3>Aucune catégorie</h3><p>Créez via le panel admin</p></div></div>
   </div>
 
-  <div style="background:linear-gradient(135deg,var(--g2),var(--b2),var(--c));padding:26px 13px;text-align:center">
+  <div style="background:linear-gradient(135deg,var(--g2),var(--b2),var(--c));padding:26px 13px calc(26px + 68px);text-align:center;margin-bottom:0">
     <p style="font-family:'Noto Naskh Arabic',serif;font-size:1.05rem;font-weight:700;color:#fff;line-height:2;margin-bottom:5px">طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ</p>
     <p style="font-size:.8rem;font-style:italic;font-weight:700;color:rgba(255,255,255,.85)">"La recherche du savoir est une obligation pour tout musulman."</p>
     <span style="display:block;margin-top:6px;font-size:.6rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)">— Ibn Mâjah</span>
@@ -2146,14 +2146,111 @@ async function adminAddLive(){
     if(res.error) throw res.error;
     toast('✅ Session live publiée !');
     clr(['lv-ttl','lv-snm','lv-url','lv-dt','lv-vw']);
-    await loadAll();
-    renderLive();
-    renderHomeLive();
+    await loadAll(); renderLive(); renderHomeLive();
   } catch(e){ toast('❌ '+e.message); }
   finally { busyBtn('btn-lv', false, '📡 Publier la session'); }
 }
 
-// ─── INIT ──────────────────────────────────────
+// ─── ADMIN : ADD HADITH ────────────────────────
+async function adminAddHadith(){
+  var ar=val('h-ar'), fr=val('h-fr'), src=val('h-src');
+  if(!ar||!fr||!src){ toast('⚠️ Texte arabe, traduction et source requis'); return; }
+  if(!await checkAdmin()) return;
+  busyBtn('btn-h', true, '➕ Ajouter le hadith');
+  try{
+    var res = await SB.from('hadiths').insert({
+      text_ar:   ar, text_fr: fr, source: src,
+      narrator:  val('h-nar')||null,
+      grade:     val('h-grade')||'Sahih',
+      category:  val('h-cat')||'general',
+      active_date: val('h-date')||null,
+    });
+    if(res.error) throw res.error;
+    toast('✅ Hadith ajouté !');
+    clr(['h-ar','h-fr','h-src','h-nar','h-date']);
+    await loadAll();
+  }catch(e){ toast('❌ '+e.message); }
+  finally{ busyBtn('btn-h', false, '➕ Ajouter le hadith'); }
+}
+
+// ─── ADMIN : ADD QUIZ ─────────────────────────
+async function adminAddQuiz(){
+  var fr=val('qz-fr'), a=val('qz-a'), b=val('qz-b'), c=val('qz-c'), d=val('qz-d'), expl=val('qz-expl');
+  if(!fr||!a||!b||!c||!d){ toast('⚠️ Question, 4 options et explication requis'); return; }
+  if(!await checkAdmin()) return;
+  busyBtn('btn-qz', true, '➕ Ajouter la question');
+  try{
+    var res = await SB.from('quizzes').insert({
+      question_ar: val('qz-ar')||null,
+      question_fr: fr,
+      option_a: a, option_b: b, option_c: c, option_d: d,
+      correct:     val('qz-correct')||'a',
+      explanation: expl,
+      category:    val('qz-cat')||'aqida',
+      difficulty:  val('qz-diff')||'moyen',
+    });
+    if(res.error) throw res.error;
+    toast('✅ Question ajoutée !');
+    clr(['qz-ar','qz-fr','qz-a','qz-b','qz-c','qz-d','qz-expl']);
+    await loadAll();
+  }catch(e){ toast('❌ '+e.message); }
+  finally{ busyBtn('btn-qz', false, '➕ Ajouter la question'); }
+}
+
+// ─── ADMIN : ADD DHIKR ────────────────────────
+async function adminAddDhikr(){
+  var ar=val('dk-ar'), fr=val('dk-fr'), src=val('dk-src');
+  if(!ar||!fr||!src){ toast('⚠️ Texte arabe, traduction et source requis'); return; }
+  if(!await checkAdmin()) return;
+  busyBtn('btn-dk', true, '➕ Ajouter le dhikr');
+  try{
+    var res = await SB.from('dhikr').insert({
+      text_ar: ar, text_fr: fr,
+      transliteration:   val('dk-tr')||null,
+      count_recommended: parseInt(val('dk-cnt'))||33,
+      reward:   val('dk-rw')||null,
+      source:   src,
+      time_of_day: val('dk-time')||'any',
+    });
+    if(res.error) throw res.error;
+    toast('✅ Dhikr ajouté !');
+    clr(['dk-ar','dk-fr','dk-tr','dk-cnt','dk-rw','dk-src']);
+    await loadAll();
+  }catch(e){ toast('❌ '+e.message); }
+  finally{ busyBtn('btn-dk', false, '➕ Ajouter le dhikr'); }
+}
+
+// ─── UPLOAD FILE ──────────────────────────────
+async function uploadFile(inpId, bucket){
+  var inp = g(inpId);
+  if(!inp||!inp.files||!inp.files.length) return null;
+  var file = inp.files[0];
+  var ext  = file.name.split('.').pop().toLowerCase();
+  var path = Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.'+ext;
+  var res  = await SB.storage.from(bucket).upload(path, file, {upsert:true});
+  if(res.error) throw new Error('Upload: '+res.error.message);
+  return SB.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+}
+async function uploadToStorage(inpId, bucket){ return uploadFile(inpId, bucket); }
+
+// ─── CHECK ADMIN ──────────────────────────────
+async function checkAdmin(){
+  var sessRes = await SB.auth.getSession();
+  if(!sessRes.data?.session){ toast('⚠️ Connexion requise'); return false; }
+  APP.user = sessRes.data.session.user;
+  var {data} = await SB.from('profiles').select('is_admin').eq('id',APP.user.id).single();
+  APP.isAdmin = data?.is_admin||false;
+  if(!APP.isAdmin){ toast('⚠️ Droits admin requis'); return false; }
+  return true;
+}
+
+// ─── FILL SELECTS ─────────────────────────────
+function fillSelects(){
+  var schOpts = '<option value="">— Aucun —</option>'+APP.scholars.map(function(s){ return '<option value="'+s.id+'">'+(s.name_fr||s.name_ar||'?')+'</option>'; }).join('');
+  var catOpts = '<option value="">— Choisir —</option>'+APP.cats.map(function(c){ return '<option value="'+(c.label_fr||'')+'">'+(c.emoji||'')+' '+(c.label_fr||'—')+'</option>'; }).join('');
+  ['b-sch','a-sch','v-sch','lv-sch'].forEach(function(id){ var e=g(id); if(e) e.innerHTML=schOpts; });
+  ['b-cat','a-cat','v-cat'].forEach(function(id){ var e=g(id); if(e) e.innerHTML=catOpts; });
+}
 // ═══════════════════════════════════════════════
 //  SPLASH SCREEN
 // ═══════════════════════════════════════════════
