@@ -4,657 +4,386 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Admin — Al Basîrah</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 :root{
-  --g:#25D366;--g2:#128C7E;--b:#2AABEE;--b2:#1565C0;
-  --r:#E53935;--c:#00BCD4;--o:#FF6F00;
-  --dark:#071D2A;--white:#fff;--bg:#F5FFFE;
-  --txt:#0A1F2E;--sub:#1E3A4A;--muted:#607D8B;--line:#E2ECF0;
-  --sh:0 2px 14px rgba(0,0,0,.07);--sh2:0 8px 28px rgba(0,0,0,.13);
-  --rad:14px;--radm:10px;
+  --g:#25D366;--g2:#0d9e4e;--b:#38bdf8;--b2:#0284c7;
+  --r:#f43f5e;--r2:#be123c;--amber:#f59e0b;--purple:#8b5cf6;
+  --dark:#030712;--dark2:#0f172a;--dark3:#1e293b;
+  --txt:#f1f5f9;--sub:#94a3b8;--muted:#475569;
+  --line:rgba(255,255,255,.08);--rad:16px;--radm:10px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
-button,input,select,textarea{font-family:'Nunito',sans-serif}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--g);border-radius:2px}
-
-/* LAYOUT */
-.admin-layout{display:flex;min-height:100vh}
-.sidebar{width:230px;background:var(--dark);min-height:100vh;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column}
-.sidebar-logo{padding:20px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
-.sidebar-gem{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--g),var(--b));display:flex;align-items:center;justify-content:center;font-family:Noto Naskh Arabic,serif;font-size:1rem;color:#fff;font-weight:700;flex-shrink:0}
-.sidebar-title{font-size:.8rem;font-weight:900;color:#fff}
-.sidebar-sub{font-size:.58rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase}
-.sidebar-nav{flex:1;padding:10px 10px;overflow-y:auto}
-.nav-section{font-size:.58rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:12px 8px 6px}
-.nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--radm);cursor:pointer;transition:all .18s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
-.nav-item .ni{font-size:1rem;flex-shrink:0}
-.nav-item .nl{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.55)}
-.nav-item:hover{background:rgba(255,255,255,.07)}
-.nav-item:hover .nl{color:#fff}
-.nav-item.active{background:linear-gradient(135deg,rgba(37,211,102,.2),rgba(42,171,238,.15))}
-.nav-item.active .nl{color:#fff;font-weight:800}
-.sidebar-footer{padding:14px;border-top:1px solid rgba(255,255,255,.08)}
-.sidebar-user{font-size:.73rem;font-weight:700;color:rgba(255,255,255,.55)}
-.sidebar-email{font-size:.64rem;color:rgba(255,255,255,.35);margin-top:2px}
-
-.main-content{margin-left:230px;flex:1;min-height:100vh}
-.topbar{background:var(--white);border-bottom:1.5px solid var(--line);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-.topbar-title{font-size:1rem;font-weight:900;color:var(--txt)}
-.topbar-right{display:flex;gap:8px;align-items:center}
-.content-area{padding:22px 24px}
-
-/* SECTIONS */
-.section{display:none}
-.section.active{display:block;animation:fu .25s ease both}
-@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-
-/* STATS CARDS */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
-.stat-card{background:var(--white);border-radius:var(--rad);border:1.5px solid var(--line);padding:18px;box-shadow:var(--sh);position:relative;overflow:hidden;cursor:pointer;transition:all .2s}
-.stat-card:hover{transform:translateY(-3px);box-shadow:var(--sh2)}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.stat-card.sc-green::before{background:var(--g)}
-.stat-card.sc-blue::before{background:var(--b)}
-.stat-card.sc-cyan::before{background:var(--c)}
-.stat-card.sc-red::before{background:var(--r)}
-.stat-card .sc-n{font-size:2rem;font-weight:900;display:block;line-height:1}
-.stat-card .sc-l{font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px;display:block}
-.stat-card .sc-ico{font-size:1.5rem;margin-bottom:8px;display:block}
-
-/* TABLES */
-.table-wrap{background:var(--white);border-radius:var(--rad);border:1.5px solid var(--line);overflow:hidden;box-shadow:var(--sh)}
-.table-header{padding:16px 18px;border-bottom:1.5px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.table-title{font-size:.9rem;font-weight:900;color:var(--txt);display:flex;align-items:center;gap:7px}
-.table-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
-.srch-bar{display:flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--line);border-radius:25px;padding:.38rem .85rem;transition:border-color .18s}
-.srch-bar:focus-within{border-color:var(--g)}
-.srch-bar input{border:none;background:none;font-size:.78rem;font-weight:600;color:var(--txt);width:160px;outline:none}
+body{font-family:'Outfit',sans-serif;background:var(--dark);color:var(--txt);min-height:100vh}
+button,input,select,textarea{font-family:'Outfit',sans-serif}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--g);border-radius:2px}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--dark2);border-right:1px solid var(--line);position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;overflow-y:auto}
+.sb-logo{padding:18px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.sb-gem{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--g),var(--b));display:flex;align-items:center;justify-content:center;font-family:'Noto Naskh Arabic',serif;font-size:1rem;color:#fff;font-weight:700;flex-shrink:0}
+.sb-title{font-size:.82rem;font-weight:800;color:var(--txt)}
+.sb-sub{font-size:.56rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.sb-nav{flex:1;padding:10px 8px}
+.sb-sec{font-size:.55rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);padding:12px 8px 5px}
+.nb{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radm);cursor:pointer;border:none;background:none;width:100%;text-align:left;margin-bottom:2px;transition:all .15s}
+.nb .ni{font-size:.95rem;flex-shrink:0}
+.nb .nl{font-size:.76rem;font-weight:600;color:var(--sub)}
+.nb:hover{background:rgba(255,255,255,.05)}.nb:hover .nl{color:var(--txt)}
+.nb.on{background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.15)}.nb.on .nl{color:var(--g);font-weight:700}
+.sb-foot{padding:12px;border-top:1px solid var(--line)}
+.sb-usr{font-size:.72rem;font-weight:700;color:var(--sub)}.sb-em{font-size:.62rem;color:var(--muted);margin-top:1px}
+.main{margin-left:220px;flex:1}
+.topbar{height:54px;background:rgba(15,23,42,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:50}
+.tb-title{font-size:.95rem;font-weight:800;color:var(--txt)}
+.tb-right{display:flex;gap:7px;align-items:center}
+.content{padding:20px}
+.sec{display:none}.sec.on{display:block;animation:fu .2s ease}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.scard{background:var(--dark2);border:1px solid var(--line);border-radius:var(--rad);padding:16px;position:relative;overflow:hidden;cursor:pointer;transition:all .2s}
+.scard:hover{border-color:rgba(255,255,255,.15);transform:translateY(-2px)}
+.scard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sc-g::before{background:var(--g)}.sc-b::before{background:var(--b)}.sc-c::before{background:#06b6d4}.sc-r::before{background:var(--r)}
+.scard-ico{font-size:1.4rem;display:block;margin-bottom:8px}
+.scard-n{font-size:2rem;font-weight:900;display:block;line-height:1;margin-bottom:3px}
+.scard-l{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.dash-bottom{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dash-box{background:var(--dark2);border:1px solid var(--line);border-radius:var(--rad);overflow:hidden}
+.dash-box-hd{padding:12px 16px;border-bottom:1px solid var(--line);font-size:.8rem;font-weight:700;color:var(--sub)}
+.dash-box-body{padding:12px 16px}
+.dash-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+.dash-row:last-child{border-bottom:none}
+.tbl-wrap{background:var(--dark2);border:1px solid var(--line);border-radius:var(--rad);overflow:hidden}
+.tbl-hd{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.tbl-title{font-size:.85rem;font-weight:800;color:var(--txt)}
+.srch{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:100px;padding:.35rem .85rem;transition:border-color .15s}
+.srch:focus-within{border-color:var(--g)}
+.srch input{border:none;background:none;font-size:.76rem;font-weight:600;color:var(--txt);width:150px;outline:none}
+.srch input::placeholder{color:var(--muted)}
 table{width:100%;border-collapse:collapse}
-thead{background:var(--bg)}
-th{text-align:left;padding:11px 16px;font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--line);white-space:nowrap}
-td{padding:11px 16px;border-bottom:1px solid var(--line);font-size:.8rem;font-weight:600;color:var(--sub);vertical-align:middle}
+thead{background:rgba(255,255,255,.02)}
+th{text-align:left;padding:10px 14px;font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.78rem;font-weight:600;color:var(--sub);vertical-align:middle}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(37,211,102,.03)}
-.td-img{width:42px;height:42px;border-radius:9px;object-fit:cover;display:block}
-.td-img-ph{width:42px;height:42px;border-radius:9px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.2rem;border:1.5px solid var(--line)}
-.td-bold{font-weight:800;color:var(--txt)}
-.td-actions{display:flex;gap:5px;white-space:nowrap}
-.empty-row td{text-align:center;padding:36px;color:var(--muted);font-style:italic}
-.table-footer{padding:12px 16px;border-top:1.5px solid var(--line);display:flex;align-items:center;justify-content:space-between}
-.count-label{font-size:.74rem;font-weight:700;color:var(--muted)}
-
-/* PAGINATION */
-.pagination{display:flex;gap:5px}
-.page-btn{width:30px;height:30px;border-radius:7px;border:1.5px solid var(--line);background:var(--white);color:var(--sub);font-size:.75rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s}
-.page-btn:hover{border-color:var(--b);color:var(--b)}
-.page-btn.active{background:var(--g);color:#fff;border-color:var(--g)}
-.page-btn:disabled{opacity:.4;cursor:not-allowed}
-
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;font-weight:800;border:none;border-radius:var(--radm);padding:.44rem .95rem;font-size:.76rem;cursor:pointer;transition:all .18s}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn-sm{padding:.3rem .7rem;font-size:.7rem}
-.btn-lg{padding:.58rem 1.35rem;font-size:.84rem}
-.btn-fw{width:100%}
-.btn-g{background:var(--g);color:#fff;box-shadow:0 3px 9px rgba(37,211,102,.27)}
-.btn-g:hover:not(:disabled){background:var(--g2);transform:translateY(-1px)}
-.btn-b{background:var(--b);color:#fff}
-.btn-b:hover:not(:disabled){background:var(--b2);transform:translateY(-1px)}
-.btn-r{background:var(--r);color:#fff}
-.btn-r:hover:not(:disabled){background:#B71C1C;transform:translateY(-1px)}
-.btn-o{background:var(--o);color:#fff}
-.btn-out{background:transparent;border:1.5px solid var(--line);color:var(--sub)}
-.btn-out:hover:not(:disabled){border-color:var(--b);color:var(--b)}
-.btn-ghost{background:var(--bg);border:1.5px solid var(--line);color:var(--sub)}
-.btn-edit{background:rgba(42,171,238,.1);border:1.5px solid rgba(42,171,238,.25);color:var(--b)}
-.btn-edit:hover{background:var(--b);color:#fff}
-.btn-del{background:rgba(229,57,53,.08);border:1.5px solid rgba(229,57,53,.2);color:var(--r)}
-.btn-del:hover{background:var(--r);color:#fff}
-
-/* INPUTS */
-.inp{width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:var(--radm);padding:.55rem .9rem;font-size:.82rem;font-weight:600;color:var(--txt);outline:none;transition:all .18s}
-.inp:focus{border-color:var(--g);background:var(--white);box-shadow:0 0 0 3px rgba(37,211,102,.09)}
-.lbl{font-size:.72rem;font-weight:800;color:var(--sub);display:block;margin-bottom:4px}
-.fg{margin-bottom:13px}
-select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23607D8B'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:26px}
-textarea.inp{resize:vertical;min-height:72px}
-
-/* MODAL */
-.mo{position:fixed;inset:0;z-index:9000;background:rgba(7,29,42,.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:16px}
-.mo.open{display:flex;animation:fi .22s ease}
-@keyframes fi{from{opacity:0}to{opacity:1}}
-.mo-box{background:var(--white);border-radius:var(--rad);width:100%;max-width:580px;max-height:90vh;overflow-y:auto;animation:sc .28s ease;box-shadow:0 24px 80px rgba(0,0,0,.2)}
-@keyframes sc{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
-.mo-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1.5px solid var(--line);position:sticky;top:0;background:var(--white);z-index:1}
-.mo-ttl{font-size:.92rem;font-weight:900;color:var(--txt);display:flex;align-items:center;gap:7px}
-.mo-x{width:30px;height:30px;border-radius:50%;border:none;background:var(--bg);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.88rem;transition:all .18s}
-.mo-x:hover{background:rgba(229,57,53,.1);color:var(--r);transform:rotate(90deg)}
-.mo-body{padding:20px}
-.mo-foot{padding:14px 20px;border-top:1.5px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
-
-/* GRID */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
-.form-grid .fg-full{grid-column:1/-1}
-
-/* BADGES */
-.bdg{display:inline-flex;align-items:center;gap:3px;font-size:.62rem;font-weight:800;padding:.14rem .5rem;border-radius:20px}
-.bdg-g{background:rgba(37,211,102,.12);color:#1B5E20}
-.bdg-b{background:rgba(42,171,238,.12);color:#1565C0}
-.bdg-r{background:rgba(229,57,53,.1);color:var(--r)}
+tr:hover td{background:rgba(255,255,255,.02)}
+.td-b{font-weight:800;color:var(--txt)}
+.td-img{width:40px;height:40px;border-radius:8px;object-fit:cover;display:block}
+.td-acts{display:flex;gap:5px;white-space:nowrap}
+.empty-r td{text-align:center;padding:32px;color:var(--muted);font-style:italic;font-size:.78rem}
+.tbl-ft{padding:10px 14px;border-top:1px solid var(--line);font-size:.7rem;color:var(--muted);font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;font-weight:700;border:none;border-radius:var(--radm);padding:.42rem .9rem;font-size:.76rem;cursor:pointer;transition:all .18s}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-sm{padding:.28rem .65rem;font-size:.7rem}.btn-fw{width:100%}
+.btn-g{background:var(--g);color:#fff}.btn-g:hover:not(:disabled){background:var(--g2)}
+.btn-b{background:var(--b);color:#fff}.btn-b:hover:not(:disabled){background:var(--b2)}
+.btn-r{background:var(--r);color:#fff}.btn-r:hover:not(:disabled){background:var(--r2)}
+.btn-ghost{background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--sub)}
+.btn-ghost:hover:not(:disabled){border-color:rgba(255,255,255,.2);color:var(--txt)}
+.btn-edit{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.2);color:var(--b)}.btn-edit:hover{background:var(--b);color:#fff}
+.btn-del{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.15);color:var(--r)}.btn-del:hover{background:var(--r);color:#fff}
+.inp{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:var(--radm);padding:.55rem .9rem;font-size:.82rem;font-weight:500;color:var(--txt);outline:none;transition:all .18s}
+.inp:focus{border-color:var(--g);background:rgba(37,211,102,.05);box-shadow:0 0 0 3px rgba(37,211,102,.08)}
+.inp::placeholder{color:var(--muted)}
+.lbl{font-size:.7rem;font-weight:700;color:var(--sub);display:block;margin-bottom:4px}
+.fg{margin-bottom:12px}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2394a3b8'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+textarea.inp{resize:vertical;min-height:70px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg-full{grid-column:1/-1}
+.file-lbl{display:block;border:1px dashed rgba(255,255,255,.15);border-radius:var(--radm);padding:14px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.02);color:var(--muted);font-size:.76rem;font-weight:600}
+.file-lbl:hover{border-color:var(--b);color:var(--b)}.file-lbl.got{border-color:var(--g);color:var(--g)}
+.bdg{display:inline-flex;align-items:center;gap:3px;font-size:.6rem;font-weight:700;padding:.12rem .48rem;border-radius:20px}
+.bdg-g{background:rgba(37,211,102,.12);color:var(--g);border:1px solid rgba(37,211,102,.2)}
+.bdg-b{background:rgba(56,189,248,.12);color:var(--b);border:1px solid rgba(56,189,248,.2)}
+.bdg-r{background:rgba(244,63,94,.1);color:var(--r);border:1px solid rgba(244,63,94,.18)}
+.bdg-amber{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
 .bdg-live{background:var(--r);color:#fff}
-.bdg-upc{background:rgba(255,111,0,.1);color:var(--o)}
-.ldot{width:6px;height:6px;border-radius:50%;background:var(--r);display:inline-block;animation:bk 1.2s infinite;flex-shrink:0}
-@keyframes bk{0%,100%{opacity:1}50%{opacity:.1}}
-
-/* FILE */
-.file-lbl{display:block;border:2px dashed var(--line);border-radius:var(--radm);padding:14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);color:var(--muted);font-size:.76rem;font-weight:700;margin-top:4px}
-.file-lbl:hover{border-color:var(--b);color:var(--b)}
-.file-lbl.got{border-color:var(--g);color:var(--g2);background:rgba(37,211,102,.05)}
-.cover-preview{width:100%;max-height:140px;object-fit:cover;border-radius:var(--radm);border:1.5px solid var(--line);margin-bottom:8px;display:none}
-
-/* MISC */
-.spin{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--g);border-radius:50%;animation:sp .7s linear infinite;margin:20px auto}
-@keyframes sp{to{transform:rotate(360deg)}}
-#toast{position:fixed;bottom:20px;right:20px;z-index:9999;background:var(--dark);color:#fff;border-radius:12px;padding:10px 18px;font-size:.78rem;font-weight:700;opacity:0;transition:all .28s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.2)}
-#toast.on{opacity:1;transform:translateY(0)}
-.confirm-box{background:rgba(229,57,53,.08);border:1.5px solid rgba(229,57,53,.2);border-radius:var(--radm);padding:14px;margin-bottom:14px;display:none}
-.confirm-box p{font-size:.82rem;font-weight:700;color:var(--r)}
-.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
-.dot-live{background:var(--r);animation:bk 1.2s infinite}
-.dot-upc{background:var(--o)}
-.dot-end{background:var(--muted)}
-
-/* FILTER TABS */
-.filter-tabs{display:flex;gap:0;border-bottom:2px solid var(--line);margin-bottom:16px}
-.ftab{font-size:.76rem;font-weight:800;color:var(--muted);background:none;border:none;padding:.6rem .9rem;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;transition:all .18s;white-space:nowrap}
-.ftab.active{color:var(--g);border-bottom-color:var(--g)}
-
-/* MOBILE BOTTOM NAV */
-.mob-bnav{
-  display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
-  background:var(--dark);border-top:1px solid rgba(255,255,255,.08);
-  height:58px;
-}
-.mob-bnav-inner{display:flex;height:100%}
-.mob-bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;cursor:pointer;padding:4px 2px}
-.mob-bn .mi{font-size:1.15rem;line-height:1}
-.mob-bn .ml{font-size:.5rem;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.04em}
-.mob-bn.active .ml{color:var(--g)}
-.mob-bn.active .mi{transform:scale(1.12)}
-
-/* HAMBURGER */
-.mob-topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:200;height:52px;background:var(--dark);align-items:center;justify-content:space-between;padding:0 14px}
-.mob-ttl{font-size:.88rem;font-weight:900;color:#fff}
-.mob-add-btn{font-size:.72rem;font-weight:800;background:var(--g);color:#fff;border:none;border-radius:8px;padding:.4rem .85rem;cursor:pointer}
-
-/* RESPONSIVE */
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--r);display:inline-block;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
+.mo{position:fixed;inset:0;z-index:9000;background:rgba(3,7,18,.8);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center}
+.mo.open{display:flex;animation:mofade .2s ease}
+@keyframes mofade{from{opacity:0}to{opacity:1}}
+.mo-box{background:var(--dark2);border:1px solid var(--line);border-radius:var(--rad) var(--rad) 0 0;width:100%;max-width:620px;max-height:92vh;overflow-y:auto;animation:moup .25s ease}
+@keyframes moup{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.mo-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--dark2);z-index:1}
+.mo-ttl{font-size:.88rem;font-weight:800;color:var(--txt)}
+.mo-x{width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.06);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:all .15s}
+.mo-x:hover{background:rgba(244,63,94,.15);color:var(--r)}
+.mo-body{padding:18px}.mo-ft{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:7px;justify-content:flex-end}
+#toast{position:fixed;bottom:16px;right:16px;z-index:9999;background:var(--dark2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:9px 16px;font-size:.76rem;font-weight:700;opacity:0;transition:all .25s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#toast.on{opacity:1}
+.mob-top{display:none;position:fixed;top:0;left:0;right:0;z-index:200;height:52px;background:var(--dark2);border-bottom:1px solid var(--line);align-items:center;justify-content:space-between;padding:0 14px}
+.mob-top-t{font-size:.85rem;font-weight:800;color:var(--txt)}
+.mob-add{font-size:.7rem;font-weight:700;background:var(--g);color:#fff;border:none;border-radius:8px;padding:.38rem .8rem;cursor:pointer}
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;height:60px;background:var(--dark2);border-top:1px solid var(--line)}
+.mob-nav-inner{display:flex;height:100%}
+.mn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;cursor:pointer;transition:all .15s;position:relative}
+.mn::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%) scaleX(0);width:20px;height:2px;background:var(--g);border-radius:1px;transition:transform .15s}
+.mn.on::after{transform:translateX(-50%) scaleX(1)}
+.mn .mi{font-size:1.1rem;line-height:1}.mn .ml{font-size:.5rem;font-weight:600;color:var(--muted)}.mn.on .ml{color:var(--g);font-weight:700}
+#cmenu{display:none;position:fixed;bottom:60px;left:0;right:0;z-index:190;background:rgba(15,23,42,.97);border-top:1px solid var(--line);padding:14px;backdrop-filter:blur(20px)}
+.cm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cm-btn{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;padding:10px 6px;color:var(--txt);font-size:.68rem;font-weight:700;cursor:pointer;text-align:center;transition:all .18s}
+.cm-btn:hover{border-color:var(--g);color:var(--g)}
 @media(max-width:900px){
-  .sidebar{display:none}
-  .mob-topbar{display:flex}
-  .mob-bnav{display:block}
-  .main-content{margin-left:0;padding-bottom:58px}
-  .topbar{display:none}
-  .content-area{padding:10px 12px;padding-top:60px}
-  .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
-  .stat-card{padding:14px}
-  .stat-card .sc-n{font-size:1.6rem}
-  .dash-bottom-grid{grid-template-columns:1fr!important}
-  .form-grid{grid-template-columns:1fr}
-  .form-grid .fg-full{grid-column:1}
-  th,td{padding:9px 10px}
-  .td-actions{flex-direction:column;gap:4px}
-  .table-wrap{border-radius:10px}
-  .mo-box{border-radius:var(--rad)}
-  .mo{align-items:flex-end;padding:0}
-  .mo-box{border-radius:var(--rad) var(--rad) 0 0;max-height:88vh}
-}
-@media(max-width:480px){
-  .stats-grid{grid-template-columns:1fr 1fr;gap:8px}
-  .content-area{padding:8px 10px;padding-top:60px}
+  .sidebar{display:none}.mob-top{display:flex}.mob-nav{display:block}
+  .main{margin-left:0;padding-bottom:60px}.topbar{display:none}
+  .content{padding:10px 12px;padding-top:60px}
+  .stats{grid-template-columns:1fr 1fr;gap:10px}.scard{padding:13px}.scard-n{font-size:1.7rem}
+  .dash-bottom{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}.fg-full{grid-column:1}
+  .mo-box{max-height:88vh}
+  th,td{padding:8px 10px}.td-acts{flex-direction:column;gap:3px}
 }
 </style>
 </head>
 <body>
-
 <div id="toast"></div>
 
-<!-- ═══ MOBILE TOPBAR ═══ -->
-<div class="mob-topbar" id="mob-topbar">
-  <div style="display:flex;align-items:center;gap:8px">
-    <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--g),var(--b));display:flex;align-items:center;justify-content:center;font-family:Noto Naskh Arabic,serif;font-size:.85rem;color:#fff;font-weight:700">ب</div>
-    <span class="mob-ttl" id="mob-section-title">📊 Tableau de bord</span>
-  </div>
-  <div style="display:flex;gap:7px;align-items:center">
-    <button class="mob-add-btn" id="mob-add-btn" style="display:none" onclick="openAdd()">➕ Ajouter</button>
-    <button style="background:none;border:none;color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;cursor:pointer" onclick="doLogout()">🚪</button>
-  </div>
-</div>
-
-<!-- ═══ MOBILE BOTTOM NAV ═══ -->
-<div class="mob-bnav">
-  <div class="mob-bnav-inner">
-    <button class="mob-bn active" data-mob="dashboard"   onclick="goSection('dashboard',null,this)"><span class="mi">📊</span><span class="ml">Bord</span></button>
-    <button class="mob-bn"        data-mob="scholars"    onclick="goSection('scholars',null,this)"> <span class="mi">👨‍🏫</span><span class="ml">Savants</span></button>
-    <button class="mob-bn"        data-mob="books"       onclick="toggleMobMenu()">    <span class="mi">📚</span><span class="ml">Contenu</span></button>
-    <button class="mob-bn"        data-mob="hadiths"     onclick="goSection('hadiths',null,this)">  <span class="mi">📿</span><span class="ml">Islamique</span></button>
-    <button class="mob-bn"        data-mob="categories"  onclick="goSection('categories',null,this)"><span class="mi">⚙️</span><span class="ml">Config</span></button>
-  </div>
-</div>
-
-<!-- MENU CONTENU ÉTENDU (slide-up) -->
-<div id="mob-content-menu" style="display:none;position:fixed;bottom:64px;left:0;right:0;z-index:700;background:rgba(7,29,42,.97);border-top:1px solid rgba(255,255,255,.1);padding:12px 0;backdrop-filter:blur(20px)">
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 12px">
-    <button onclick="goSection('books',null,null);hideMobMenu()"  style="background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.2);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">📚<br>Livres</button>
-    <button onclick="goSection('audios',null,null);hideMobMenu()" style="background:rgba(42,171,238,.1);border:1px solid rgba(42,171,238,.2);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">🎧<br>Audio</button>
-    <button onclick="goSection('videos',null,null);hideMobMenu()" style="background:rgba(229,57,53,.1);border:1px solid rgba(229,57,53,.2);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">🎬<br>Vidéos</button>
-    <button onclick="goSection('lives',null,null);hideMobMenu()"  style="background:rgba(229,57,53,.08);border:1px solid rgba(229,57,53,.15);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">📡<br>Live</button>
-    <button onclick="goSection('hadiths',null,null);hideMobMenu()" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">📿<br>Hadiths</button>
-    <button onclick="goSection('quizzes',null,null);hideMobMenu()" style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">🎯<br>Quiz</button>
-    <button onclick="goSection('dhikrs',null,null);hideMobMenu()"  style="background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.15);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">🕌<br>Dhikr</button>
-    <button onclick="hideMobMenu()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px;color:rgba(255,255,255,.5);font-size:.7rem;font-weight:700;cursor:pointer">✕<br>Fermer</button>
-  </div>
-</div>
-
-<!-- ═══ CONFIRM MODAL ═══ -->
 <div class="mo" id="mo-confirm">
-  <div class="mo-box" style="max-width:420px">
-    <div class="mo-hd"><p class="mo-ttl">🗑️ Confirmer la suppression</p><button class="mo-x" onclick="closeMo('mo-confirm')">✕</button></div>
+  <div class="mo-box" style="max-width:400px">
+    <div class="mo-hd"><p class="mo-ttl">Supprimer</p><button class="mo-x" onclick="cmo('mo-confirm')">x</button></div>
     <div class="mo-body">
-      <p style="font-size:.85rem;font-weight:700;color:var(--sub);margin-bottom:14px">Tu es sur le point de supprimer :</p>
-      <div style="background:rgba(229,57,53,.07);border:1.5px solid rgba(229,57,53,.2);border-radius:var(--radm);padding:12px;margin-bottom:14px">
-        <p style="font-size:.84rem;font-weight:800;color:var(--r)" id="confirm-name">—</p>
-      </div>
-      <p style="font-size:.78rem;color:var(--muted);font-weight:600">⚠️ Cette action est irréversible.</p>
+      <p style="font-size:.82rem;color:var(--sub);margin-bottom:12px">Supprimer definitivement :</p>
+      <div style="background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);border-radius:var(--radm);padding:10px;margin-bottom:12px"><p style="font-size:.82rem;font-weight:800;color:var(--r)" id="cfm-name"></p></div>
+      <p style="font-size:.74rem;color:var(--muted)">Cette action est irreversible.</p>
     </div>
-    <div class="mo-foot">
-      <button class="btn btn-ghost" onclick="closeMo('mo-confirm')">Annuler</button>
-      <button class="btn btn-r" id="confirm-delete-btn" onclick="executeDelete()">🗑️ Supprimer définitivement</button>
-    </div>
+    <div class="mo-ft"><button class="btn btn-ghost" onclick="cmo('mo-confirm')">Annuler</button><button class="btn btn-r" id="del-btn" onclick="execDel()">Supprimer</button></div>
   </div>
 </div>
 
-<!-- ═══ EDIT MODAL ═══ -->
 <div class="mo" id="mo-edit">
   <div class="mo-box">
-    <div class="mo-hd">
-      <p class="mo-ttl" id="edit-modal-title">✏️ Modifier</p>
-      <button class="mo-x" onclick="closeMo('mo-edit')">✕</button>
-    </div>
-    <div class="mo-body" id="edit-modal-body">
-      <!-- Contenu dynamique -->
-    </div>
-    <div class="mo-foot">
-      <button class="btn btn-ghost" onclick="closeMo('mo-edit')">Annuler</button>
-      <button class="btn btn-g" id="edit-save-btn" onclick="saveEdit()">💾 Enregistrer</button>
-    </div>
+    <div class="mo-hd"><p class="mo-ttl" id="edit-ttl">Modifier</p><button class="mo-x" onclick="cmo('mo-edit')">x</button></div>
+    <div class="mo-body" id="edit-body"></div>
+    <div class="mo-ft"><button class="btn btn-ghost" onclick="cmo('mo-edit')">Annuler</button><button class="btn btn-g" id="edit-sv" onclick="svEdit()">Enregistrer</button></div>
   </div>
 </div>
 
-<!-- ═══ ADD MODAL ═══ -->
 <div class="mo" id="mo-add">
   <div class="mo-box">
-    <div class="mo-hd">
-      <p class="mo-ttl" id="add-modal-title">➕ Ajouter</p>
-      <button class="mo-x" onclick="closeMo('mo-add')">✕</button>
-    </div>
-    <div class="mo-body" id="add-modal-body"></div>
-    <div class="mo-foot">
-      <button class="btn btn-ghost" onclick="closeMo('mo-add')">Annuler</button>
-      <button class="btn btn-g" id="add-save-btn" onclick="saveAdd()">➕ Ajouter</button>
-    </div>
+    <div class="mo-hd"><p class="mo-ttl" id="add-ttl">Ajouter</p><button class="mo-x" onclick="cmo('mo-add')">x</button></div>
+    <div class="mo-body" id="add-body"></div>
+    <div class="mo-ft"><button class="btn btn-ghost" onclick="cmo('mo-add')">Annuler</button><button class="btn btn-g" id="add-sv" onclick="svAdd()">Ajouter</button></div>
   </div>
 </div>
 
-<!-- ═══ LAYOUT ═══ -->
-<div class="admin-layout">
+<div class="mob-top" id="mob-top">
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="sb-gem">b</div>
+    <span class="mob-top-t" id="mob-ttl">Tableau de bord</span>
+  </div>
+  <div style="display:flex;gap:7px;align-items:center">
+    <button class="mob-add" id="mob-add" style="display:none" onclick="openAdd()">+ Ajouter</button>
+    <button style="background:none;border:none;color:var(--muted);font-size:.72rem;font-weight:700;cursor:pointer" onclick="doLogout()">Quitter</button>
+  </div>
+</div>
 
-  <!-- SIDEBAR -->
+<div id="cmenu">
+  <div class="cm-grid">
+    <button class="cm-btn" onclick="go('books');hm()">Livres</button>
+    <button class="cm-btn" onclick="go('audios');hm()">Audio</button>
+    <button class="cm-btn" onclick="go('videos');hm()">Videos</button>
+    <button class="cm-btn" onclick="go('lives');hm()">Live</button>
+    <button class="cm-btn" onclick="go('hadiths');hm()">Hadiths</button>
+    <button class="cm-btn" onclick="go('quizzes');hm()">Quiz</button>
+    <button class="cm-btn" onclick="go('dhikrs');hm()">Dhikr</button>
+    <button class="cm-btn" onclick="hm()" style="color:var(--muted)">Fermer</button>
+  </div>
+</div>
+
+<div class="mob-nav">
+  <div class="mob-nav-inner">
+    <button class="mn on"  data-s="dashboard"  onclick="go('dashboard',this)"><span class="mi">📊</span><span class="ml">Bord</span></button>
+    <button class="mn"     data-s="scholars"   onclick="go('scholars',this)"> <span class="mi">👨‍🏫</span><span class="ml">Savants</span></button>
+    <button class="mn"     data-s="content"    onclick="tm(this)">            <span class="mi">📚</span><span class="ml">Contenu</span></button>
+    <button class="mn"     data-s="hadiths"    onclick="go('hadiths',this)">  <span class="mi">📿</span><span class="ml">Islamique</span></button>
+    <button class="mn"     data-s="categories" onclick="go('categories',this)"><span class="mi">⚙️</span><span class="ml">Config</span></button>
+  </div>
+</div>
+
+<div class="layout">
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-gem">ب</div>
-      <div><div class="sidebar-title">Al Basîrah</div><div class="sidebar-sub">Panel Admin</div></div>
+    <div class="sb-logo">
+      <div class="sb-gem">ب</div>
+      <div><div class="sb-title">Al Basirah</div><div class="sb-sub">Panel Admin</div></div>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">Vue d'ensemble</div>
-      <button class="nav-item active" onclick="goSection('dashboard',this,null)"><span class="ni">📊</span><span class="nl">Tableau de bord</span></button>
-
-      <div class="nav-section">Contenu</div>
-      <button class="nav-item" onclick="goSection('scholars',this,null)"><span class="ni">👨‍🏫</span><span class="nl">Savants</span></button>
-      <button class="nav-item" onclick="goSection('books',this,null)"><span class="ni">📚</span><span class="nl">Livres / PDF</span></button>
-      <button class="nav-item" onclick="goSection('audios',this,null)"><span class="ni">🎧</span><span class="nl">Cours Audio</span></button>
-      <button class="nav-item" onclick="goSection('videos',this,null)"><span class="ni">🎬</span><span class="nl">Vidéos</span></button>
-      <button class="nav-item" onclick="goSection('lives',this,null)"><span class="ni">📡</span><span class="nl">Sessions Live</span></button>
-
-      <div class="nav-section">Paramètres</div>
-      <button class="nav-item" onclick="goSection('categories',this,null)"><span class="ni">🏷️</span><span class="nl">Catégories</span></button>
-
-      <div class="nav-section">Contenu islamique</div>
-      <button class="nav-item" onclick="goSection('hadiths',this,null)"><span class="ni">📿</span><span class="nl">Hadiths du jour</span></button>
-      <button class="nav-item" onclick="goSection('quizzes',this,null)"><span class="ni">🎯</span><span class="nl">Questions Quiz</span></button>
-      <button class="nav-item" onclick="goSection('dhikrs',this,null)"><span class="ni">🕌</span><span class="nl">Dhikrs</span></button>
+    <nav class="sb-nav">
+      <div class="sb-sec">Vue d ensemble</div>
+      <button class="nb on" onclick="go('dashboard',this)"><span class="ni">📊</span><span class="nl">Tableau de bord</span></button>
+      <div class="sb-sec">Contenu</div>
+      <button class="nb" onclick="go('scholars',this)">  <span class="ni">👨‍🏫</span><span class="nl">Savants</span></button>
+      <button class="nb" onclick="go('books',this)">     <span class="ni">📚</span><span class="nl">Livres / PDF</span></button>
+      <button class="nb" onclick="go('audios',this)">    <span class="ni">🎧</span><span class="nl">Cours Audio</span></button>
+      <button class="nb" onclick="go('videos',this)">    <span class="ni">🎬</span><span class="nl">Videos</span></button>
+      <button class="nb" onclick="go('lives',this)">     <span class="ni">📡</span><span class="nl">Sessions Live</span></button>
+      <div class="sb-sec">Islamique</div>
+      <button class="nb" onclick="go('hadiths',this)">   <span class="ni">📿</span><span class="nl">Hadiths du jour</span></button>
+      <button class="nb" onclick="go('quizzes',this)">   <span class="ni">🎯</span><span class="nl">Questions Quiz</span></button>
+      <button class="nb" onclick="go('dhikrs',this)">    <span class="ni">🕌</span><span class="nl">Dhikrs</span></button>
+      <div class="sb-sec">Config</div>
+      <button class="nb" onclick="go('categories',this)"><span class="ni">🏷️</span><span class="nl">Categories</span></button>
     </nav>
-    <div class="sidebar-footer">
-      <div class="sidebar-user" id="sb-user">—</div>
-      <div class="sidebar-email" id="sb-email">—</div>
-      <button class="btn btn-r btn-fw" style="margin-top:10px;font-size:.72rem" onclick="doLogout()">🚪 Déconnexion</button>
-      <a href="index.html" style="display:block;text-align:center;margin-top:8px;font-size:.68rem;color:rgba(255,255,255,.35);font-weight:700">← Retour au site</a>
+    <div class="sb-foot">
+      <div class="sb-usr" id="sb-usr">Admin</div>
+      <div class="sb-em"  id="sb-em"></div>
+      <button class="btn btn-r btn-fw" style="margin-top:9px;font-size:.7rem" onclick="doLogout()">Deconnexion</button>
+      <a href="index.html" style="display:block;text-align:center;margin-top:7px;font-size:.65rem;color:var(--muted);font-weight:600">Retour au site</a>
     </div>
   </aside>
-
-  <!-- MAIN -->
-  <div class="main-content">
+  <div class="main">
     <div class="topbar">
-      <p class="topbar-title" id="topbar-title">📊 Tableau de bord</p>
-      <div class="topbar-right">
-        <button class="btn btn-g btn-sm" id="topbar-add-btn" style="display:none" onclick="openAdd()">➕ Ajouter</button>
-        <span style="font-size:.74rem;font-weight:700;color:var(--muted)" id="topbar-date"></span>
+      <p class="tb-title" id="tb-title">Tableau de bord</p>
+      <div class="tb-right">
+        <button class="btn btn-g btn-sm" id="tb-add" style="display:none" onclick="openAdd()">+ Ajouter</button>
+        <span style="font-size:.72rem;font-weight:600;color:var(--muted)" id="tb-date"></span>
       </div>
     </div>
+    <div class="content">
 
-    <div class="content-area">
-
-      <!-- ═══ DASHBOARD ═══ -->
-      <div id="sec-dashboard" class="section active">
-        <div class="stats-grid">
-          <div class="stat-card sc-green" onclick="goSection('scholars',null,null)">
-            <span class="sc-ico">👨‍🏫</span>
-            <span class="sc-n" style="color:var(--g)" id="dash-scholars">—</span>
-            <span class="sc-l">Savants</span>
-          </div>
-          <div class="stat-card sc-blue" onclick="goSection('books',null,null)">
-            <span class="sc-ico">📚</span>
-            <span class="sc-n" style="color:var(--b)" id="dash-books">—</span>
-            <span class="sc-l">Livres / PDF</span>
-          </div>
-          <div class="stat-card sc-cyan" onclick="goSection('audios',null,null)">
-            <span class="sc-ico">🎧</span>
-            <span class="sc-n" style="color:var(--c)" id="dash-audios">—</span>
-            <span class="sc-l">Cours Audio</span>
-          </div>
-          <div class="stat-card sc-red" onclick="goSection('videos',null,null)">
-            <span class="sc-ico">🎬</span>
-            <span class="sc-n" style="color:var(--r)" id="dash-videos">—</span>
-            <span class="sc-l">Vidéos</span>
-          </div>
+      <div id="sec-dashboard" class="sec on">
+        <div class="stats">
+          <div class="scard sc-g" onclick="go('scholars')"><span class="scard-ico">👨‍🏫</span><span class="scard-n" style="color:var(--g)" id="ds-sc">0</span><span class="scard-l">Savants</span></div>
+          <div class="scard sc-b" onclick="go('books')">   <span class="scard-ico">📚</span> <span class="scard-n" style="color:var(--b)" id="ds-bk">0</span><span class="scard-l">Livres</span></div>
+          <div class="scard sc-c" onclick="go('audios')">  <span class="scard-ico">🎧</span> <span class="scard-n" style="color:#06b6d4" id="ds-au">0</span><span class="scard-l">Cours Audio</span></div>
+          <div class="scard sc-r" onclick="go('videos')">  <span class="scard-ico">🎬</span> <span class="scard-n" style="color:var(--r)" id="ds-vi">0</span><span class="scard-l">Videos</span></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px" class="dash-bottom-grid">
-          <div class="table-wrap">
-            <div class="table-header"><p class="table-title">📡 Sessions Live</p></div>
-            <div id="dash-lives-list" style="padding:12px 16px"></div>
-          </div>
-          <div class="table-wrap">
-            <div class="table-header"><p class="table-title">🕐 Ajouts récents</p></div>
-            <div id="dash-recent-list" style="padding:12px 16px"></div>
-          </div>
+        <div class="dash-bottom">
+          <div class="dash-box"><div class="dash-box-hd">Sessions Live</div><div class="dash-box-body" id="ds-lv"><p style="font-size:.76rem;color:var(--muted);text-align:center;padding:12px">Aucune</p></div></div>
+          <div class="dash-box"><div class="dash-box-hd">Ajouts recents</div><div class="dash-box-body" id="ds-rc"><p style="font-size:.76rem;color:var(--muted);text-align:center;padding:12px">Aucun</p></div></div>
         </div>
       </div>
 
-      <!-- ═══ SCHOLARS ═══ -->
-      <div id="sec-scholars" class="section">
-        <div class="table-wrap">
-          <div class="table-header">
-            <p class="table-title">👨‍🏫 Savants <span id="cnt-scholars" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
-            <div class="table-actions">
-              <div class="srch-bar"><span>🔍</span><input type="text" placeholder="Rechercher…" id="sch-srch" oninput="filterTable('scholars',this.value)"/></div>
-            </div>
-          </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr>
-                <th>Savant</th><th>Catégorie</th><th>Pays</th><th>Époque</th>
-                <th>📚</th><th>🎧</th><th>🎬</th><th>Statut</th><th>Actions</th>
-              </tr></thead>
-              <tbody id="tbl-scholars"></tbody>
-            </table>
-          </div>
-          <div class="table-footer"><span class="count-label" id="cl-scholars"></span></div>
+      <div id="sec-scholars" class="sec">
+        <div class="tbl-wrap">
+          <div class="tbl-hd"><p class="tbl-title">Savants <span id="cnt-sc" style="font-size:.68rem;color:var(--muted)"></span></p><div class="srch"><span>🔍</span><input type="text" placeholder="Rechercher..." oninput="ftbl('scholars',this.value)"/></div></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>Savant</th><th>Categorie</th><th>Pays</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="tbl-scholars"></tbody></table></div>
+          <div class="tbl-ft" id="ft-scholars"></div>
         </div>
       </div>
 
-      <!-- ═══ BOOKS ═══ -->
-      <div id="sec-books" class="section">
-        <div class="table-wrap">
-          <div class="table-header">
-            <p class="table-title">📚 Livres <span id="cnt-books" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
-            <div class="table-actions">
-              <div class="srch-bar"><span>🔍</span><input type="text" placeholder="Rechercher…" id="book-srch" oninput="filterTable('books',this.value)"/></div>
-            </div>
-          </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr>
-                <th>Cover</th><th>Titre</th><th>Auteur</th><th>Catégorie</th>
-                <th>Type</th><th>Pages</th><th>↓</th><th>Actions</th>
-              </tr></thead>
-              <tbody id="tbl-books"></tbody>
-            </table>
-          </div>
-          <div class="table-footer"><span class="count-label" id="cl-books"></span></div>
+      <div id="sec-books" class="sec">
+        <div class="tbl-wrap">
+          <div class="tbl-hd"><p class="tbl-title">Livres <span id="cnt-bk" style="font-size:.68rem;color:var(--muted)"></span></p><div class="srch"><span>🔍</span><input type="text" placeholder="Rechercher..." oninput="ftbl('books',this.value)"/></div></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>Cover</th><th>Titre</th><th>Auteur</th><th>Type</th><th>Actions</th></tr></thead><tbody id="tbl-books"></tbody></table></div>
+          <div class="tbl-ft" id="ft-books"></div>
         </div>
       </div>
 
-      <!-- ═══ AUDIOS ═══ -->
-      <div id="sec-audios" class="section">
-        <div class="table-wrap">
-          <div class="table-header">
-            <p class="table-title">🎧 Cours Audio <span id="cnt-audios" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
-            <div class="table-actions">
-              <div class="srch-bar"><span>🔍</span><input type="text" placeholder="Rechercher…" id="audio-srch" oninput="filterTable('audios',this.value)"/></div>
-            </div>
-          </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr>
-                <th>Cover</th><th>Titre</th><th>Savant</th><th>Catégorie</th>
-                <th>Ép.</th><th>Durée</th><th>▶</th><th>Actions</th>
-              </tr></thead>
-              <tbody id="tbl-audios"></tbody>
-            </table>
-          </div>
-          <div class="table-footer"><span class="count-label" id="cl-audios"></span></div>
+      <div id="sec-audios" class="sec">
+        <div class="tbl-wrap">
+          <div class="tbl-hd"><p class="tbl-title">Cours Audio <span id="cnt-au" style="font-size:.68rem;color:var(--muted)"></span></p><div class="srch"><span>🔍</span><input type="text" placeholder="Rechercher..." oninput="ftbl('audios',this.value)"/></div></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>Cover</th><th>Titre</th><th>Savant</th><th>Duree</th><th>Actions</th></tr></thead><tbody id="tbl-audios"></tbody></table></div>
+          <div class="tbl-ft" id="ft-audios"></div>
         </div>
       </div>
 
-      <!-- ═══ VIDEOS ═══ -->
-      <div id="sec-videos" class="section">
-        <div class="table-wrap">
-          <div class="table-header">
-            <p class="table-title">🎬 Vidéos <span id="cnt-videos" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
-            <div class="table-actions">
-              <div class="srch-bar"><span>🔍</span><input type="text" placeholder="Rechercher…" id="video-srch" oninput="filterTable('videos',this.value)"/></div>
-            </div>
-          </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr>
-                <th>Thumb</th><th>Titre</th><th>Savant</th><th>Catégorie</th>
-                <th>Durée</th><th>👁</th><th>Actions</th>
-              </tr></thead>
-              <tbody id="tbl-videos"></tbody>
-            </table>
-          </div>
-          <div class="table-footer"><span class="count-label" id="cl-videos"></span></div>
+      <div id="sec-videos" class="sec">
+        <div class="tbl-wrap">
+          <div class="tbl-hd"><p class="tbl-title">Videos <span id="cnt-vi" style="font-size:.68rem;color:var(--muted)"></span></p><div class="srch"><span>🔍</span><input type="text" placeholder="Rechercher..." oninput="ftbl('videos',this.value)"/></div></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>Thumb</th><th>Titre</th><th>Savant</th><th>Duree</th><th>Actions</th></tr></thead><tbody id="tbl-videos"></tbody></table></div>
+          <div class="tbl-ft" id="ft-videos"></div>
         </div>
       </div>
 
-      <!-- ═══ LIVES ═══ -->
-      <div id="sec-lives" class="section">
-        <div class="table-wrap">
-          <div class="table-header">
-            <p class="table-title">📡 Sessions Live <span id="cnt-lives" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
-          </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr>
-                <th>Titre</th><th>Savant</th><th>Date & Heure</th>
-                <th>Statut</th><th>Auditeurs</th><th>Actions</th>
-              </tr></thead>
-              <tbody id="tbl-lives"></tbody>
-            </table>
-          </div>
-          <div class="table-footer"><span class="count-label" id="cl-lives"></span></div>
+      <div id="sec-lives" class="sec">
+        <div class="tbl-wrap">
+          <div class="tbl-hd"><p class="tbl-title">Sessions Live <span id="cnt-lv" style="font-size:.68rem;color:var(--muted)"></span></p></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>Titre</th><th>Savant</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="tbl-lives"></tbody></table></div>
+          <div class="tbl-ft" id="ft-lives"></div>
         </div>
       </div>
 
-      <!-- ═══ CATEGORIES ═══ -->
-      <div id="sec-categories" class="section">
-        <div class="table-wrap">
-          <div class="table-header">
-            <p class="table-title">🏷️ Catégories <span id="cnt-cats" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
-          </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr>
-                <th>Emoji</th><th>Nom Arabe</th><th>Nom Français</th>
-                <th>Couleur</th><th>Actions</th>
-              </tr></thead>
-              <tbody id="tbl-cats"></tbody>
-            </table>
-          </div>
-          <div class="table-footer"><span class="count-label" id="cl-cats"></span></div>
+      <div id="sec-hadiths" class="sec">
+        <div class="tbl-wrap">
+          <div class="tbl-hd"><p class="tbl-title">Hadiths du jour <span id="cnt-hd" style="font-size:.68rem;color:var(--muted)"></span></p></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>Texte arabe</th><th>Source</th><th>Grade</th><th>Rapporteur</th><th>Actions</th></tr></thead><tbody id="tbl-hadiths"></tbody></table></div>
+          <div class="tbl-ft" id="ft-hadiths"></div>
         </div>
       </div>
 
-      <!-- ═══ HADITHS ═══ -->
-      <div id="sec-hadiths" class="section">
-        <div class="table-wrap">
-          <div class="table-header">
-            <p class="table-title">📿 Hadiths <span id="cnt-hadiths" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
-          </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr><th>Texte arabe</th><th>Source</th><th>Grade</th><th>Rapporteur</th><th>Actions</th></tr></thead>
-              <tbody id="tbl-hadiths"></tbody>
-            </table>
-          </div>
-          <div class="table-footer"><span class="count-label" id="cl-hadiths"></span></div>
+      <div id="sec-quizzes" class="sec">
+        <div class="tbl-wrap">
+          <div class="tbl-hd"><p class="tbl-title">Questions Quiz <span id="cnt-qz" style="font-size:.68rem;color:var(--muted)"></span></p></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>Question</th><th>Categorie</th><th>Difficulte</th><th>Reponse</th><th>Actions</th></tr></thead><tbody id="tbl-quizzes"></tbody></table></div>
+          <div class="tbl-ft" id="ft-quizzes"></div>
         </div>
       </div>
 
-      <!-- ═══ QUIZZES ═══ -->
-      <div id="sec-quizzes" class="section">
-        <div class="table-wrap">
-          <div class="table-header">
-            <p class="table-title">🎯 Questions Quiz <span id="cnt-quizzes" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
-          </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr><th>Question</th><th>Catégorie</th><th>Difficulté</th><th>Bonne rép.</th><th>Actions</th></tr></thead>
-              <tbody id="tbl-quizzes"></tbody>
-            </table>
-          </div>
-          <div class="table-footer"><span class="count-label" id="cl-quizzes"></span></div>
+      <div id="sec-dhikrs" class="sec">
+        <div class="tbl-wrap">
+          <div class="tbl-hd"><p class="tbl-title">Dhikrs <span id="cnt-dk" style="font-size:.68rem;color:var(--muted)"></span></p></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>Arabe</th><th>Francais</th><th>Count</th><th>Moment</th><th>Source</th><th>Actions</th></tr></thead><tbody id="tbl-dhikrs"></tbody></table></div>
+          <div class="tbl-ft" id="ft-dhikrs"></div>
         </div>
       </div>
 
-      <!-- ═══ DHIKRS ═══ -->
-      <div id="sec-dhikrs" class="section">
-        <div class="table-wrap">
-          <div class="table-header">
-            <p class="table-title">🕌 Dhikrs <span id="cnt-dhikrs" style="font-size:.72rem;color:var(--muted);font-weight:700"></span></p>
-          </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr><th>Texte arabe</th><th>Traduction</th><th>Count</th><th>Moment</th><th>Source</th><th>Actions</th></tr></thead>
-              <tbody id="tbl-dhikrs"></tbody>
-            </table>
-          </div>
-          <div class="table-footer"><span class="count-label" id="cl-dhikrs"></span></div>
+      <div id="sec-categories" class="sec">
+        <div class="tbl-wrap">
+          <div class="tbl-hd"><p class="tbl-title">Categories <span id="cnt-cat" style="font-size:.68rem;color:var(--muted)"></span></p></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>Emoji</th><th>Arabe</th><th>Francais</th><th>Couleur</th><th>Actions</th></tr></thead><tbody id="tbl-cats"></tbody></table></div>
+          <div class="tbl-ft" id="ft-cats"></div>
         </div>
       </div>
 
-    </div><!-- /content-area -->
-  </div><!-- /main-content -->
-</div><!-- /admin-layout -->
+    </div>
+  </div>
+</div>
 
 <script>
 'use strict';
+const SB=supabase.createClient('https://mutdtyifvcrkiouudwhr.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11dGR0eWlmdmNya2lvdXVkd2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5ODEwODcsImV4cCI6MjA4OTU1NzA4N30.l08pEalpQ50QN4xVuDp5hyan7hwXprHOeCo0nrCA4vU');
+const D={scholars:[],books:[],audios:[],videos:[],lives:[],cats:[],hadiths:[],quizzes:[],dhikrs:[],section:'dashboard',dt:null,di:null,et:null,ei:null};
+const TM={lives:'live_sessions',dhikrs:'dhikr'};
+function rt(s){return TM[s]||s;}
+const ADD=['scholars','books','audios','videos','lives','hadiths','quizzes','dhikrs','categories'];
+const TITLES={dashboard:'Tableau de bord',scholars:'Savants',books:'Livres',audios:'Cours Audio',videos:'Videos',lives:'Sessions Live',hadiths:'Hadiths',quizzes:'Quiz',dhikrs:'Dhikrs',categories:'Categories'};
+function g(i){return document.getElementById(i);}
+function v(i){return(g(i)?.value||'').trim();}
+let _t;function toast(m){const e=g('toast');e.textContent=m;e.classList.add('on');clearTimeout(_t);_t=setTimeout(()=>e.classList.remove('on'),2600);}
+function busy(i,b,l){const e=g(i);if(!e)return;e.disabled=b;e.textContent=b?'...':l;}
+function cmo(i){g(i)?.classList.remove('open');}
+document.addEventListener('click',e=>{if(e.target.classList.contains('mo'))e.target.classList.remove('open');});
 
-const SB = supabase.createClient(
-  'https://mutdtyifvcrkiouudwhr.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11dGR0eWlmdmNya2lvdXVkd2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5ODEwODcsImV4cCI6MjA4OTU1NzA4N30.l08pEalpQ50QN4xVuDp5hyan7hwXprHOeCo0nrCA4vU'
-);
+function go(s,btn){
+  hm();
+  document.querySelectorAll('.sec').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.nb,.mn').forEach(x=>x.classList.remove('on'));
+  const sec=g('sec-'+s);if(sec)sec.classList.add('on');
+  if(btn)btn.classList.add('on');
+  document.querySelectorAll('[onclick*="go(\''+s+'"]').forEach(b=>b.classList.add('on'));
+  D.section=s;
+  const t=TITLES[s]||s;
+  const tb=g('tb-title');if(tb)tb.textContent=t;
+  const mt=g('mob-ttl');if(mt)mt.textContent=t;
+  const show=ADD.includes(s);
+  const ta=g('tb-add');if(ta)ta.style.display=show?'flex':'none';
+  const ma=g('mob-add');if(ma)ma.style.display=show?'block':'none';
+}
+function tm(btn){
+  const m=g('cmenu');if(!m)return;
+  const open=m.style.display==='block';
+  m.style.display=open?'none':'block';
+  if(btn){document.querySelectorAll('.mn').forEach(b=>b.classList.remove('on'));if(!open)btn.classList.add('on');}
+}
+function hm(){const m=g('cmenu');if(m)m.style.display='none';}
 
-// --------------------------------------
-const A = {
-  user: null, isAdmin: false,
-  scholars:[], books:[], audios:[], videos:[], lives:[], cats:[],
-  hadiths:[], quizzes:[], dhikrs:[],
-  section: 'dashboard',
-  editItem: null, editTable: null,
-  deleteItem: null, deleteTable: null,
-};
-
-// ------------------------------------
-function g(id){ return document.getElementById(id); }
-function val(id){ return (g(id)?.value||'').trim(); }
-function fmt(n){ if(!n)return '0'; return n>=1000?(n/1000).toFixed(1).replace('.0','')+'K':String(n); }
-function fmtDate(dt){ if(!dt)return '—'; const d=new Date(dt); return d.toLocaleDateString('fr')+' '+d.toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'}); }
-function clrForm(ids){ ids.forEach(id=>{ const e=g(id); if(!e)return; if(e.type==='checkbox')e.checked=false; else e.value=''; }); }
-
-let _tt;
-function toast(m){ const e=g('toast'); e.textContent=m; e.classList.add('on'); clearTimeout(_tt); _tt=setTimeout(()=>e.classList.remove('on'),2800); }
-function busy(id,b,lbl){ const e=g(id); if(!e)return; e.disabled=b; e.textContent=b?'⏳ En cours…':lbl; }
-
-function closeMo(id){ const e=g(id); if(e) e.classList.remove('open'); }
-document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
-
-// -------------------------
-// Les sections ont des noms courts, les vraies tables Supabase ont des noms diff-rents
-const TABLE_MAP = {
-  scholars:   'scholars',
-  books:      'books',
-  audios:     'audios',
-  videos:     'videos',
-  lives:      'live_sessions',
-  categories: 'categories',
-  hadiths:    'hadiths',
-  quizzes:    'quizzes',
-  dhikrs:     'dhikr',
-};
-function realTable(section){ return TABLE_MAP[section] || section; }
-async function checkAuth(){
-  const {data:{session}} = await SB.auth.getSession();
-  if(!session){ window.location.href='index.html'; return; }
-  A.user = session.user;
-  const {data} = await SB.from('profiles').select('full_name,is_admin').eq('id',session.user.id).single();
-  if(!data?.is_admin){ alert('⛔ Accès refusé — tu n\'es pas administrateur.'); window.location.href='index.html'; return; }
-  A.isAdmin = true;
-  const name = data.full_name || session.user.user_metadata?.full_name || 'Admin';
-  g('sb-user').textContent = name;
-  g('sb-email').textContent = session.user.email;
+async function init(){
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session){location.href='index.html';return;}
+  D.user=session.user;
+  const{data}=await SB.from('profiles').select('full_name,is_admin').eq('id',session.user.id).single();
+  if(!data?.is_admin){alert('Acces refuse');location.href='index.html';return;}
+  const name=data.full_name||session.user.user_metadata?.full_name||'Admin';
+  g('sb-usr').textContent=name;g('sb-em').textContent=session.user.email;
   await loadAll();
 }
+async function doLogout(){await SB.auth.signOut();location.href='index.html';}
 
-async function doLogout(){
-  await SB.auth.signOut();
-  window.location.href = 'index.html';
-}
-
-// --- MOBILE MENU ---
-function toggleMobMenu(){
-  const m=document.getElementById('mob-content-menu');
-  if(m) m.style.display=m.style.display==='none'?'block':'none';
-}
-function hideMobMenu(){
-  const m=document.getElementById('mob-content-menu');
-  if(m) m.style.display='none';
-}
-document.addEventListener('click',function(e){
-  const menu=document.getElementById('mob-content-menu');
-  if(menu&&menu.style.display!=='none'){
-    const isMenuBtn=e.target.closest('.mob-bn');
-    if(!menu.contains(e.target)&&!isMenuBtn) hideMobMenu();
-  }
-});
-
-// ----------------------------------
 async function loadAll(){
   try{
-    const [sc,b,a,v,l,c,h,qz,dk] = await Promise.all([
+    const[a,b,c,d,e,f,h,q,dk]=await Promise.all([
       SB.from('scholars').select('*').order('name_fr'),
       SB.from('books').select('*').order('created_at',{ascending:false}),
       SB.from('audios').select('*').order('created_at',{ascending:false}),
@@ -665,1136 +394,318 @@ async function loadAll(){
       SB.from('quizzes').select('*').order('id',{ascending:false}),
       SB.from('dhikr').select('*').order('order_num'),
     ]);
-    A.scholars=sc.data||[]; A.books=b.data||[]; A.audios=a.data||[];
-    A.videos=v.data||[];  A.lives=l.data||[];  A.cats=c.data||[];
-    A.hadiths=h.data||[]; A.quizzes=qz.data||[]; A.dhikrs=dk.data||[];
-  }catch(e){ toast('❌ Erreur chargement: '+e.message); }
-  renderAll();
+    D.scholars=a.data||[];D.books=b.data||[];D.audios=c.data||[];
+    D.videos=d.data||[];D.lives=e.data||[];D.cats=f.data||[];
+    D.hadiths=h.data||[];D.quizzes=q.data||[];D.dhikrs=dk.data||[];
+  }catch(e){toast('Erreur: '+e.message);}
+  rAll();
 }
 
-function renderAll(){
-  renderDashboard();
-  renderScholars();renderBooks();renderAudios();renderVideos();renderLives();renderCats();
-  renderHadiths();renderQuizzes();renderDhikrs();
+function rAll(){rDash();rSc();rBk();rAu();rVi();rLv();rHd();rQz();rDk();rCat();}
+
+function rDash(){
+  g('ds-sc').textContent=D.scholars.length;g('ds-bk').textContent=D.books.length;
+  g('ds-au').textContent=D.audios.length;g('ds-vi').textContent=D.videos.length;
+  const lv=g('ds-lv');
+  lv.innerHTML=D.lives.length?D.lives.slice(0,5).map(l=>'<div class="dash-row"><div><p style="font-size:.76rem;font-weight:700;color:var(--txt)">'+l.title+'</p><p style="font-size:.65rem;color:var(--muted)">'+(l.scheduled_at?new Date(l.scheduled_at).toLocaleDateString('fr'):'')+'</p></div>'+(l.status==='live'?'<span class="bdg bdg-live">LIVE</span>':'<span class="bdg bdg-amber">'+l.status+'</span>')+'</div>').join(''):'<p style="font-size:.76rem;color:var(--muted);text-align:center;padding:12px">Aucune session</p>';
+  const rc=g('ds-rc');
+  const items=[...D.books.slice(0,2).map(x=>({e:'📚',t:x.title})),...D.audios.slice(0,2).map(x=>({e:'🎧',t:x.title})),...D.videos.slice(0,2).map(x=>({e:'🎬',t:x.title}))].slice(0,6);
+  rc.innerHTML=items.length?items.map(r=>'<div class="dash-row"><p style="font-size:.76rem;font-weight:700;color:var(--txt)">'+r.e+' '+r.t+'</p></div>').join(''):'<p style="font-size:.76rem;color:var(--muted);text-align:center;padding:12px">Aucun contenu</p>';
 }
 
-// ---------------------------------
-const SECTION_TITLES = {
-  dashboard:'📊 Tableau de bord',
-  scholars:'👨‍🏫 Savants',
-  books:'📚 Livres / PDF',
-  audios:'🎧 Cours Audio',
-  videos:'🎬 Vidéos',
-  lives:'📡 Sessions Live',
-  categories:'🏷️ Catégories',
-  hadiths:'📿 Hadiths du jour',
-  quizzes:'🎯 Questions Quiz',
-  dhikrs:'🕌 Dhikrs',
-};
-const ADD_SECTIONS = ['scholars','books','audios','videos','lives','categories','hadiths','quizzes','dhikrs'];
-
-function goSection(name, sidebarBtn, mobBtn){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.mob-bn').forEach(b=>b.classList.remove('active'));
-
-  const sec = g('sec-'+name);
-  if(sec) sec.classList.add('active');
-  if(sidebarBtn) sidebarBtn.classList.add('active');
-  if(mobBtn) mobBtn.classList.add('active');
-
-  // Sync sidebar active state
-  document.querySelectorAll('.nav-item[onclick*="\''+name+'\'"]').forEach(b=>b.classList.add('active'));
-  // Sync mobile active
-  const mobBnMatch = document.querySelector('.mob-bn[data-mob="'+name+'"]');
-  if(mobBnMatch) mobBnMatch.classList.add('active');
-
-  A.section = name;
-  const title = SECTION_TITLES[name]||name;
-  g('topbar-title').textContent = title;
-  const mobTitle = g('mob-section-title');
-  if(mobTitle) mobTitle.textContent = title;
-
-  const addBtn = g('topbar-add-btn');
-  const mobAdd = g('mob-add-btn');
-  const show = ADD_SECTIONS.includes(name);
-  if(addBtn) addBtn.style.display = show ? 'flex' : 'none';
-  if(mobAdd) mobAdd.style.display = show ? 'block' : 'none';
+function avDiv(s,i){
+  if(s.avatar_url) return '<img src="'+s.avatar_url+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover" onerror="this.style.display=\'none\'">';
+  return '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#25D366,#38bdf8);display:flex;align-items:center;justify-content:center;font-family:Noto Naskh Arabic,serif;font-size:.9rem;color:#fff;font-weight:700">'+(s.initial||'?')+'</div>';
+}
+function thDiv(url,emoji,bg){
+  if(url) return '<img src="'+url+'" class="td-img" onerror="this.style.display=\'none\'">';
+  return '<div style="width:40px;height:40px;border-radius:8px;background:'+bg+';display:flex;align-items:center;justify-content:center;font-size:1.1rem">'+emoji+'</div>';
 }
 
-// ----------------------------------
-function renderDashboard(){
-  g('dash-scholars').textContent = A.scholars.length;
-  g('dash-books').textContent    = A.books.length;
-  g('dash-audios').textContent   = A.audios.length;
-  g('dash-videos').textContent   = A.videos.length;
-  // Lives
-  const lv = g('dash-lives-list');
-  lv.innerHTML = A.lives.length ? A.lives.slice(0,6).map(l=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)">
-      <div>
-        <p style="font-size:.78rem;font-weight:800;color:var(--txt)">${l.title}</p>
-        <p style="font-size:.66rem;color:var(--muted)">${fmtDate(l.scheduled_at)}</p>
-      </div>
-      ${l.status==='live'
-        ? '<span class="bdg bdg-live" style="display:inline-flex;align-items:center;gap:3px"><div class="ldot"></div>LIVE</span>'
-        : l.status==='upcoming'
-        ? '<span class="bdg bdg-upc">À venir</span>'
-        : '<span class="bdg" style="background:var(--bg);color:var(--muted)">Terminé</span>'}
-    </div>`).join('') : '<p style="font-size:.78rem;color:var(--muted);text-align:center;padding:20px">Aucune session</p>';
-  // Recent
-  const recent = [
-    ...A.books.slice(0,3).map(b=>({type:'livre',title:b.title,date:b.created_at})),
-    ...A.audios.slice(0,2).map(a=>({type:'audio',title:a.title,date:a.created_at})),
-    ...A.videos.slice(0,2).map(v=>({type:'vidéo',title:v.title,date:v.created_at})),
-  ].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,6);
-  const rl = g('dash-recent-list');
-  rl.innerHTML = recent.length ? recent.map(r=>`
-    <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)">
-      <span style="font-size:.7rem;font-weight:800;background:var(--bg);padding:.18rem .5rem;border-radius:20px;color:var(--muted)">${r.type}</span>
-      <p style="font-size:.78rem;font-weight:700;color:var(--txt);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.title}</p>
-    </div>`).join('') : '<p style="font-size:.78rem;color:var(--muted);text-align:center;padding:20px">Aucun contenu</p>';
+function rSc(){
+  const n=D.scholars.length;g('cnt-sc').textContent='('+n+')';g('ft-scholars').textContent=n+' savant'+(n>1?'s':'');
+  g('tbl-scholars').innerHTML=!n?'<tr class="empty-r"><td colspan="5">Aucun savant</td></tr>':D.scholars.map(s=>'<tr><td><div style="display:flex;align-items:center;gap:8px">'+avDiv(s)+'<div><p class="td-b">'+(s.name_fr||s.name_ar||'?')+'</p><p style="font-size:.65rem;color:var(--muted)">'+(s.name_ar||'')+'</p></div></div></td><td><span class="bdg bdg-g">'+(s.category||'—')+'</span></td><td>'+(s.country||'—')+'</td><td>'+(s.is_live?'<span class="bdg bdg-live">LIVE</span>':'<span style="font-size:.7rem;color:var(--muted)">Hors ligne</span>')+'</td><td class="td-acts"><button class="btn btn-sm btn-edit" onclick="ei(\'scholars\',\''+es(s.id)+'\')">✏️</button><button class="btn btn-sm btn-del" onclick="ad(\'scholars\',\''+es(s.id)+'\',\''+es(s.name_fr||s.name_ar||'?')+'\')">🗑️</button></td></tr>').join('');
+}
+function rBk(){
+  const n=D.books.length;g('cnt-bk').textContent='('+n+')';g('ft-books').textContent=n+' livre'+(n>1?'s':'');
+  g('tbl-books').innerHTML=!n?'<tr class="empty-r"><td colspan="5">Aucun livre</td></tr>':D.books.map(b=>'<tr><td>'+thDiv(b.cover_url,b.emoji||'📗','rgba(37,211,102,.1)')+'</td><td><p class="td-b" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(b.title||'—')+'</p>'+(b.is_new?'<span class="bdg bdg-r" style="font-size:.52rem">NEW</span>':'')+'</td><td>'+(b.author_name||'—')+'</td><td><span class="bdg bdg-amber">'+(b.file_type||'PDF')+'</span></td><td class="td-acts"><button class="btn btn-sm btn-edit" onclick="ei(\'books\','+b.id+')">✏️</button><button class="btn btn-sm btn-del" onclick="ad(\'books\','+b.id+',\''+es(b.title||'?')+'\')">🗑️</button></td></tr>').join('');
+}
+function rAu(){
+  const n=D.audios.length;g('cnt-au').textContent='('+n+')';g('ft-audios').textContent=n+' cours';
+  g('tbl-audios').innerHTML=!n?'<tr class="empty-r"><td colspan="5">Aucun cours audio</td></tr>':D.audios.map(a=>{const sc=D.scholars.find(s=>s.id===a.scholar_id);return'<tr><td>'+thDiv(a.cover_url,a.emoji||'🎧','rgba(56,189,248,.1)')+'</td><td><p class="td-b" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(a.title||'—')+'</p></td><td>'+(sc?sc.name_fr:a.author_name||'—')+'</td><td>'+(a.duration||'—')+'</td><td class="td-acts"><button class="btn btn-sm btn-edit" onclick="ei(\'audios\','+a.id+')">✏️</button><button class="btn btn-sm btn-del" onclick="ad(\'audios\','+a.id+',\''+es(a.title||'?')+'\')">🗑️</button></td></tr>';}).join('');
+}
+function rVi(){
+  const n=D.videos.length;g('cnt-vi').textContent='('+n+')';g('ft-videos').textContent=n+' video'+(n>1?'s':'');
+  g('tbl-videos').innerHTML=!n?'<tr class="empty-r"><td colspan="5">Aucune video</td></tr>':D.videos.map(vd=>{const sc=D.scholars.find(s=>s.id===vd.scholar_id);return'<tr><td>'+thDiv(vd.thumbnail_url,vd.emoji||'🎬','rgba(244,63,94,.08)')+'</td><td><p class="td-b" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(vd.title||'—')+'</p></td><td>'+(sc?sc.name_fr:vd.author_name||'—')+'</td><td>'+(vd.duration||'—')+'</td><td class="td-acts"><button class="btn btn-sm btn-edit" onclick="ei(\'videos\','+vd.id+')">✏️</button><button class="btn btn-sm btn-del" onclick="ad(\'videos\','+vd.id+',\''+es(vd.title||'?')+'\')">🗑️</button></td></tr>';}).join('');
+}
+function rLv(){
+  const n=D.lives.length;g('cnt-lv').textContent='('+n+')';g('ft-lives').textContent=n+' session'+(n>1?'s':'');
+  const ST={live:'<span class="bdg bdg-live">LIVE</span>',upcoming:'<span class="bdg bdg-amber">Planifie</span>',ended:'<span class="bdg" style="background:rgba(255,255,255,.05);color:var(--muted)">Termine</span>'};
+  g('tbl-lives').innerHTML=!n?'<tr class="empty-r"><td colspan="5">Aucune session</td></tr>':D.lives.map(l=>'<tr><td><p class="td-b" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(l.title||'—')+'</p></td><td>'+(l.scholar_name||'—')+'</td><td style="white-space:nowrap">'+(l.scheduled_at?new Date(l.scheduled_at).toLocaleDateString('fr'):'—')+'</td><td>'+(ST[l.status]||l.status)+'</td><td class="td-acts"><button class="btn btn-sm btn-edit" onclick="ei(\'lives\','+l.id+')">✏️</button><button class="btn btn-sm btn-del" onclick="ad(\'lives\','+l.id+',\''+es(l.title||'?')+'\')">🗑️</button></td></tr>').join('');
+}
+function rHd(){
+  const n=D.hadiths.length;g('cnt-hd').textContent='('+n+')';g('ft-hadiths').textContent=n+' hadith'+(n>1?'s':'');
+  g('tbl-hadiths').innerHTML=!n?'<tr class="empty-r"><td colspan="5">Aucun hadith</td></tr>':D.hadiths.map(h=>'<tr><td style="max-width:160px;font-family:Noto Naskh Arabic,serif;direction:rtl;text-align:right">'+(h.text_ar||'').substring(0,40)+'</td><td class="td-b">'+(h.source||'—')+'</td><td><span class="bdg bdg-g">'+(h.grade||'Sahih')+'</span></td><td>'+(h.narrator||'—')+'</td><td class="td-acts"><button class="btn btn-sm btn-edit" onclick="ei(\'hadiths\','+h.id+')">✏️</button><button class="btn btn-sm btn-del" onclick="ad(\'hadiths\','+h.id+',\''+es(h.source||'?')+'\')">🗑️</button></td></tr>').join('');
+}
+function rQz(){
+  const n=D.quizzes.length;g('cnt-qz').textContent='('+n+')';g('ft-quizzes').textContent=n+' question'+(n>1?'s':'');
+  const DF={facile:'<span class="bdg bdg-g">Facile</span>',moyen:'<span class="bdg bdg-amber">Moyen</span>',difficile:'<span class="bdg bdg-r">Difficile</span>'};
+  g('tbl-quizzes').innerHTML=!n?'<tr class="empty-r"><td colspan="5">Aucune question</td></tr>':D.quizzes.map(q=>'<tr><td class="td-b" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(q.question_fr||'—')+'</td><td><span class="bdg bdg-b">'+(q.category||'—')+'</span></td><td>'+(DF[q.difficulty]||q.difficulty||'—')+'</td><td><span class="bdg bdg-g">'+(q.correct||'?').toUpperCase()+'</span></td><td class="td-acts"><button class="btn btn-sm btn-edit" onclick="ei(\'quizzes\','+q.id+')">✏️</button><button class="btn btn-sm btn-del" onclick="ad(\'quizzes\','+q.id+',\''+es((q.question_fr||'').substring(0,25))+'\')">🗑️</button></td></tr>').join('');
+}
+function rDk(){
+  const n=D.dhikrs.length;g('cnt-dk').textContent='('+n+')';g('ft-dhikrs').textContent=n+' dhikr'+(n>1?'s':'');
+  const TI={morning:'Matin',evening:'Soir',any:'Tous',prayer:'Priere'};
+  g('tbl-dhikrs').innerHTML=!n?'<tr class="empty-r"><td colspan="6">Aucun dhikr</td></tr>':D.dhikrs.map(d=>'<tr><td style="font-family:Noto Naskh Arabic,serif;direction:rtl;text-align:right;max-width:120px">'+(d.text_ar||'').substring(0,25)+'</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(d.text_fr||'—')+'</td><td>x'+(d.count_recommended||33)+'</td><td><span class="bdg bdg-g">'+(TI[d.time_of_day]||d.time_of_day||'—')+'</span></td><td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(d.source||'—')+'</td><td class="td-acts"><button class="btn btn-sm btn-edit" onclick="ei(\'dhikrs\','+d.id+')">✏️</button><button class="btn btn-sm btn-del" onclick="ad(\'dhikrs\','+d.id+',\''+es(d.text_fr||'?')+'\')">🗑️</button></td></tr>').join('');
+}
+function rCat(){
+  const n=D.cats.length;g('cnt-cat').textContent='('+n+')';g('ft-cats').textContent=n+' categorie'+(n>1?'s':'');
+  g('tbl-cats').innerHTML=!n?'<tr class="empty-r"><td colspan="5">Aucune categorie</td></tr>':D.cats.map(c=>'<tr><td><div style="width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;background:rgba(37,211,102,.08)">'+(c.emoji||'📚')+'</div></td><td style="font-family:Noto Naskh Arabic,serif">'+(c.label_ar||'—')+'</td><td class="td-b">'+(c.label_fr||'—')+'</td><td><span class="bdg bdg-g">'+(c.color||'—')+'</span></td><td class="td-acts"><button class="btn btn-sm btn-edit" onclick="ei(\'categories\','+c.id+')">✏️</button><button class="btn btn-sm btn-del" onclick="ad(\'categories\','+c.id+',\''+es(c.label_fr||'?')+'\')">🗑️</button></td></tr>').join('');
 }
 
-// -------------------------------------
-function filterTable(section, q){
-  const sel = {scholars:'tbl-scholars',books:'tbl-books',audios:'tbl-audios',videos:'tbl-videos'};
-  const tbody = g(sel[section]);
-  if(!tbody) return;
-  tbody.querySelectorAll('tr').forEach(row=>{
-    const text = row.textContent.toLowerCase();
-    row.style.display = text.includes(q.toLowerCase()) ? '' : 'none';
-  });
+function ftbl(s,q){
+  const ids={scholars:'tbl-scholars',books:'tbl-books',audios:'tbl-audios',videos:'tbl-videos'};
+  const tb=g(ids[s]);if(!tb)return;
+  tb.querySelectorAll('tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';});
+}
+function es(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").substring(0,50);}
+
+function ad(t,id,nm){D.dt=t;D.di=id;g('cfm-name').textContent=nm;g('mo-confirm').classList.add('open');}
+async function execDel(){
+  busy('del-btn',true,'...');
+  try{const{error}=await SB.from(rt(D.dt)).delete().eq('id',D.di);if(error)throw error;cmo('mo-confirm');toast('Supprime!');await loadAll();}
+  catch(e){toast('Erreur: '+e.message);}
+  finally{busy('del-btn',false,'Supprimer');}
 }
 
-// ------------------------------
-function renderScholars(){
-  const cnt = A.scholars.length;
-  g('cnt-scholars').textContent = '('+cnt+')';
-  g('cl-scholars').textContent = cnt+' savant'+(cnt>1?'s':'');
-  const CAT = {contemporain:'🕌 Contemporain',ancien:'📜 Ancien',hadith:'📿 Hadith',rapporteur:'📖 Rapporteur'};
-  g('tbl-scholars').innerHTML = !cnt
-    ? '<tr class="empty-row"><td colspan="9">Aucun savant — ajoutez-en via le bouton ➕</td></tr>'
-    : A.scholars.map(s=>`
-      <tr>
-        <td>
-          <div style="display:flex;align-items:center;gap:9px">
-            ${s.avatar_url
-              ? `<img src="${s.avatar_url}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--line)" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
-              : ''}
-            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#25D366,#2AABEE);display:${s.avatar_url?'none':'flex'};align-items:center;justify-content:center;font-family:Noto Naskh Arabic,serif;font-size:.95rem;color:#fff;font-weight:700;flex-shrink:0">${s.initial||'?'}</div>
-            <div>
-              <p class="td-bold">${s.name_fr||'—'}</p>
-              <p style="font-size:.68rem;color:var(--muted);font-family:Noto Naskh Arabic,serif">${s.name_ar||''}</p>
-            </div>
-          </div>
-        </td>
-        <td><span class="bdg bdg-g">${CAT[s.category]||s.category||'—'}</span></td>
-        <td>${s.country||'—'}</td>
-        <td>${s.era||'—'}</td>
-        <td>${s.books_count||0}</td>
-        <td>${s.audios_count||0}</td>
-        <td>${s.videos_count||0}</td>
-        <td>${s.is_live?'<span class="bdg bdg-live" style="display:inline-flex;align-items:center;gap:3px"><div class="ldot"></div>LIVE</span>':'<span style="font-size:.72rem;color:var(--muted)">Hors ligne</span>'}</td>
-        <td class="td-actions">
-          <button class="btn btn-sm btn-edit" onclick="editItem('scholars','${s.id}')">✏️ Modifier</button>
-          <button class="btn btn-sm btn-del" onclick="confirmDelete('scholars','${s.id}','${(s.name_fr||'').replace(/'/g,"\\'")}')">🗑️</button>
-        </td>
-      </tr>`).join('');
+function bf(fields){
+  return '<div class="form-grid">'+fields.map(f=>{
+    let inp='';
+    const cls=' class="fg'+(f.half?'':' fg-full')+'"';
+    if(f.type==='sel') inp='<select class="inp" id="'+f.i+'">'+f.opts+'</select>';
+    else if(f.type==='ta') inp='<textarea class="inp" id="'+f.i+'" rows="3"'+(f.ar?' style="direction:rtl;text-align:right;font-family:Noto Naskh Arabic,serif"':'')+'>'+( f.v||'')+'</textarea>';
+    else if(f.type==='file') inp='<label class="file-lbl" id="'+f.i+'-lbl" for="'+f.i+'">'+(f.lbl||'Choisir')+'</label><input type="file" style="display:none" id="'+f.i+'" accept="'+(f.accept||'*')+'" onchange="of(\''+f.i+'-lbl\',\''+f.i+'\')">';
+    else inp='<input class="inp" id="'+f.i+'" type="'+(f.type||'text')+'" value="'+(f.v||'')+'"'+(f.ar?' style="direction:rtl;text-align:right;font-family:Noto Naskh Arabic,serif"':'')+'/>';
+    return '<div'+cls+'><label class="lbl">'+f.l+'</label>'+inp+'</div>';
+  }).join('')+'</div>';
 }
 
-// --------------------------------
-function renderBooks(){
-  const cnt = A.books.length;
-  g('cnt-books').textContent = '('+cnt+')';
-  g('cl-books').textContent = cnt+' livre'+(cnt>1?'s':'');
-  g('tbl-books').innerHTML = !cnt
-    ? '<tr class="empty-row"><td colspan="8">Aucun livre</td></tr>'
-    : A.books.map(b=>`
-      <tr>
-        <td>${b.cover_url
-          ? `<img src="${b.cover_url}" class="td-img" onerror="this.style.display='none'">`
-          : `<div class="td-img-ph">${b.emoji||'📗'}</div>`}</td>
-        <td><p class="td-bold" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.title||'—'}</p>
-            ${b.is_new?'<span class="bdg bdg-r" style="font-size:.54rem">NOUVEAU</span>':''}</td>
-        <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.author_name||'—'}</td>
-        <td>${b.category?`<span class="bdg bdg-g">${b.category}</span>`:'—'}</td>
-        <td><span class="bdg" style="background:rgba(255,111,0,.1);color:#E65100">${b.file_type||'PDF'}</span></td>
-        <td>${b.pages||0}</td>
-        <td>${fmt(b.downloads||0)}</td>
-        <td class="td-actions">
-          <button class="btn btn-sm btn-edit" onclick="editItem('books',${b.id})">✏️</button>
-          <button class="btn btn-sm btn-del" onclick="confirmDelete('books',${b.id},'${(b.title||'').replace(/'/g,"\\'")}')">🗑️</button>
-        </td>
-      </tr>`).join('');
+function ei(t,id){
+  D.et=t;D.ei=id;
+  const sO=D.scholars.map(s=>'<option value="'+s.id+'">'+(s.name_fr||s.name_ar)+'</option>').join('');
+  const cO=D.cats.map(c=>'<option value="'+(c.label_fr||'')+'">'+( c.emoji||'')+' '+(c.label_fr||'')+'</option>').join('');
+  let form='',title='';
+
+  if(t==='scholars'){
+    const s=D.scholars.find(x=>String(x.id)===String(id));if(!s)return;
+    title='Modifier - '+(s.name_fr||s.name_ar);
+    form=bf([
+      {l:'Nom arabe',i:'e-nar',v:s.name_ar||'',ar:true,half:true},{l:'Nom francais',i:'e-nfr',v:s.name_fr||'',half:true},
+      {l:'Initiale',i:'e-ini',v:s.initial||'',half:true},{l:'Pays',i:'e-cty',v:s.country||'',half:true},
+      {l:'Epoque',i:'e-era',v:s.era||'',half:true},
+      {l:'Categorie',i:'e-cat',type:'sel',opts:'<option value="contemporain"'+(s.category==='contemporain'?' selected':'')+'>Contemporain</option><option value="ancien"'+(s.category==='ancien'?' selected':'')+'>Ancien</option><option value="hadith"'+(s.category==='hadith'?' selected':'')+'>Hadith</option><option value="rapporteur"'+(s.category==='rapporteur'?' selected':'')+'>Rapporteur</option>',half:true},
+      {l:'Tags (virgule)',i:'e-tags',v:(s.tags||[]).join(', ')},{l:'Biographie',i:'e-bio',v:s.bio||'',type:'ta'},
+      {l:'Photo URL',i:'e-avurl',v:s.avatar_url||''},{l:'Photo upload',i:'e-avinp',type:'file',accept:'image/*',lbl:'Choisir une photo'},
+      {l:'Live',i:'e-live',type:'sel',opts:'<option value="false"'+(s.is_live?'':' selected')+'>Hors ligne</option><option value="true"'+(s.is_live?' selected':'')+'>En direct</option>',half:true},
+      {l:'Titre live',i:'e-ltitle',v:s.live_title||'',half:true},{l:'Lien live',i:'e-lurl',v:s.live_url||''},
+    ]);
+  }else if(t==='books'){
+    const b=D.books.find(x=>x.id===id||String(x.id)===String(id));if(!b)return;
+    title='Modifier - '+(b.title||'?');
+    form=bf([
+      {l:'Titre',i:'e-ttl',v:b.title||''},{l:'Auteur',i:'e-aut',v:b.author_name||'',half:true},
+      {l:'Savant',i:'e-sch',type:'sel',opts:'<option value="">Aucun</option>'+sO,half:true},
+      {l:'Categorie',i:'e-cat',type:'sel',opts:'<option value="">Choisir</option>'+cO,half:true,sv:b.category},
+      {l:'Type',i:'e-typ',type:'sel',opts:'<option value="PDF"'+(b.file_type==='PDF'?' selected':'')+'>PDF</option><option value="EPUB"'+(b.file_type==='EPUB'?' selected':'')+'>Ebook</option><option value="Word"'+(b.file_type==='Word'?' selected':'')+'>Word</option>',half:true},
+      {l:'Pages',i:'e-pg',v:b.pages||0,type:'number',half:true},
+      {l:'Lien fichier',i:'e-url',v:b.file_url||''},{l:'Cover URL',i:'e-cvr',v:b.cover_url||''},
+      {l:'Cover upload',i:'e-cvrinp',type:'file',accept:'image/*',lbl:'Choisir une image'},
+      {l:'Description',i:'e-dsc',v:b.description||'',type:'ta'},
+    ]);
+    setTimeout(()=>{const s=g('e-sch');if(s&&b.scholar_id)s.value=b.scholar_id;const c=g('e-cat');if(c&&b.category)c.value=b.category;},50);
+  }else if(t==='audios'){
+    const a=D.audios.find(x=>x.id===id||String(x.id)===String(id));if(!a)return;
+    title='Modifier - '+(a.title||'?');
+    form=bf([
+      {l:'Titre',i:'e-ttl',v:a.title||''},{l:'Savant',i:'e-sch',type:'sel',opts:'<option value="">Aucun</option>'+sO,half:true},
+      {l:'Categorie',i:'e-cat',type:'sel',opts:'<option value="">Choisir</option>'+cO,half:true},
+      {l:'Episodes',i:'e-eps',v:a.episodes||1,type:'number',half:true},{l:'Duree',i:'e-dur',v:a.duration||'',half:true},
+      {l:'Lien audio',i:'e-url',v:a.file_url||''},{l:'Cover URL',i:'e-cvr',v:a.cover_url||''},
+      {l:'Cover upload',i:'e-cvrinp',type:'file',accept:'image/*',lbl:'Choisir une image'},
+      {l:'Description',i:'e-dsc',v:a.description||'',type:'ta'},
+    ]);
+    setTimeout(()=>{const s=g('e-sch');if(s&&a.scholar_id)s.value=a.scholar_id;const c=g('e-cat');if(c&&a.category)c.value=a.category;},50);
+  }else if(t==='videos'){
+    const vd=D.videos.find(x=>x.id===id||String(x.id)===String(id));if(!vd)return;
+    title='Modifier - '+(vd.title||'?');
+    form=bf([
+      {l:'Titre',i:'e-ttl',v:vd.title||''},{l:'Savant',i:'e-sch',type:'sel',opts:'<option value="">Aucun</option>'+sO,half:true},
+      {l:'Categorie',i:'e-cat',type:'sel',opts:'<option value="">Choisir</option>'+cO,half:true},
+      {l:'Duree',i:'e-dur',v:vd.duration||'',half:true},
+      {l:'Lien video',i:'e-url',v:vd.video_url||''},{l:'Thumbnail URL',i:'e-cvr',v:vd.thumbnail_url||''},
+      {l:'Thumbnail upload',i:'e-cvrinp',type:'file',accept:'image/*',lbl:'Choisir une image'},
+      {l:'Description',i:'e-dsc',v:vd.description||'',type:'ta'},
+    ]);
+    setTimeout(()=>{const s=g('e-sch');if(s&&vd.scholar_id)s.value=vd.scholar_id;const c=g('e-cat');if(c&&vd.category)c.value=vd.category;},50);
+  }else if(t==='lives'){
+    const l=D.lives.find(x=>x.id===id||String(x.id)===String(id));if(!l)return;
+    const dt=l.scheduled_at?new Date(l.scheduled_at).toISOString().slice(0,16):'';
+    title='Modifier - '+(l.title||'?');
+    form=bf([
+      {l:'Titre',i:'e-ttl',v:l.title||''},{l:'Savant',i:'e-sch',type:'sel',opts:'<option value="">Aucun</option>'+sO,half:true},
+      {l:'Nom savant',i:'e-snm',v:l.scholar_name||'',half:true},
+      {l:'Date Heure',i:'e-dt',v:dt,type:'datetime-local',half:true},{l:'Lien stream',i:'e-url',v:l.stream_url||'',half:true},
+      {l:'Statut',i:'e-st',type:'sel',opts:'<option value="upcoming"'+(l.status==='upcoming'?' selected':'')+'>Planifie</option><option value="live"'+(l.status==='live'?' selected':'')+'>En direct</option><option value="ended"'+(l.status==='ended'?' selected':'')+'>Termine</option>',half:true},
+      {l:'Auditeurs',i:'e-vw',v:l.viewers||0,type:'number',half:true},{l:'Lien replay',i:'e-replay',v:l.replay_url||''},
+    ]);
+    setTimeout(()=>{const s=g('e-sch');if(s&&l.scholar_id)s.value=l.scholar_id;},50);
+  }else if(t==='hadiths'){
+    const h=D.hadiths.find(x=>x.id===id||String(x.id)===String(id));if(!h)return;
+    title='Modifier hadith';
+    form=bf([
+      {l:'Texte arabe',i:'e-ar',v:h.text_ar||'',type:'ta',ar:true},{l:'Traduction fr',i:'e-fr',v:h.text_fr||'',type:'ta'},
+      {l:'Source',i:'e-src',v:h.source||'',half:true},{l:'Rapporteur',i:'e-nar',v:h.narrator||'',half:true},
+      {l:'Grade',i:'e-grade',type:'sel',opts:'<option value="Sahih"'+(h.grade==='Sahih'?' selected':'')+'>Sahih</option><option value="Hasan"'+(h.grade==='Hasan'?' selected':'')+'>Hasan</option>',half:true},
+      {l:'Categorie',i:'e-cat',type:'sel',opts:'<option value="ilm">Ilm</option><option value="aqida">Aqida</option><option value="akhlaq">Akhlaq</option><option value="ibada">Ibada</option><option value="manhaj">Manhaj</option>',half:true,sv:h.category},
+      {l:'Date affichage',i:'e-date',v:h.active_date||'',type:'date'},
+    ]);
+    setTimeout(()=>{const c=g('e-cat');if(c&&h.category)c.value=h.category;},50);
+  }else if(t==='quizzes'){
+    const q=D.quizzes.find(x=>x.id===id||String(x.id)===String(id));if(!q)return;
+    title='Modifier question';
+    form=bf([
+      {l:'Question fr',i:'e-fr',v:q.question_fr||'',type:'ta'},
+      {l:'Option A',i:'e-oa',v:q.option_a||'',half:true},{l:'Option B',i:'e-ob',v:q.option_b||'',half:true},
+      {l:'Option C',i:'e-oc',v:q.option_c||'',half:true},{l:'Option D',i:'e-od',v:q.option_d||'',half:true},
+      {l:'Bonne reponse',i:'e-correct',type:'sel',opts:'<option value="a"'+(q.correct==='a'?' selected':'')+'>A</option><option value="b"'+(q.correct==='b'?' selected':'')+'>B</option><option value="c"'+(q.correct==='c'?' selected':'')+'>C</option><option value="d"'+(q.correct==='d'?' selected':'')+'>D</option>',half:true},
+      {l:'Difficulte',i:'e-diff',type:'sel',opts:'<option value="facile"'+(q.difficulty==='facile'?' selected':'')+'>Facile</option><option value="moyen"'+(q.difficulty==='moyen'?' selected':'')+'>Moyen</option><option value="difficile"'+(q.difficulty==='difficile'?' selected':'')+'>Difficile</option>',half:true},
+      {l:'Categorie',i:'e-cat',type:'sel',opts:'<option value="aqida">Aqida</option><option value="fiqh">Fiqh</option><option value="hadith">Hadith</option><option value="quran">Coran</option><option value="ibada">Ibada</option><option value="manhaj">Manhaj</option>',half:true},
+      {l:'Explication',i:'e-expl',v:q.explanation||'',type:'ta'},
+    ]);
+    setTimeout(()=>{const c=g('e-cat');if(c&&q.category)c.value=q.category;},50);
+  }else if(t==='dhikrs'){
+    const dk=D.dhikrs.find(x=>x.id===id||String(x.id)===String(id));if(!dk)return;
+    title='Modifier dhikr';
+    form=bf([
+      {l:'Texte arabe',i:'e-ar',v:dk.text_ar||'',ar:true,half:true},{l:'Traduction fr',i:'e-fr',v:dk.text_fr||'',half:true},
+      {l:'Translitteration',i:'e-tr',v:dk.transliteration||''},
+      {l:'Count',i:'e-cnt',v:dk.count_recommended||33,type:'number',half:true},
+      {l:'Moment',i:'e-time',type:'sel',opts:'<option value="any"'+(dk.time_of_day==='any'?' selected':'')+'>Tous</option><option value="morning"'+(dk.time_of_day==='morning'?' selected':'')+'>Matin</option><option value="evening"'+(dk.time_of_day==='evening'?' selected':'')+'>Soir</option><option value="prayer"'+(dk.time_of_day==='prayer'?' selected':'')+'>Priere</option>',half:true},
+      {l:'Recompense',i:'e-rw',v:dk.reward||'',type:'ta'},{l:'Source',i:'e-src',v:dk.source||''},
+      {l:'Ordre',i:'e-ord',v:dk.order_num||0,type:'number',half:true},
+    ]);
+  }else if(t==='categories'){
+    const c=D.cats.find(x=>x.id===id||String(x.id)===String(id));if(!c)return;
+    title='Modifier categorie';
+    form=bf([
+      {l:'Nom arabe',i:'e-ar',v:c.label_ar||'',ar:true,half:true},{l:'Nom francais',i:'e-fr',v:c.label_fr||'',half:true},
+      {l:'Emoji',i:'e-em',v:c.emoji||'',half:true},
+      {l:'Couleur',i:'e-col',type:'sel',opts:'<option value="green"'+(c.color==='green'?' selected':'')+'>Vert</option><option value="blue"'+(c.color==='blue'?' selected':'')+'>Bleu</option><option value="red"'+(c.color==='red'?' selected':'')+'>Rouge</option><option value="cyan"'+(c.color==='cyan'?' selected':'')+'>Cyan</option>',half:true},
+    ]);
+  }
+  g('edit-ttl').textContent=title;g('edit-body').innerHTML=form;g('mo-edit').classList.add('open');
 }
 
-// --------------------------------
-function renderAudios(){
-  const cnt = A.audios.length;
-  g('cnt-audios').textContent = '('+cnt+')';
-  g('cl-audios').textContent = cnt+' cours';
-  g('tbl-audios').innerHTML = !cnt
-    ? '<tr class="empty-row"><td colspan="8">Aucun cours audio</td></tr>'
-    : A.audios.map(a=>{
-        const sc = A.scholars.find(s=>s.id===a.scholar_id);
-        return `<tr>
-          <td>${a.cover_url
-            ? `<img src="${a.cover_url}" class="td-img" onerror="this.style.display='none'">`
-            : `<div class="td-img-ph">${a.emoji||'🎧'}</div>`}</td>
-          <td><p class="td-bold" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.title||'—'}</p></td>
-          <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sc?sc.name_fr:a.author_name||'—'}</td>
-          <td>${a.category?`<span class="bdg bdg-b">${a.category}</span>`:'—'}</td>
-          <td>${a.episodes||1}</td>
-          <td>${a.duration||'—'}</td>
-          <td>${fmt(a.plays||0)}</td>
-          <td class="td-actions">
-            <button class="btn btn-sm btn-edit" onclick="editItem('audios',${a.id})">✏️</button>
-            <button class="btn btn-sm btn-del" onclick="confirmDelete('audios',${a.id},'${(a.title||'').replace(/'/g,"\\'")}')">🗑️</button>
-          </td>
-        </tr>`;
-      }).join('');
-}
-
-// --------------------------------
-function renderVideos(){
-  const cnt = A.videos.length;
-  g('cnt-videos').textContent = '('+cnt+')';
-  g('cl-videos').textContent = cnt+' vidéo'+(cnt>1?'s':'');
-  g('tbl-videos').innerHTML = !cnt
-    ? '<tr class="empty-row"><td colspan="7">Aucune vidéo</td></tr>'
-    : A.videos.map(v=>{
-        const sc = A.scholars.find(s=>s.id===v.scholar_id);
-        return `<tr>
-          <td>${v.thumbnail_url||v.cover_url
-            ? `<img src="${v.thumbnail_url||v.cover_url}" class="td-img" onerror="this.style.display='none'">`
-            : `<div class="td-img-ph">${v.emoji||'🎬'}</div>`}</td>
-          <td><p class="td-bold" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.title||'—'}</p></td>
-          <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sc?sc.name_fr:v.author_name||'—'}</td>
-          <td>${v.category?`<span class="bdg bdg-r">${v.category}</span>`:'—'}</td>
-          <td>${v.duration||'—'}</td>
-          <td>${fmt(v.views||0)}</td>
-          <td class="td-actions">
-            <button class="btn btn-sm btn-edit" onclick="editItem('videos',${v.id})">✏️</button>
-            <button class="btn btn-sm btn-del" onclick="confirmDelete('videos',${v.id},'${(v.title||'').replace(/'/g,"\\'")}')">🗑️</button>
-          </td>
-        </tr>`;
-      }).join('');
-}
-
-// --------------------------------
-function renderLives(){
-  const cnt = A.lives.length;
-  g('cnt-lives').textContent = '('+cnt+')';
-  g('cl-lives').textContent = cnt+' session'+(cnt>1?'s':'');
-  const STATUS = {
-    live:     '<span class="bdg bdg-live" style="display:inline-flex;align-items:center;gap:3px"><div class="ldot"></div>EN DIRECT</span>',
-    upcoming: '<span class="bdg bdg-upc">📅 Planifié</span>',
-    ended:    '<span class="bdg" style="background:var(--bg);color:var(--muted)">✅ Terminé</span>',
-  };
-  g('tbl-lives').innerHTML = !cnt
-    ? '<tr class="empty-row"><td colspan="6">Aucune session live</td></tr>'
-    : A.lives.map(l=>`
-      <tr>
-        <td><p class="td-bold" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.title||'—'}</p></td>
-        <td>${l.scholar_name||'—'}</td>
-        <td style="white-space:nowrap">${fmtDate(l.scheduled_at)}</td>
-        <td>${STATUS[l.status]||l.status}</td>
-        <td>${fmt(l.viewers||0)}</td>
-        <td class="td-actions">
-          <button class="btn btn-sm btn-edit" onclick="editItem('lives',${l.id})">✏️ Modifier</button>
-          <button class="btn btn-sm btn-del" onclick="confirmDelete('lives',${l.id},'${(l.title||'').replace(/'/g,"\\'")}')">🗑️</button>
-        </td>
-      </tr>`).join('');
-}
-
-// ---------------------------------
-function renderCats(){
-  const cnt = A.cats.length;
-  g('cnt-cats').textContent = '('+cnt+')';
-  g('cl-cats').textContent = cnt+' catégorie'+(cnt>1?'s':'');
-  const COL_BG = {green:'rgba(37,211,102,.1)',blue:'rgba(42,171,238,.1)',red:'rgba(229,57,53,.09)',cyan:'rgba(0,188,212,.1)'};
-  g('tbl-cats').innerHTML = !cnt
-    ? '<tr class="empty-row"><td colspan="6">Aucune catégorie</td></tr>'
-    : A.cats.map(c=>`
-      <tr>
-        <td><div style="width:36px;height:36px;border-radius:9px;background:${COL_BG[c.color]||COL_BG.green};display:flex;align-items:center;justify-content:center;font-size:1.2rem">${c.emoji||'📚'}</div></td>
-        <td style="font-family:Noto Naskh Arabic,serif;font-size:.88rem;font-weight:700">${c.label_ar||'—'}</td>
-        <td class="td-bold">${c.label_fr||'—'}</td>
-        <td><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${COL_BG[c.color]?.replace('.1','1')};margin-right:5px"></span>${c.color||'—'}</td>
-        <td>${c.content_count||0}</td>
-        <td class="td-actions">
-          <button class="btn btn-sm btn-edit" onclick="editItem('categories',${c.id})">✏️ Modifier</button>
-          <button class="btn btn-sm btn-del" onclick="confirmDelete('categories',${c.id},'${(c.label_fr||'').replace(/'/g,"\\'")}')">🗑️</button>
-        </td>
-      </tr>`).join('');
-}
-
-// -------------------------------------
-function confirmDelete(table, id, name){
-  A.deleteTable = table; A.deleteId = id;
-  g('confirm-name').textContent = name;
-  g('mo-confirm').classList.add('open');
-}
-
-async function executeDelete(){
-  busy('confirm-delete-btn', true, '🗑️ Supprimer définitivement');
+async function svEdit(){
+  busy('edit-sv',true,'...');const t=D.et;
   try{
-    const {error} = await SB.from(realTable(A.deleteTable)).delete().eq('id', A.deleteId);
-    if(error) throw error;
-    closeMo('mo-confirm');
-    toast('✅ Supprimé avec succès');
-    await loadAll();
-  }catch(e){ toast('❌ '+e.message); }
-  finally{ busy('confirm-delete-btn', false, '🗑️ Supprimer définitivement'); }
-}
-
-// ---------------------------------------
-function editItem(table, id){
-  A.editTable = table;
-  A.editId    = id;
-  const schOpts = A.scholars.map(s=>`<option value="${s.id}">${s.name_fr||s.name_ar}</option>`).join('');
-  const catOpts = A.cats.map(c=>`<option value="${c.label_fr}">${c.emoji||''} ${c.label_fr}</option>`).join('');
-
-  if(table === 'scholars'){
-    const sc = A.scholars.find(s=>String(s.id)===String(id));
-    if(!sc) return;
-    g('edit-modal-title').textContent = '✏️ Modifier — '+(sc.name_fr||sc.name_ar||'Savant');
-    g('edit-modal-body').innerHTML = `
-      <div class="form-grid">
-
-        <!-- Photo du savant -->
-        <div class="fg fg-full">
-          <label class="lbl">📷 Photo du savant</label>
-          <div style="display:flex;align-items:center;gap:14px;background:var(--bg);border-radius:var(--radm);padding:12px;margin-bottom:8px">
-            <div id="e-av-wrap" style="width:72px;height:72px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#25D366,#2AABEE);display:flex;align-items:center;justify-content:center;font-family:Noto Naskh Arabic,serif;font-size:1.6rem;font-weight:700;color:#fff;border:2px solid var(--line)">
-              ${sc.avatar_url
-                ? `<img id="e-av-img" src="${sc.avatar_url}" style="width:100%;height:100%;object-fit:cover"/>`
-                : `<span id="e-av-img">${sc.initial||'?'}</span>`}
-            </div>
-            <div style="flex:1">
-              <p style="font-size:.8rem;font-weight:800;color:var(--txt);margin-bottom:4px">${sc.name_fr||sc.name_ar||'—'}</p>
-              <label class="file-lbl" id="e-avlbl" for="e-avinp" style="margin:0;padding:10px;font-size:.74rem">
-                📷 ${sc.avatar_url ? 'Changer la photo' : 'Ajouter une photo'}
-              </label>
-              <input type="file" style="display:none" id="e-avinp" accept="image/*"
-                onchange="previewAvatar('e-avlbl','e-avinp','e-av-wrap')"/>
-              ${sc.avatar_url
-                ? `<button onclick="clearAvatar()" style="display:block;margin-top:5px;font-size:.68rem;font-weight:700;color:var(--r);background:none;border:none;cursor:pointer">🗑️ Supprimer la photo</button>`
-                : ''}
-            </div>
-          </div>
-          <input type="hidden" id="e-avurl" value="${sc.avatar_url||''}"/>
-        </div>
-
-        <div class="fg"><label class="lbl">Nom arabe *</label><input class="inp" id="e-nar" value="${sc.name_ar||''}"/></div>
-        <div class="fg"><label class="lbl">Nom français *</label><input class="inp" id="e-nfr" value="${sc.name_fr||''}"/></div>
-        <div class="fg"><label class="lbl">Initiale (avatar si pas de photo)</label><input class="inp" id="e-ini" value="${sc.initial||''}" maxlength="2"/></div>
-        <div class="fg"><label class="lbl">Pays</label><input class="inp" id="e-cty" value="${sc.country||''}"/></div>
-        <div class="fg"><label class="lbl">Époque</label><input class="inp" id="e-era" value="${sc.era||''}"/></div>
-        <div class="fg"><label class="lbl">Catégorie</label>
-          <select class="inp" id="e-cat">
-            <option value="contemporain"${sc.category==='contemporain'?' selected':''}>🕌 Contemporain</option>
-            <option value="ancien"${sc.category==='ancien'?' selected':''}>📜 Ancien</option>
-            <option value="hadith"${sc.category==='hadith'?' selected':''}>📿 Hadith</option>
-            <option value="rapporteur"${sc.category==='rapporteur'?' selected':''}>📖 Rapporteur</option>
-          </select>
-        </div>
-        <div class="fg fg-full"><label class="lbl">Tags (séparés par virgule)</label><input class="inp" id="e-tags" value="${(sc.tags||[]).join(', ')}"/></div>
-        <div class="fg fg-full"><label class="lbl">Biographie</label><textarea class="inp" id="e-bio" rows="3">${sc.bio||''}</textarea></div>
-        <div class="fg"><label class="lbl">Statut Live</label>
-          <select class="inp" id="e-live">
-            <option value="false"${!sc.is_live?' selected':''}>⬛ Hors ligne</option>
-            <option value="true"${sc.is_live?' selected':''}>🔴 En direct</option>
-          </select>
-        </div>
-        <div class="fg"><label class="lbl">Titre du Live</label><input class="inp" id="e-ltitle" value="${sc.live_title||''}"/></div>
-        <div class="fg"><label class="lbl">Auditeurs Live</label><input class="inp" type="number" id="e-lvw" value="${sc.live_viewers||0}"/></div>
-        <div class="fg"><label class="lbl">Lien Live (URL)</label><input class="inp" id="e-lurl" value="${sc.live_url||''}"/></div>
-      </div>`;
-  }
-  else if(table === 'books'){
-    const b = A.books.find(x=>x.id===id||String(x.id)===String(id));
-    if(!b) return;
-    g('edit-modal-title').textContent = '✏️ Modifier — '+b.title;
-    g('edit-modal-body').innerHTML = `
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="e-ttl" value="${b.title||''}"/></div>
-        <div class="fg"><label class="lbl">Auteur</label><input class="inp" id="e-aut" value="${b.author_name||''}"/></div>
-        <div class="fg"><label class="lbl">Savant lié</label>
-          <select class="inp" id="e-sch"><option value="">— Aucun —</option>${schOpts}</select>
-        </div>
-        <div class="fg"><label class="lbl">Catégorie</label>
-          <select class="inp" id="e-cat"><option value="">— Choisir —</option>${catOpts}</select>
-        </div>
-        <div class="fg"><label class="lbl">Type</label>
-          <select class="inp" id="e-typ">
-            <option value="PDF"${b.file_type==='PDF'?' selected':''}>📄 PDF</option>
-            <option value="EPUB"${b.file_type==='EPUB'?' selected':''}>📱 Ebook</option>
-            <option value="Word"${b.file_type==='Word'?' selected':''}>📝 Word</option>
-            <option value="Autre"${b.file_type==='Autre'?' selected':''}>📎 Autre</option>
-          </select>
-        </div>
-        <div class="fg"><label class="lbl">Pages</label><input class="inp" type="number" id="e-pg" value="${b.pages||0}"/></div>
-        <div class="fg fg-full"><label class="lbl">Lien fichier (URL)</label><input class="inp" id="e-url" value="${b.file_url||''}"/></div>
-        <div class="fg fg-full"><label class="lbl">Image de couverture (URL)</label>
-          ${b.cover_url?`<img src="${b.cover_url}" style="width:100%;max-height:100px;object-fit:cover;border-radius:8px;margin-bottom:6px;border:1.5px solid var(--line)">`:''}
-          <input class="inp" id="e-cvr" value="${b.cover_url||''}" placeholder="https://- ou uploader ci-dessous"/>
-          <label class="file-lbl" id="e-cvrlbl" for="e-cvrinp" style="margin-top:6px">🖼️ Uploader une nouvelle image</label>
-          <input type="file" style="display:none" id="e-cvrinp" accept="image/*" onchange="editCoverPreview('e-cvrlbl','e-cvrinp','e-cvr')"/>
-        </div>
-        <div class="fg fg-full"><label class="lbl">Description</label><textarea class="inp" id="e-dsc" rows="3">${b.description||''}</textarea></div>
-        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="e-emo" value="${b.emoji||'📗'}" maxlength="4"/></div>
-        <div class="fg" style="display:flex;align-items:center;gap:7px;padding-top:20px">
-          <input type="checkbox" id="e-new" style="accent-color:var(--r);width:15px;height:15px"${b.is_new?' checked':''}/>
-          <label for="e-new" class="lbl" style="margin:0;cursor:pointer">Marquer NOUVEAU</label>
-        </div>
-      </div>`;
-    // Set selected values
-    setTimeout(()=>{
-      const sel = g('e-sch'); if(sel&&b.scholar_id) sel.value=b.scholar_id;
-      const catsel = g('e-cat'); if(catsel&&b.category) catsel.value=b.category;
-    },50);
-  }
-  else if(table === 'audios'){
-    const a = A.audios.find(x=>x.id===id||String(x.id)===String(id));
-    if(!a) return;
-    g('edit-modal-title').textContent = '✏️ Modifier — '+a.title;
-    g('edit-modal-body').innerHTML = `
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="e-ttl" value="${a.title||''}"/></div>
-        <div class="fg"><label class="lbl">Savant</label>
-          <select class="inp" id="e-sch"><option value="">— Aucun —</option>${schOpts}</select>
-        </div>
-        <div class="fg"><label class="lbl">Catégorie</label>
-          <select class="inp" id="e-cat"><option value="">— Choisir —</option>${catOpts}</select>
-        </div>
-        <div class="fg"><label class="lbl">Épisodes</label><input class="inp" type="number" id="e-eps" value="${a.episodes||1}"/></div>
-        <div class="fg"><label class="lbl">Durée totale</label><input class="inp" id="e-dur" value="${a.duration||''}"/></div>
-        <div class="fg fg-full"><label class="lbl">Lien audio (URL)</label><input class="inp" id="e-url" value="${a.file_url||''}"/></div>
-        <div class="fg fg-full"><label class="lbl">Image de couverture (URL)</label>
-          ${a.cover_url?`<img src="${a.cover_url}" style="width:100%;max-height:100px;object-fit:cover;border-radius:8px;margin-bottom:6px;border:1.5px solid var(--line)">`:''}
-          <input class="inp" id="e-cvr" value="${a.cover_url||''}" placeholder="https://-"/>
-          <label class="file-lbl" id="e-cvrlbl" for="e-cvrinp" style="margin-top:6px">🖼️ Uploader une nouvelle image</label>
-          <input type="file" style="display:none" id="e-cvrinp" accept="image/*" onchange="editCoverPreview('e-cvrlbl','e-cvrinp','e-cvr')"/>
-        </div>
-        <div class="fg fg-full"><label class="lbl">Description</label><textarea class="inp" id="e-dsc" rows="3">${a.description||''}</textarea></div>
-        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="e-emo" value="${a.emoji||'🎧'}" maxlength="4"/></div>
-      </div>`;
-    setTimeout(()=>{
-      const sel=g('e-sch'); if(sel&&a.scholar_id) sel.value=a.scholar_id;
-      const cat=g('e-cat'); if(cat&&a.category) cat.value=a.category;
-    },50);
-  }
-  else if(table === 'videos'){
-    const v = A.videos.find(x=>x.id===id||String(x.id)===String(id));
-    if(!v) return;
-    g('edit-modal-title').textContent = '✏️ Modifier — '+v.title;
-    g('edit-modal-body').innerHTML = `
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="e-ttl" value="${v.title||''}"/></div>
-        <div class="fg"><label class="lbl">Savant</label>
-          <select class="inp" id="e-sch"><option value="">— Aucun —</option>${schOpts}</select>
-        </div>
-        <div class="fg"><label class="lbl">Catégorie</label>
-          <select class="inp" id="e-cat"><option value="">— Choisir —</option>${catOpts}</select>
-        </div>
-        <div class="fg"><label class="lbl">Durée</label><input class="inp" id="e-dur" value="${v.duration||''}"/></div>
-        <div class="fg fg-full"><label class="lbl">Lien vidéo (URL YouTube, etc.)</label><input class="inp" id="e-url" value="${v.video_url||''}"/></div>
-        <div class="fg fg-full"><label class="lbl">Thumbnail / Miniature (URL)</label>
-          ${v.thumbnail_url?`<img src="${v.thumbnail_url}" style="width:100%;max-height:100px;object-fit:cover;border-radius:8px;margin-bottom:6px;border:1.5px solid var(--line)">`:''}
-          <input class="inp" id="e-cvr" value="${v.thumbnail_url||''}" placeholder="https://-"/>
-          <label class="file-lbl" id="e-cvrlbl" for="e-cvrinp" style="margin-top:6px">🖼️ Uploader une nouvelle miniature</label>
-          <input type="file" style="display:none" id="e-cvrinp" accept="image/*" onchange="editCoverPreview('e-cvrlbl','e-cvrinp','e-cvr')"/>
-        </div>
-        <div class="fg fg-full"><label class="lbl">Description</label><textarea class="inp" id="e-dsc" rows="3">${v.description||''}</textarea></div>
-        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="e-emo" value="${v.emoji||'🎬'}" maxlength="4"/></div>
-      </div>`;
-    setTimeout(()=>{
-      const sel=g('e-sch'); if(sel&&v.scholar_id) sel.value=v.scholar_id;
-      const cat=g('e-cat'); if(cat&&v.category) cat.value=v.category;
-    },50);
-  }
-  else if(table === 'lives'){
-    const l = A.lives.find(x=>x.id===id||String(x.id)===String(id));
-    if(!l) return;
-    const localDt = l.scheduled_at ? new Date(l.scheduled_at).toISOString().slice(0,16) : '';
-    g('edit-modal-title').textContent = '✏️ Modifier — '+l.title;
-    g('edit-modal-body').innerHTML = `
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="e-ttl" value="${l.title||''}"/></div>
-        <div class="fg"><label class="lbl">Savant</label>
-          <select class="inp" id="e-sch"><option value="">— Aucun —</option>${schOpts}</select>
-        </div>
-        <div class="fg"><label class="lbl">Nom du savant (manuel)</label><input class="inp" id="e-snm" value="${l.scholar_name||''}"/></div>
-        <div class="fg"><label class="lbl">Date & Heure</label><input class="inp" type="datetime-local" id="e-dt" value="${localDt}"/></div>
-        <div class="fg"><label class="lbl">Lien stream (YouTube Live…)</label><input class="inp" id="e-url" value="${l.stream_url||''}"/></div>
-        <div class="fg"><label class="lbl">Statut</label>
-          <select class="inp" id="e-st">
-            <option value="upcoming"${l.status==='upcoming'?' selected':''}>📅 Planifié</option>
-            <option value="live"${l.status==='live'?' selected':''}>🔴 En direct</option>
-            <option value="ended"${l.status==='ended'?' selected':''}>✅ Terminé</option>
-          </select>
-        </div>
-        <div class="fg"><label class="lbl">Nombre d'auditeurs</label><input class="inp" type="number" id="e-vw" value="${l.viewers||0}"/></div>
-        <div class="fg"><label class="lbl">Lien replay (optionnel)</label><input class="inp" id="e-replay" value="${l.replay_url||''}"/></div>
-      </div>`;
-    setTimeout(()=>{
-      const sel=g('e-sch'); if(sel&&l.scholar_id) sel.value=l.scholar_id;
-    },50);
-  }
-  else if(table === 'categories'){
-    const c = A.cats.find(x=>x.id===id||String(x.id)===String(id));
-    if(!c) return;
-    g('edit-modal-title').textContent = '✏️ Modifier — '+c.label_fr;
-    g('edit-modal-body').innerHTML = `
-      <div class="form-grid">
-        <div class="fg"><label class="lbl">Nom arabe *</label><input class="inp" id="e-ar" value="${c.label_ar||''}"/></div>
-        <div class="fg"><label class="lbl">Nom français *</label><input class="inp" id="e-fr" value="${c.label_fr||''}"/></div>
-        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="e-em" value="${c.emoji||'📚'}" maxlength="4"/></div>
-        <div class="fg"><label class="lbl">Couleur</label>
-          <select class="inp" id="e-col">
-            <option value="green"${c.color==='green'?' selected':''}>🟢 Vert</option>
-            <option value="blue"${c.color==='blue'?' selected':''}>🔵 Bleu</option>
-            <option value="red"${c.color==='red'?' selected':''}>🔴 Rouge</option>
-            <option value="cyan"${c.color==='cyan'?' selected':''}>🩵 Cyan</option>
-          </select>
-        </div>
-      </div>`;
-  }
-
-  else if(table === 'hadiths'){
-    const h = A.hadiths.find(x=>x.id===id||String(x.id)===String(id));
-    if(!h) return;
-    g('edit-modal-title').textContent = '✏️ Modifier hadith — '+h.source;
-    g('edit-modal-body').innerHTML = `
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Texte arabe *</label><textarea class="inp" id="e-ar" rows="2" style="direction:rtl;text-align:right;font-family:Noto Naskh Arabic,serif">${h.text_ar||''}</textarea></div>
-        <div class="fg fg-full"><label class="lbl">Traduction française *</label><textarea class="inp" id="e-fr" rows="2">${h.text_fr||''}</textarea></div>
-        <div class="fg"><label class="lbl">Source *</label><input class="inp" id="e-src" value="${h.source||''}"/></div>
-        <div class="fg"><label class="lbl">Rapporteur</label><input class="inp" id="e-nar" value="${h.narrator||''}"/></div>
-        <div class="fg"><label class="lbl">Grade</label>
-          <select class="inp" id="e-grade">
-            <option value="Sahih"${h.grade==='Sahih'?' selected':''}>✅ Sahih</option>
-            <option value="Hasan"${h.grade==='Hasan'?' selected':''}>🟡 Hasan</option>
-          </select>
-        </div>
-        <div class="fg"><label class="lbl">Catégorie</label>
-          <select class="inp" id="e-cat">
-            <option value="ilm"${h.category==='ilm'?' selected':''}>📚 Savoir</option>
-            <option value="aqida"${h.category==='aqida'?' selected':''}>☝️ Aqida</option>
-            <option value="akhlaq"${h.category==='akhlaq'?' selected':''}>🌸 Akhlaq</option>
-            <option value="ibada"${h.category==='ibada'?' selected':''}>🕌 Ibada</option>
-            <option value="quran"${h.category==='quran'?' selected':''}>📖 Coran</option>
-            <option value="manhaj"${h.category==='manhaj'?' selected':''}>🛤️ Manhaj</option>
-          </select>
-        </div>
-        <div class="fg"><label class="lbl">Date affichage</label><input class="inp" type="date" id="e-date" value="${h.active_date||''}"/></div>
-      </div>`;
-  }
-  else if(table === 'quizzes'){
-    const q = A.quizzes.find(x=>x.id===id||String(x.id)===String(id));
-    if(!q) return;
-    g('edit-modal-title').textContent = '✏️ Modifier question quiz';
-    g('edit-modal-body').innerHTML = `
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Question arabe</label><textarea class="inp" id="e-ar" rows="2" style="direction:rtl;text-align:right;font-family:Noto Naskh Arabic,serif">${q.question_ar||''}</textarea></div>
-        <div class="fg fg-full"><label class="lbl">Question française *</label><textarea class="inp" id="e-fr" rows="2">${q.question_fr||''}</textarea></div>
-        <div class="fg"><label class="lbl">Option A *</label><input class="inp" id="e-oa" value="${q.option_a||''}"/></div>
-        <div class="fg"><label class="lbl">Option B *</label><input class="inp" id="e-ob" value="${q.option_b||''}"/></div>
-        <div class="fg"><label class="lbl">Option C *</label><input class="inp" id="e-oc" value="${q.option_c||''}"/></div>
-        <div class="fg"><label class="lbl">Option D *</label><input class="inp" id="e-od" value="${q.option_d||''}"/></div>
-        <div class="fg"><label class="lbl">Bonne réponse *</label>
-          <select class="inp" id="e-correct">
-            <option value="a"${q.correct==='a'?' selected':''}>A</option>
-            <option value="b"${q.correct==='b'?' selected':''}>B</option>
-            <option value="c"${q.correct==='c'?' selected':''}>C</option>
-            <option value="d"${q.correct==='d'?' selected':''}>D</option>
-          </select>
-        </div>
-        <div class="fg"><label class="lbl">Catégorie</label>
-          <select class="inp" id="e-cat">
-            <option value="aqida"${q.category==='aqida'?' selected':''}>☝️ Aqida</option>
-            <option value="fiqh"${q.category==='fiqh'?' selected':''}>📜 Fiqh</option>
-            <option value="hadith"${q.category==='hadith'?' selected':''}>📿 Hadith</option>
-            <option value="quran"${q.category==='quran'?' selected':''}>📖 Coran</option>
-            <option value="sira"${q.category==='sira'?' selected':''}>🌙 Sira</option>
-            <option value="ibada"${q.category==='ibada'?' selected':''}>🕌 Ibada</option>
-            <option value="manhaj"${q.category==='manhaj'?' selected':''}>🛤️ Manhaj</option>
-          </select>
-        </div>
-        <div class="fg"><label class="lbl">Difficulté</label>
-          <select class="inp" id="e-diff">
-            <option value="facile"${q.difficulty==='facile'?' selected':''}>🟢 Facile</option>
-            <option value="moyen"${q.difficulty==='moyen'?' selected':''}>🟡 Moyen</option>
-            <option value="difficile"${q.difficulty==='difficile'?' selected':''}>🔴 Difficile</option>
-          </select>
-        </div>
-        <div class="fg fg-full"><label class="lbl">Explication / Référence *</label><textarea class="inp" id="e-expl" rows="3">${q.explanation||''}</textarea></div>
-      </div>`;
-  }
-  else if(table === 'dhikrs'){
-    const d = A.dhikrs.find(x=>x.id===id||String(x.id)===String(id));
-    if(!d) return;
-    g('edit-modal-title').textContent = '✏️ Modifier dhikr';
-    g('edit-modal-body').innerHTML = `
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Texte arabe *</label><input class="inp" id="e-ar" value="${d.text_ar||''}" style="direction:rtl;text-align:right;font-family:Noto Naskh Arabic,serif"/></div>
-        <div class="fg fg-full"><label class="lbl">Traduction française *</label><input class="inp" id="e-fr" value="${d.text_fr||''}"/></div>
-        <div class="fg fg-full"><label class="lbl">Translittération</label><input class="inp" id="e-tr" value="${d.transliteration||''}"/></div>
-        <div class="fg"><label class="lbl">Nombre recommandé</label><input class="inp" type="number" id="e-cnt" value="${d.count_recommended||33}"/></div>
-        <div class="fg"><label class="lbl">Moment</label>
-          <select class="inp" id="e-time">
-            <option value="any"${d.time_of_day==='any'?' selected':''}>🕐 N&apos;importe quand</option>
-            <option value="morning"${d.time_of_day==='morning'?' selected':''}>🌅 Matin</option>
-            <option value="evening"${d.time_of_day==='evening'?' selected':''}>🌆 Soir</option>
-            <option value="prayer"${d.time_of_day==='prayer'?' selected':''}>🕌 Après prière</option>
-          </select>
-        </div>
-        <div class="fg fg-full"><label class="lbl">Récompense (vertu)</label><textarea class="inp" id="e-rw" rows="2">${d.reward||''}</textarea></div>
-        <div class="fg fg-full"><label class="lbl">Source *</label><input class="inp" id="e-src" value="${d.source||''}"/></div>
-        <div class="fg"><label class="lbl">Ordre d'affichage</label><input class="inp" type="number" id="e-ord" value="${d.order_num||0}"/></div>
-      </div>`;
-  }
-
-// ----------------------------------
-async function saveEdit(){
-  busy('edit-save-btn', true, '💾 Enregistrer');
-  try{
-    let data = {};
-    const t = A.editTable;
-
-    // Upload cover if chosen
-    let newCoverUrl = val('e-cvr')||null;
-    if(g('e-cvrinp')?.files?.length){
-      newCoverUrl = await uploadFile('e-cvrinp','covers');
-    }
-
-    if(t==='scholars'){
-      // G-rer la photo du savant
-      let avatarUrl = g('e-avurl')?.value || null;
-
-      if(avatarUrl === '[upload]' && g('e-avinp')?.files?.length){
-        // Uploader la nouvelle photo
-        toast('⏳ Upload de la photo…');
-        avatarUrl = await uploadFile('e-avinp','covers');
-      } else if(avatarUrl === '[delete]'){
-        // Supprimer la photo
-        avatarUrl = null;
-      } else if(avatarUrl === '' || avatarUrl === '[upload]'){
-        avatarUrl = null;
-      }
-      // Si avatarUrl n'a pas chang- (valeur URL normale), on la garde telle quelle
-
-      data = {
-        name_ar:  val('e-nar')||undefined,
-        name_fr:  val('e-nfr')||undefined,
-        initial:  val('e-ini')||undefined,
-        country:  val('e-cty')||null,
-        era:      val('e-era')||null,
-        category: val('e-cat')||undefined,
-        tags:     val('e-tags').split(',').map(x=>x.trim()).filter(Boolean),
-        bio:      val('e-bio')||null,
-        avatar_url: avatarUrl,
-        is_live:  val('e-live')==='true',
-        live_title:   val('e-ltitle')||null,
-        live_viewers: parseInt(val('e-lvw'))||0,
-        live_url: val('e-lurl')||null,
-      };
-    } else if(t==='books'){
-      data = {
-        title:       val('e-ttl')||undefined,
-        author_name: val('e-aut')||null,
-        scholar_id:  val('e-sch')||null,
-        category:    val('e-cat')||null,
-        file_type:   val('e-typ')||'PDF',
-        pages:       parseInt(val('e-pg'))||0,
-        file_url:    val('e-url')||null,
-        cover_url:   newCoverUrl,
-        description: val('e-dsc')||null,
-        emoji:       val('e-emo')||'📗',
-        is_new:      g('e-new')?.checked||false,
-      };
-    } else if(t==='audios'){
-      data = {
-        title:      val('e-ttl')||undefined,
-        scholar_id: val('e-sch')||null,
-        category:   val('e-cat')||null,
-        episodes:   parseInt(val('e-eps'))||1,
-        duration:   val('e-dur')||null,
-        file_url:   val('e-url')||null,
-        cover_url:  newCoverUrl,
-        description:val('e-dsc')||null,
-        emoji:      val('e-emo')||'🎧',
-      };
-    } else if(t==='videos'){
-      data = {
-        title:         val('e-ttl')||undefined,
-        scholar_id:    val('e-sch')||null,
-        category:      val('e-cat')||null,
-        duration:      val('e-dur')||null,
-        video_url:     val('e-url')||null,
-        thumbnail_url: newCoverUrl,
-        description:   val('e-dsc')||null,
-        emoji:         val('e-emo')||'🎬',
-      };
-    } else if(t==='lives'){
-      data = {
-        title:        val('e-ttl')||undefined,
-        scholar_id:   val('e-sch')||null,
-        scholar_name: val('e-snm')||null,
-        scheduled_at: val('e-dt') ? new Date(val('e-dt')).toISOString() : undefined,
-        stream_url:   val('e-url')||null,
-        status:       val('e-st')||'upcoming',
-        viewers:      parseInt(val('e-vw'))||0,
-        replay_url:   val('e-replay')||null,
-      };
-    } else if(t==='categories'){
-      data = {
-        label_ar: val('e-ar')||undefined,
-        label_fr: val('e-fr')||undefined,
-        emoji:    val('e-em')||'📚',
-        color:    val('e-col')||'green',
-      };
-    } else if(t==='hadiths'){
-      data = {
-        text_ar:    val('e-ar')||undefined,
-        text_fr:    val('e-fr')||undefined,
-        source:     val('e-src')||undefined,
-        narrator:   val('e-nar')||null,
-        grade:      val('e-grade')||'Sahih',
-        category:   val('e-cat')||'general',
-        active_date:val('e-date')||null,
-      };
-    } else if(t==='quizzes'){
-      data = {
-        question_ar: val('e-ar')||null,
-        question_fr: val('e-fr')||undefined,
-        option_a: val('e-oa')||undefined,
-        option_b: val('e-ob')||undefined,
-        option_c: val('e-oc')||undefined,
-        option_d: val('e-od')||undefined,
-        correct:    val('e-correct')||'a',
-        category:   val('e-cat')||'aqida',
-        difficulty: val('e-diff')||'moyen',
-        explanation:val('e-expl')||null,
-      };
-    } else if(t==='dhikrs'){
-      data = {
-        text_ar: val('e-ar')||undefined,
-        text_fr: val('e-fr')||undefined,
-        transliteration: val('e-tr')||null,
-        count_recommended: parseInt(val('e-cnt'))||33,
-        time_of_day: val('e-time')||'any',
-        reward: val('e-rw')||null,
-        source: val('e-src')||undefined,
-        order_num: parseInt(val('e-ord'))||0,
-      };
-    }
-
-    const {error} = await SB.from(realTable(t)).update(data).eq('id', A.editId);
-    if(error) throw error;
-    closeMo('mo-edit');
-    toast('✅ Modifié avec succès !');
-    await loadAll();
-  }catch(e){ toast('❌ '+e.message); }
-  finally{ busy('edit-save-btn', false, '💾 Enregistrer'); }
-}
-
-// ----------------------------------------
-function getScholarsForm(){
-  return '<div class="form-grid">'
-    +'<div class="fg fg-full"><label class="lbl">📷 Photo du savant</label>'
-    +'<div style="display:flex;align-items:center;gap:14px;background:var(--bg);border-radius:var(--radm);padding:12px">'
-    +'<div id="n-av-wrap" style="width:64px;height:64px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#25D366,#2AABEE);display:flex;align-items:center;justify-content:center;font-size:1.6rem;">📷</div>'
-    +'<div style="flex:1">'
-    +'<label class="file-lbl" id="n-avlbl" for="n-avinp" style="margin:0;padding:10px;font-size:.74rem">📷 Choisir une photo JPG / PNG / WEBP</label>'
-    +'<input type="file" style="display:none" id="n-avinp" accept="image/*" onchange="previewAvatarAdd(\'n-avlbl\',\'n-avinp\',\'n-av-wrap\')"/>'
-    +'<p style="font-size:.66rem;color:var(--muted);font-weight:600;margin-top:4px">Optionnel — initiale arabe si pas de photo</p>'
-    +'</div></div></div>'
-    +'<div class="fg"><label class="lbl">Nom arabe *</label><input class="inp" id="n-nar" placeholder="الشيخ …"/></div>'
-    +'<div class="fg"><label class="lbl">Nom français *</label><input class="inp" id="n-nfr" placeholder="Cheikh …"/></div>'
-    +'<div class="fg"><label class="lbl">Initiale *</label><input class="inp" id="n-ini" placeholder="ا" maxlength="2"/></div>'
-    +'<div class="fg"><label class="lbl">Pays</label><input class="inp" id="n-cty" placeholder="Arabie Saoudite"/></div>'
-    +'<div class="fg"><label class="lbl">Epoque</label><input class="inp" id="n-era" placeholder="1910-1999"/></div>'
-    +'<div class="fg"><label class="lbl">Categorie</label>'
-    +'<select class="inp" id="n-cat"><option value="contemporain">Contemporain</option><option value="ancien">Ancien</option><option value="hadith">Hadith</option><option value="rapporteur">Rapporteur</option></select></div>'
-    +'<div class="fg fg-full"><label class="lbl">Tags (virgule)</label><input class="inp" id="n-tags" placeholder="Aqida, Fiqh"/></div>'
-    +'<div class="fg fg-full"><label class="lbl">Biographie</label><textarea class="inp" id="n-bio" rows="3" placeholder="Biographie…"></textarea></div>'
-    +'</div>';
+    let data={};
+    let nc=v('e-cvr')||null;
+    if(g('e-cvrinp')?.files?.length)nc=await ul('e-cvrinp','covers');
+    let na=v('e-avurl')||null;
+    if(g('e-avinp')?.files?.length)na=await ul('e-avinp','covers');
+    if(t==='scholars') data={name_ar:v('e-nar'),name_fr:v('e-nfr'),initial:v('e-ini'),country:v('e-cty')||null,era:v('e-era')||null,category:v('e-cat'),tags:v('e-tags').split(',').map(x=>x.trim()).filter(Boolean),bio:v('e-bio')||null,avatar_url:na,is_live:v('e-live')==='true',live_title:v('e-ltitle')||null,live_url:v('e-lurl')||null};
+    else if(t==='books') data={title:v('e-ttl'),author_name:v('e-aut')||null,scholar_id:v('e-sch')||null,category:v('e-cat')||null,file_type:v('e-typ')||'PDF',pages:parseInt(v('e-pg'))||0,file_url:v('e-url')||null,cover_url:nc,description:v('e-dsc')||null};
+    else if(t==='audios') data={title:v('e-ttl'),scholar_id:v('e-sch')||null,category:v('e-cat')||null,episodes:parseInt(v('e-eps'))||1,duration:v('e-dur')||null,file_url:v('e-url')||null,cover_url:nc,description:v('e-dsc')||null};
+    else if(t==='videos') data={title:v('e-ttl'),scholar_id:v('e-sch')||null,category:v('e-cat')||null,duration:v('e-dur')||null,video_url:v('e-url')||null,thumbnail_url:nc,description:v('e-dsc')||null};
+    else if(t==='lives') data={title:v('e-ttl'),scholar_id:v('e-sch')||null,scholar_name:v('e-snm')||null,scheduled_at:v('e-dt')?new Date(v('e-dt')).toISOString():undefined,stream_url:v('e-url')||null,status:v('e-st')||'upcoming',viewers:parseInt(v('e-vw'))||0,replay_url:v('e-replay')||null};
+    else if(t==='hadiths') data={text_ar:v('e-ar'),text_fr:v('e-fr'),source:v('e-src'),narrator:v('e-nar')||null,grade:v('e-grade')||'Sahih',category:v('e-cat')||'general',active_date:v('e-date')||null};
+    else if(t==='quizzes') data={question_fr:v('e-fr'),option_a:v('e-oa'),option_b:v('e-ob'),option_c:v('e-oc'),option_d:v('e-od'),correct:v('e-correct')||'a',difficulty:v('e-diff')||'moyen',category:v('e-cat')||'aqida',explanation:v('e-expl')||null};
+    else if(t==='dhikrs') data={text_ar:v('e-ar'),text_fr:v('e-fr'),transliteration:v('e-tr')||null,count_recommended:parseInt(v('e-cnt'))||33,time_of_day:v('e-time')||'any',reward:v('e-rw')||null,source:v('e-src'),order_num:parseInt(v('e-ord'))||0};
+    else if(t==='categories') data={label_ar:v('e-ar'),label_fr:v('e-fr'),emoji:v('e-em')||'',color:v('e-col')||'green'};
+    const{error}=await SB.from(rt(t)).update(data).eq('id',D.ei);
+    if(error)throw error;
+    cmo('mo-edit');toast('Modifie!');await loadAll();
+  }catch(e){toast('Erreur: '+e.message);}
+  finally{busy('edit-sv',false,'Enregistrer');}
 }
 
 function openAdd(){
-  const t = A.section;
-  const schOpts = A.scholars.map(s=>`<option value="${s.id}">${s.name_fr||s.name_ar}</option>`).join('');
-  const catOpts = A.cats.map(c=>`<option value="${c.label_fr}">${c.emoji||''} ${c.label_fr}</option>`).join('');
-
-  const titles = {
-    scholars:'👨‍🏫 Ajouter un Savant',books:'📚 Ajouter un Livre',
-    audios:'🎧 Ajouter un Cours Audio',videos:'🎬 Ajouter une Vidéo',
-    lives:'📡 Publier un Live',categories:'🏷️ Créer une Catégorie',
-    hadiths:'📿 Ajouter un Hadith',quizzes:'🎯 Ajouter une Question',dhikrs:'🕌 Ajouter un Dhikr',
+  const t=D.section;
+  const sO=D.scholars.map(s=>'<option value="'+s.id+'">'+(s.name_fr||s.name_ar)+'</option>').join('');
+  const cO=D.cats.map(c=>'<option value="'+(c.label_fr||'')+'">'+( c.emoji||'')+' '+(c.label_fr||'')+'</option>').join('');
+  const titles={scholars:'Ajouter un Savant',books:'Ajouter un Livre',audios:'Ajouter un Cours Audio',videos:'Ajouter une Video',lives:'Publier un Live',hadiths:'Ajouter un Hadith',quizzes:'Ajouter une Question Quiz',dhikrs:'Ajouter un Dhikr',categories:'Creer une Categorie'};
+  g('add-ttl').textContent=titles[t]||'Ajouter';
+  const forms={
+    scholars:bf([{l:'Photo upload',i:'n-avinp',type:'file',accept:'image/*',lbl:'Choisir une photo du savant'},{l:'Nom arabe',i:'n-nar',ar:true,v:'',half:true},{l:'Nom francais',i:'n-nfr',v:'',half:true},{l:'Initiale',i:'n-ini',v:'',half:true},{l:'Pays',i:'n-cty',v:'',half:true},{l:'Epoque',i:'n-era',v:'',half:true},{l:'Categorie',i:'n-cat',type:'sel',opts:'<option value="contemporain">Contemporain</option><option value="ancien">Ancien</option><option value="hadith">Hadith</option><option value="rapporteur">Rapporteur</option>',half:true},{l:'Tags',i:'n-tags',v:''},{l:'Biographie',i:'n-bio',v:'',type:'ta'}]),
+    books:bf([{l:'Titre',i:'n-ttl',v:''},{l:'Auteur',i:'n-aut',v:'',half:true},{l:'Savant',i:'n-sch',type:'sel',opts:'<option value="">Aucun</option>'+sO,half:true},{l:'Categorie',i:'n-cat',type:'sel',opts:'<option value="">Choisir</option>'+cO,half:true},{l:'Type',i:'n-typ',type:'sel',opts:'<option value="PDF">PDF</option><option value="EPUB">Ebook</option><option value="Word">Word</option>',half:true},{l:'Pages',i:'n-pg',v:'',type:'number',half:true},{l:'Lien URL',i:'n-url',v:''},{l:'Cover upload',i:'n-cvrinp',type:'file',accept:'image/*',lbl:'Choisir une image'},{l:'Description',i:'n-dsc',v:'',type:'ta'}]),
+    audios:bf([{l:'Titre',i:'n-ttl',v:''},{l:'Savant',i:'n-sch',type:'sel',opts:'<option value="">Aucun</option>'+sO,half:true},{l:'Categorie',i:'n-cat',type:'sel',opts:'<option value="">Choisir</option>'+cO,half:true},{l:'Episodes',i:'n-eps',v:'1',type:'number',half:true},{l:'Duree',i:'n-dur',v:'',half:true},{l:'Lien audio',i:'n-url',v:''},{l:'Cover upload',i:'n-cvrinp',type:'file',accept:'image/*',lbl:'Choisir une image'},{l:'Description',i:'n-dsc',v:'',type:'ta'}]),
+    videos:bf([{l:'Titre',i:'n-ttl',v:''},{l:'Savant',i:'n-sch',type:'sel',opts:'<option value="">Aucun</option>'+sO,half:true},{l:'Categorie',i:'n-cat',type:'sel',opts:'<option value="">Choisir</option>'+cO,half:true},{l:'Duree',i:'n-dur',v:'',half:true},{l:'Lien YouTube',i:'n-url',v:''},{l:'Thumbnail upload',i:'n-cvrinp',type:'file',accept:'image/*',lbl:'Choisir une image'},{l:'Description',i:'n-dsc',v:'',type:'ta'}]),
+    lives:bf([{l:'Titre',i:'n-ttl',v:''},{l:'Savant',i:'n-sch',type:'sel',opts:'<option value="">Aucun</option>'+sO,half:true},{l:'Nom savant',i:'n-snm',v:'',half:true},{l:'Date Heure',i:'n-dt',v:'',type:'datetime-local',half:true},{l:'Lien stream',i:'n-url',v:'',half:true},{l:'Statut',i:'n-st',type:'sel',opts:'<option value="upcoming">Planifie</option><option value="live">En direct</option>',half:true},{l:'Auditeurs',i:'n-vw',v:'0',type:'number',half:true}]),
+    hadiths:bf([{l:'Texte arabe',i:'n-ar',v:'',type:'ta',ar:true},{l:'Traduction fr',i:'n-fr',v:'',type:'ta'},{l:'Source',i:'n-src',v:'',half:true},{l:'Rapporteur',i:'n-nar',v:'',half:true},{l:'Grade',i:'n-grade',type:'sel',opts:'<option value="Sahih">Sahih</option><option value="Hasan">Hasan</option>',half:true},{l:'Categorie',i:'n-cat',type:'sel',opts:'<option value="ilm">Ilm</option><option value="aqida">Aqida</option><option value="akhlaq">Akhlaq</option><option value="ibada">Ibada</option><option value="manhaj">Manhaj</option>',half:true},{l:'Date affichage',i:'n-date',v:'',type:'date'}]),
+    quizzes:bf([{l:'Question fr',i:'n-fr',v:'',type:'ta'},{l:'Option A',i:'n-oa',v:'',half:true},{l:'Option B',i:'n-ob',v:'',half:true},{l:'Option C',i:'n-oc',v:'',half:true},{l:'Option D',i:'n-od',v:'',half:true},{l:'Bonne reponse',i:'n-correct',type:'sel',opts:'<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>',half:true},{l:'Difficulte',i:'n-diff',type:'sel',opts:'<option value="facile">Facile</option><option value="moyen">Moyen</option><option value="difficile">Difficile</option>',half:true},{l:'Categorie',i:'n-cat',type:'sel',opts:'<option value="aqida">Aqida</option><option value="fiqh">Fiqh</option><option value="hadith">Hadith</option><option value="quran">Coran</option><option value="ibada">Ibada</option>',half:true},{l:'Explication',i:'n-expl',v:'',type:'ta'}]),
+    dhikrs:bf([{l:'Texte arabe',i:'n-ar',v:'',ar:true,half:true},{l:'Traduction fr',i:'n-fr',v:'',half:true},{l:'Translitteration',i:'n-tr',v:''},{l:'Count',i:'n-cnt',v:'33',type:'number',half:true},{l:'Moment',i:'n-time',type:'sel',opts:'<option value="any">Tous</option><option value="morning">Matin</option><option value="evening">Soir</option><option value="prayer">Priere</option>',half:true},{l:'Recompense',i:'n-rw',v:'',type:'ta'},{l:'Source',i:'n-src',v:''}]),
+    categories:bf([{l:'Nom arabe',i:'n-ar',v:'',ar:true,half:true},{l:'Nom francais',i:'n-fr',v:'',half:true},{l:'Emoji',i:'n-em',v:'',half:true},{l:'Couleur',i:'n-col',type:'sel',opts:'<option value="green">Vert</option><option value="blue">Bleu</option><option value="red">Rouge</option><option value="cyan">Cyan</option>',half:true}]),
   };
-  g('add-modal-title').textContent = titles[t]||'➕ Ajouter';
-
-  const forms = {
-    scholars: getScholarsForm(),
-    books: `
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="n-ttl" placeholder="Titre du livre"/></div>
-        <div class="fg"><label class="lbl">Auteur</label><input class="inp" id="n-aut" placeholder="Auteur"/></div>
-        <div class="fg"><label class="lbl">Savant lié</label><select class="inp" id="n-sch"><option value="">— Aucun —</option>${schOpts}</select></div>
-        <div class="fg"><label class="lbl">Catégorie</label><select class="inp" id="n-cat"><option value="">— Choisir —</option>${catOpts}</select></div>
-        <div class="fg"><label class="lbl">Type</label>
-          <select class="inp" id="n-typ"><option value="PDF">📄 PDF</option><option value="EPUB">📱 Ebook</option><option value="Word">📝 Word</option><option value="Autre">📎 Autre</option></select>
-        </div>
-        <div class="fg"><label class="lbl">Pages</label><input class="inp" type="number" id="n-pg" placeholder="120" min="1"/></div>
-        <div class="fg fg-full"><label class="lbl">Lien fichier (URL)</label><input class="inp" id="n-url" placeholder="https://-"/></div>
-        <div class="fg fg-full">
-          <label class="lbl">🖼️ Image de couverture</label>
-          <div id="n-cvr-prev" style="display:none;margin-bottom:7px"><img id="n-cvr-img" style="width:100%;max-height:120px;object-fit:cover;border-radius:9px;border:1.5px solid var(--line)"/></div>
-          <label class="file-lbl" id="n-cvrlbl" for="n-cvrinp">🖼️ Choisir une image JPG / PNG / WEBP</label>
-          <input type="file" style="display:none" id="n-cvrinp" accept="image/*" onchange="addCoverPreview('n-cvrlbl','n-cvrinp','n-cvr-prev','n-cvr-img')"/>
-        </div>
-        <div class="fg fg-full"><label class="lbl">Description</label><textarea class="inp" id="n-dsc" rows="2" placeholder="Description…"></textarea></div>
-        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="n-emo" placeholder="📗" maxlength="4"/></div>
-        <div class="fg" style="display:flex;align-items:center;gap:7px;padding-top:20px"><input type="checkbox" id="n-new" style="accent-color:var(--r);width:14px;height:14px"/><label for="n-new" class="lbl" style="margin:0;cursor:pointer">Marquer NOUVEAU</label></div>
-      </div>`,
-    audios: `
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="n-ttl" placeholder="Titre du cours"/></div>
-        <div class="fg"><label class="lbl">Savant</label><select class="inp" id="n-sch"><option value="">— Aucun —</option>${schOpts}</select></div>
-        <div class="fg"><label class="lbl">Catégorie</label><select class="inp" id="n-cat"><option value="">— Choisir —</option>${catOpts}</select></div>
-        <div class="fg"><label class="lbl">Épisodes</label><input class="inp" type="number" id="n-eps" placeholder="12" min="1"/></div>
-        <div class="fg"><label class="lbl">Durée</label><input class="inp" id="n-dur" placeholder="8h 30min"/></div>
-        <div class="fg fg-full"><label class="lbl">Lien audio (URL)</label><input class="inp" id="n-url" placeholder="https://-"/></div>
-        <div class="fg fg-full">
-          <label class="lbl">🖼️ Image de couverture</label>
-          <div id="n-cvr-prev" style="display:none;margin-bottom:7px"><img id="n-cvr-img" style="width:100%;max-height:120px;object-fit:cover;border-radius:9px;border:1.5px solid var(--line)"/></div>
-          <label class="file-lbl" id="n-cvrlbl" for="n-cvrinp">🖼️ Choisir une image JPG / PNG / WEBP</label>
-          <input type="file" style="display:none" id="n-cvrinp" accept="image/*" onchange="addCoverPreview('n-cvrlbl','n-cvrinp','n-cvr-prev','n-cvr-img')"/>
-        </div>
-        <div class="fg fg-full"><label class="lbl">Description</label><textarea class="inp" id="n-dsc" rows="2" placeholder="Description…"></textarea></div>
-        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="n-emo" placeholder="🎧" maxlength="4"/></div>
-      </div>`,
-    videos: `
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="n-ttl" placeholder="Titre de la vidéo"/></div>
-        <div class="fg"><label class="lbl">Savant</label><select class="inp" id="n-sch"><option value="">— Aucun —</option>${schOpts}</select></div>
-        <div class="fg"><label class="lbl">Catégorie</label><select class="inp" id="n-cat"><option value="">— Choisir —</option>${catOpts}</select></div>
-        <div class="fg"><label class="lbl">Durée</label><input class="inp" id="n-dur" placeholder="1h 24min"/></div>
-        <div class="fg fg-full"><label class="lbl">Lien YouTube / TikTok / Vimeo</label><input class="inp" id="n-url" placeholder="https://youtube.com/watch?v=-"/></div>
-        <div class="fg fg-full">
-          <label class="lbl">🖼️ Miniature / Thumbnail</label>
-          <div id="n-cvr-prev" style="display:none;margin-bottom:7px"><img id="n-cvr-img" style="width:100%;max-height:120px;object-fit:cover;border-radius:9px;border:1.5px solid var(--line)"/></div>
-          <label class="file-lbl" id="n-cvrlbl" for="n-cvrinp">🖼️ Choisir une image JPG / PNG / WEBP</label>
-          <input type="file" style="display:none" id="n-cvrinp" accept="image/*" onchange="addCoverPreview('n-cvrlbl','n-cvrinp','n-cvr-prev','n-cvr-img')"/>
-        </div>
-        <div class="fg fg-full"><label class="lbl">Description</label><textarea class="inp" id="n-dsc" rows="2" placeholder="Description…"></textarea></div>
-        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="n-emo" placeholder="🎬" maxlength="4"/></div>
-      </div>`,
-    lives: `
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Titre *</label><input class="inp" id="n-ttl" placeholder="Cours sur l'Aqida — Séance 1"/></div>
-        <div class="fg"><label class="lbl">Savant</label><select class="inp" id="n-sch"><option value="">— Aucun —</option>${schOpts}</select></div>
-        <div class="fg"><label class="lbl">Nom du savant (manuel)</label><input class="inp" id="n-snm" placeholder="Nom du savant"/></div>
-        <div class="fg"><label class="lbl">Date & Heure *</label><input class="inp" type="datetime-local" id="n-dt"/></div>
-        <div class="fg"><label class="lbl">Lien stream *</label><input class="inp" id="n-url" placeholder="https://youtube.com/live/-"/></div>
-        <div class="fg"><label class="lbl">Statut</label>
-          <select class="inp" id="n-st"><option value="upcoming">📅 Planifié</option><option value="live">🔴 En direct maintenant</option></select>
-        </div>
-        <div class="fg"><label class="lbl">Auditeurs estimés</label><input class="inp" type="number" id="n-vw" placeholder="0" min="0"/></div>
-      </div>`,
-    categories: `
-      <div class="form-grid">
-        <div class="fg"><label class="lbl">Nom arabe *</label><input class="inp" id="n-ar" placeholder="العقيدة"/></div>
-        <div class="fg"><label class="lbl">Nom français *</label><input class="inp" id="n-fr" placeholder="Aqida"/></div>
-        <div class="fg"><label class="lbl">Emoji</label><input class="inp" id="n-em" placeholder="☝️" maxlength="4"/></div>
-        <div class="fg"><label class="lbl">Couleur</label>
-          <select class="inp" id="n-col"><option value="green">🟢 Vert</option><option value="blue">🔵 Bleu</option><option value="red">🔴 Rouge</option><option value="cyan">🩵 Cyan</option></select>
-        </div>
-      </div>`,
-    hadiths:`
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Texte arabe *</label><textarea class="inp" id="n-ar" rows="2" style="direction:rtl;text-align:right;font-family:Noto Naskh Arabic,serif" placeholder="النص العربي…"></textarea></div>
-        <div class="fg fg-full"><label class="lbl">Traduction française *</label><textarea class="inp" id="n-fr" rows="2" placeholder="Traduction…"></textarea></div>
-        <div class="fg"><label class="lbl">Source *</label><input class="inp" id="n-src" placeholder="Sahih Al-Bukhari 71"/></div>
-        <div class="fg"><label class="lbl">Rapporteur</label><input class="inp" id="n-nar" placeholder="Abu Hurairah"/></div>
-        <div class="fg"><label class="lbl">Grade</label>
-          <select class="inp" id="n-grade"><option value="Sahih">✅ Sahih</option><option value="Hasan">🟡 Hasan</option></select>
-        </div>
-        <div class="fg"><label class="lbl">Catégorie</label>
-          <select class="inp" id="n-cat"><option value="ilm">📚 Savoir</option><option value="aqida">☝️ Aqida</option><option value="akhlaq">🌸 Akhlaq</option><option value="ibada">🕌 Ibada</option><option value="quran">📖 Coran</option><option value="manhaj">🛤️ Manhaj</option></select>
-        </div>
-        <div class="fg"><label class="lbl">Date affichage (optionnel)</label><input class="inp" type="date" id="n-date"/></div>
-      </div>`,
-    quizzes:`
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Question arabe</label><textarea class="inp" id="n-ar" rows="2" style="direction:rtl;text-align:right;font-family:Noto Naskh Arabic,serif" placeholder="السؤال…"></textarea></div>
-        <div class="fg fg-full"><label class="lbl">Question française *</label><textarea class="inp" id="n-fr" rows="2" placeholder="Question…"></textarea></div>
-        <div class="fg"><label class="lbl">Option A *</label><input class="inp" id="n-oa" placeholder="Option A"/></div>
-        <div class="fg"><label class="lbl">Option B *</label><input class="inp" id="n-ob" placeholder="Option B"/></div>
-        <div class="fg"><label class="lbl">Option C *</label><input class="inp" id="n-oc" placeholder="Option C"/></div>
-        <div class="fg"><label class="lbl">Option D *</label><input class="inp" id="n-od" placeholder="Option D"/></div>
-        <div class="fg"><label class="lbl">Bonne réponse *</label>
-          <select class="inp" id="n-correct"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select>
-        </div>
-        <div class="fg"><label class="lbl">Catégorie</label>
-          <select class="inp" id="n-cat"><option value="aqida">☝️ Aqida</option><option value="fiqh">📜 Fiqh</option><option value="hadith">📿 Hadith</option><option value="quran">📖 Coran</option><option value="sira">🌙 Sira</option><option value="ibada">🕌 Ibada</option><option value="manhaj">🛤️ Manhaj</option></select>
-        </div>
-        <div class="fg"><label class="lbl">Difficulté</label>
-          <select class="inp" id="n-diff"><option value="facile">🟢 Facile</option><option value="moyen">🟡 Moyen</option><option value="difficile">🔴 Difficile</option></select>
-        </div>
-        <div class="fg fg-full"><label class="lbl">Explication / Référence *</label><textarea class="inp" id="n-expl" rows="2" placeholder="Explication avec référence…"></textarea></div>
-      </div>`,
-    dhikrs:`
-      <div class="form-grid">
-        <div class="fg fg-full"><label class="lbl">Texte arabe *</label><input class="inp" id="n-ar" style="direction:rtl;text-align:right;font-family:Noto Naskh Arabic,serif" placeholder="الذكر…"/></div>
-        <div class="fg fg-full"><label class="lbl">Traduction française *</label><input class="inp" id="n-fr" placeholder="Traduction…"/></div>
-        <div class="fg fg-full"><label class="lbl">Translittération</label><input class="inp" id="n-tr" placeholder="Subhanallahi wa bihamdihi…"/></div>
-        <div class="fg"><label class="lbl">Nombre recommandé</label><input class="inp" type="number" id="n-cnt" placeholder="33" min="1"/></div>
-        <div class="fg"><label class="lbl">Moment</label>
-          <select class="inp" id="n-time"><option value="any">🕐 N&apos;importe quand</option><option value="morning">🌅 Matin</option><option value="evening">🌆 Soir</option><option value="prayer">🕌 Après prière</option></select>
-        </div>
-        <div class="fg fg-full"><label class="lbl">Récompense (vertu)</label><textarea class="inp" id="n-rw" rows="2" placeholder="Vertu et récompense…"></textarea></div>
-        <div class="fg fg-full"><label class="lbl">Source *</label><input class="inp" id="n-src" placeholder="Sahih al-Bukhari 6682"/></div>
-      </div>`,
-  };
-  g('add-modal-body').innerHTML = forms[t]||'<p>Section non supportée</p>';
+  g('add-body').innerHTML=forms[t]||'<p style="color:var(--muted)">Section non supportee</p>';
   g('mo-add').classList.add('open');
 }
 
-async function saveAdd(){
-  const t = A.section;
-  busy('add-save-btn', true, '➕ Ajouter');
+async function svAdd(){
+  const t=D.section;busy('add-sv',true,'...');
   try{
-    let coverUrl = null;
-    if(g('n-cvrinp')?.files?.length){
-      toast('⏳ Upload de l\'image…');
-      coverUrl = await uploadFile('n-cvrinp','covers');
-    }
-
     let res;
+    let cv=null;if(g('n-cvrinp')?.files?.length){toast('Upload...');cv=await ul('n-cvrinp','covers');}
+    let av=null;if(g('n-avinp')?.files?.length){toast('Upload photo...');av=await ul('n-avinp','covers');}
     if(t==='scholars'){
-      const nfr = val('n-nfr');
-      if(!val('n-nar')||!nfr||!val('n-ini')){ toast('⚠️ Nom arabe, français et initiale requis'); return; }
-      const id = nfr.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,38)+'-'+Date.now().toString(36);
-      // Upload photo si choisie
-      let avatarUrl = null;
-      if(g('n-avinp')?.files?.length){
-        toast('⏳ Upload de la photo…');
-        avatarUrl = await uploadFile('n-avinp','covers');
-      }
-      res = await SB.from('scholars').insert({
-        id, name_ar:val('n-nar'), name_fr:nfr, initial:val('n-ini'),
-        country:val('n-cty')||null, era:val('n-era')||null, category:val('n-cat')||'contemporain',
-        tags:val('n-tags').split(',').map(x=>x.trim()).filter(Boolean), bio:val('n-bio')||null,
-        avatar_url: avatarUrl,
-      });
-    } else if(t==='books'){
-      if(!val('n-ttl')){ toast('⚠️ Titre requis'); return; }
-      let fileUrl = val('n-url')||null;
-      res = await SB.from('books').insert({
-        title:val('n-ttl'), author_name:val('n-aut')||null, scholar_id:val('n-sch')||null,
-        category:val('n-cat')||null, file_type:val('n-typ')||'PDF', pages:parseInt(val('n-pg'))||0,
-        file_url:fileUrl, cover_url:coverUrl, description:val('n-dsc')||null,
-        emoji:val('n-emo')||'📗', is_new:g('n-new')?.checked||false,
-      });
-    } else if(t==='audios'){
-      if(!val('n-ttl')){ toast('⚠️ Titre requis'); return; }
-      res = await SB.from('audios').insert({
-        title:val('n-ttl'), scholar_id:val('n-sch')||null, category:val('n-cat')||null,
-        episodes:parseInt(val('n-eps'))||1, duration:val('n-dur')||null,
-        file_url:val('n-url')||null, cover_url:coverUrl, description:val('n-dsc')||null, emoji:val('n-emo')||'🎧',
-      });
-    } else if(t==='videos'){
-      if(!val('n-ttl')){ toast('⚠️ Titre requis'); return; }
-      res = await SB.from('videos').insert({
-        title:val('n-ttl'), scholar_id:val('n-sch')||null, category:val('n-cat')||null,
-        duration:val('n-dur')||null, video_url:val('n-url')||null, thumbnail_url:coverUrl,
-        description:val('n-dsc')||null, emoji:val('n-emo')||'🎬',
-      });
-    } else if(t==='lives'){
-      if(!val('n-ttl')||!val('n-dt')){ toast('⚠️ Titre et date requis'); return; }
-      const scId=val('n-sch'); const sc=A.scholars.find(s=>s.id===scId);
-      res = await SB.from('live_sessions').insert({
-        title:val('n-ttl'), scholar_id:scId||null, scholar_name:val('n-snm')||sc?.name_fr||'',
-        scheduled_at:new Date(val('n-dt')).toISOString(), stream_url:val('n-url')||null,
-        status:val('n-st')||'upcoming', viewers:parseInt(val('n-vw'))||0, emoji:'📡',
-      });
-    } else if(t==='categories'){
-      if(!val('n-ar')||!val('n-fr')){ toast('⚠️ Noms requis'); return; }
-      const slug=val('n-fr').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
-      res = await SB.from('categories').insert({slug, label_ar:val('n-ar'), label_fr:val('n-fr'), emoji:val('n-em')||'📚', color:val('n-col')||'green'});
-    } else if(t==='hadiths'){
-      if(!val('n-ar')||!val('n-fr')||!val('n-src')){ toast('⚠️ Texte arabe, traduction et source requis'); return; }
-      res = await SB.from('hadiths').insert({
-        text_ar:val('n-ar'), text_fr:val('n-fr'), source:val('n-src'),
-        narrator:val('n-nar')||null, grade:val('n-grade')||'Sahih',
-        category:val('n-cat')||'general', active_date:val('n-date')||null,
-      });
-    } else if(t==='quizzes'){
-      if(!val('n-fr')||!val('n-oa')||!val('n-ob')||!val('n-oc')||!val('n-od')){ toast('⚠️ Question et 4 options requises'); return; }
-      res = await SB.from('quizzes').insert({
-        question_ar:val('n-ar')||null, question_fr:val('n-fr'),
-        option_a:val('n-oa'), option_b:val('n-ob'), option_c:val('n-oc'), option_d:val('n-od'),
-        correct:val('n-correct')||'a', category:val('n-cat')||'aqida',
-        difficulty:val('n-diff')||'moyen', explanation:val('n-expl')||null,
-      });
-    } else if(t==='dhikrs'){
-      if(!val('n-ar')||!val('n-fr')||!val('n-src')){ toast('⚠️ Texte arabe, traduction et source requis'); return; }
-      res = await SB.from('dhikr').insert({
-        text_ar:val('n-ar'), text_fr:val('n-fr'),
-        transliteration:val('n-tr')||null,
-        count_recommended:parseInt(val('n-cnt'))||33,
-        time_of_day:val('n-time')||'any',
-        reward:val('n-rw')||null, source:val('n-src'),
-      });
+      if(!v('n-nar')||!v('n-nfr')||!v('n-ini')){toast('Nom arabe, fr et initiale requis');return;}
+      const nfr=v('n-nfr');
+      const id=nfr.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,38)+'-'+Date.now().toString(36);
+      res=await SB.from('scholars').insert({id,name_ar:v('n-nar'),name_fr:nfr,initial:v('n-ini'),country:v('n-cty')||null,era:v('n-era')||null,category:v('n-cat')||'contemporain',tags:v('n-tags').split(',').map(x=>x.trim()).filter(Boolean),bio:v('n-bio')||null,avatar_url:av});
+    }else if(t==='books'){
+      if(!v('n-ttl')){toast('Titre requis');return;}
+      res=await SB.from('books').insert({title:v('n-ttl'),author_name:v('n-aut')||null,scholar_id:v('n-sch')||null,category:v('n-cat')||null,file_type:v('n-typ')||'PDF',pages:parseInt(v('n-pg'))||0,file_url:v('n-url')||null,cover_url:cv,description:v('n-dsc')||null,emoji:'📗'});
+    }else if(t==='audios'){
+      if(!v('n-ttl')){toast('Titre requis');return;}
+      res=await SB.from('audios').insert({title:v('n-ttl'),scholar_id:v('n-sch')||null,category:v('n-cat')||null,episodes:parseInt(v('n-eps'))||1,duration:v('n-dur')||null,file_url:v('n-url')||null,cover_url:cv,description:v('n-dsc')||null,emoji:'🎧'});
+    }else if(t==='videos'){
+      if(!v('n-ttl')){toast('Titre requis');return;}
+      res=await SB.from('videos').insert({title:v('n-ttl'),scholar_id:v('n-sch')||null,category:v('n-cat')||null,duration:v('n-dur')||null,video_url:v('n-url')||null,thumbnail_url:cv,description:v('n-dsc')||null,emoji:'🎬'});
+    }else if(t==='lives'){
+      if(!v('n-ttl')||!v('n-dt')){toast('Titre et date requis');return;}
+      const sc=D.scholars.find(s=>s.id===v('n-sch'));
+      res=await SB.from('live_sessions').insert({title:v('n-ttl'),scholar_id:v('n-sch')||null,scholar_name:v('n-snm')||sc?.name_fr||'',scheduled_at:new Date(v('n-dt')).toISOString(),stream_url:v('n-url')||null,status:v('n-st')||'upcoming',viewers:parseInt(v('n-vw'))||0,emoji:'📡'});
+    }else if(t==='hadiths'){
+      if(!v('n-ar')||!v('n-fr')||!v('n-src')){toast('Texte ar, fr et source requis');return;}
+      res=await SB.from('hadiths').insert({text_ar:v('n-ar'),text_fr:v('n-fr'),source:v('n-src'),narrator:v('n-nar')||null,grade:v('n-grade')||'Sahih',category:v('n-cat')||'general',active_date:v('n-date')||null});
+    }else if(t==='quizzes'){
+      if(!v('n-fr')||!v('n-oa')||!v('n-ob')||!v('n-oc')||!v('n-od')){toast('Question et 4 options requises');return;}
+      res=await SB.from('quizzes').insert({question_fr:v('n-fr'),option_a:v('n-oa'),option_b:v('n-ob'),option_c:v('n-oc'),option_d:v('n-od'),correct:v('n-correct')||'a',category:v('n-cat')||'aqida',difficulty:v('n-diff')||'moyen',explanation:v('n-expl')||null});
+    }else if(t==='dhikrs'){
+      if(!v('n-ar')||!v('n-fr')||!v('n-src')){toast('Texte ar, fr et source requis');return;}
+      res=await SB.from('dhikr').insert({text_ar:v('n-ar'),text_fr:v('n-fr'),transliteration:v('n-tr')||null,count_recommended:parseInt(v('n-cnt'))||33,time_of_day:v('n-time')||'any',reward:v('n-rw')||null,source:v('n-src')});
+    }else if(t==='categories'){
+      if(!v('n-ar')||!v('n-fr')){toast('Noms requis');return;}
+      const slug=v('n-fr').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+      res=await SB.from('categories').insert({slug,label_ar:v('n-ar'),label_fr:v('n-fr'),emoji:v('n-em')||'📚',color:v('n-col')||'green'});
     }
-
-    if(res?.error) throw res.error;
-    closeMo('mo-add');
-    toast('✅ Ajouté avec succès !');
-    await loadAll();
-  }catch(e){ toast('❌ '+e.message); }
-  finally{ busy('add-save-btn', false, '➕ Ajouter'); }
+    if(res?.error)throw res.error;
+    cmo('mo-add');toast('Ajoute!');await loadAll();
+  }catch(e){toast('Erreur: '+e.message);}
+  finally{busy('add-sv',false,'Ajouter');}
 }
 
-// -----------------------------
-function previewAvatarAdd(lblId, inpId, wrapId){
-  const inp  = g(inpId);
-  const lbl  = g(lblId);
-  const wrap = g(wrapId);
-  if(!inp?.files?.length) return;
-  lbl.textContent = '✅ '+inp.files[0].name.substring(0,28);
-  lbl.classList.add('got');
-  const reader = new FileReader();
-  reader.onload = e => {
-    if(wrap) wrap.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover"/>`;
-  };
-  reader.readAsDataURL(inp.files[0]);
-}
-
-function previewAvatar(lblId, inpId, wrapId){
-  const inp  = g(inpId);
-  const lbl  = g(lblId);
-  const wrap = g(wrapId);
-  if(!inp?.files?.length) return;
-  const file = inp.files[0];
-  lbl.textContent = '✅ '+file.name.substring(0,28);
-  lbl.classList.add('got');
-  // Pr-visualisation ronde
-  const reader = new FileReader();
-  reader.onload = e => {
-    wrap.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover"/>`;
-    // Effacer la valeur hidden pour signaler qu'un fichier est choisi
-    const urlInp = g('e-avurl');
-    if(urlInp) urlInp.value = '[upload]';
-  };
-  reader.readAsDataURL(file);
-}
-
-function clearAvatar(){
-  const wrap = g('e-av-wrap');
-  const lbl  = g('e-avlbl');
-  const urlInp = g('e-avurl');
-  if(wrap) wrap.innerHTML = '<span style="font-family:\'Noto Naskh Arabic\',serif;font-size:1.6rem;font-weight:700;color:#fff">?</span>';
-  if(urlInp) urlInp.value = '[delete]';
-  if(lbl){ lbl.textContent = '📷 Ajouter une photo'; lbl.classList.remove('got'); }
-  // Reset input file
-  const inp = g('e-avinp');
-  if(inp) inp.value = '';
-  toast('🗑️ Photo supprimée (sauvegarder pour confirmer)');
-}
-function addCoverPreview(lblId, inpId, prevId, imgId){
-  const inp=g(inpId), lbl=g(lblId), prev=g(prevId), img=g(imgId);
-  if(!inp?.files?.length) return;
-  lbl.textContent='✅ '+inp.files[0].name.substring(0,35); lbl.classList.add('got');
-  const r=new FileReader(); r.onload=e=>{ img.src=e.target.result; prev.style.display='block'; }; r.readAsDataURL(inp.files[0]);
-}
-
-function editCoverPreview(lblId, inpId, urlInpId){
-  const inp=g(inpId), lbl=g(lblId);
-  if(!inp?.files?.length) return;
-  lbl.textContent='✅ '+inp.files[0].name.substring(0,35); lbl.classList.add('got');
-  const r=new FileReader(); r.onload=e=>{ const ui=g(urlInpId); if(ui) ui.value='[nouveau fichier]'; }; r.readAsDataURL(inp.files[0]);
-}
-
-// --------------------------------
-async function uploadFile(inpId, bucket){
-  const inp=g(inpId);
-  if(!inp?.files?.length) return null;
-  const file=inp.files[0];
-  const ext=file.name.split('.').pop().toLowerCase();
-  const path=Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.'+ext;
-  const {data,error}=await SB.storage.from(bucket).upload(path,file,{upsert:true});
-  if(error) throw new Error('Upload: '+error.message);
+function of(lblId,inpId){const l=g(lblId),i=g(inpId);if(i?.files?.length){l.textContent='OK: '+i.files[0].name.substring(0,25);l.classList.add('got');}}
+async function ul(inpId,bucket){
+  const i=g(inpId);if(!i?.files?.length)return null;
+  const f=i.files[0];const ext=f.name.split('.').pop().toLowerCase();
+  const path=Date.now()+'_'+Math.random().toString(36).slice(2,7)+'.'+ext;
+  const{error}=await SB.storage.from(bucket).upload(path,f,{upsert:true});
+  if(error)throw new Error(error.message);
   return SB.storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }
 
-// -------------------------------
-function renderHadiths(){
-  const cnt=A.hadiths.length;
-  g('cnt-hadiths').textContent='('+cnt+')';
-  g('cl-hadiths').textContent=cnt+' hadith'+(cnt>1?'s':'');
-  const GRADE={Sahih:'<span class="bdg bdg-g">✅ Sahih</span>',Hasan:'<span class="bdg bdg-amber">🟡 Hasan</span>'};
-  g('tbl-hadiths').innerHTML=!cnt
-    ?'<tr class="empty-row"><td colspan="5">Aucun hadith — ajoutez-en via le bouton ➕</td></tr>'
-    :A.hadiths.map(h=>`<tr>
-      <td style="max-width:200px;font-family:Noto Naskh Arabic,serif;direction:rtl;text-align:right">${(h.text_ar||'').substring(0,60)}…</td>
-      <td class="td-bold">${h.source||'—'}</td>
-      <td>${GRADE[h.grade]||h.grade||'—'}</td>
-      <td>${h.narrator||'—'}</td>
-      <td class="td-actions">
-        <button class="btn btn-sm btn-edit" onclick="editItem('hadiths',${h.id})">✏️</button>
-        <button class="btn btn-sm btn-del" onclick="confirmDelete('hadiths',${h.id},'${(h.source||'').replace(/'/g,"\\'")}')">🗑️</button>
-      </td></tr>`).join('');
-}
-
-// --------------------------------
-function renderQuizzes(){
-  const cnt=A.quizzes.length;
-  g('cnt-quizzes').textContent='('+cnt+')';
-  g('cl-quizzes').textContent=cnt+' question'+(cnt>1?'s':'');
-  const DIFF={facile:'<span class="bdg bdg-g">🟢 Facile</span>',moyen:'<span class="bdg bdg-amber">🟡 Moyen</span>',difficile:'<span class="bdg bdg-r">🔴 Difficile</span>'};
-  g('tbl-quizzes').innerHTML=!cnt
-    ?'<tr class="empty-row"><td colspan="5">Aucune question</td></tr>'
-    :A.quizzes.map(q=>`<tr>
-      <td class="td-bold" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${q.question_fr||'—'}</td>
-      <td><span class="bdg bdg-b">${q.category||'—'}</span></td>
-      <td>${DIFF[q.difficulty]||q.difficulty||'—'}</td>
-      <td><span class="bdg bdg-g">${(q.correct||'?').toUpperCase()}</span></td>
-      <td class="td-actions">
-        <button class="btn btn-sm btn-edit" onclick="editItem('quizzes',${q.id})">✏️</button>
-        <button class="btn btn-sm btn-del" onclick="confirmDelete('quizzes',${q.id},'${(q.question_fr||'').substring(0,30).replace(/'/g,"\\'")}')">🗑️</button>
-      </td></tr>`).join('');
-}
-
-// ---------------------------------
-function renderDhikrs(){
-  const cnt=A.dhikrs.length;
-  g('cnt-dhikrs').textContent='('+cnt+')';
-  g('cl-dhikrs').textContent=cnt+' dhikr'+(cnt>1?'s':'');
-  const TIME={morning:'🌅 Matin',evening:'🌆 Soir',any:'🕐 Tous',prayer:'🕌 Prière'};
-  g('tbl-dhikrs').innerHTML=!cnt
-    ?'<tr class="empty-row"><td colspan="6">Aucun dhikr</td></tr>'
-    :A.dhikrs.map(d=>`<tr>
-      <td style="font-family:Noto Naskh Arabic,serif;direction:rtl;text-align:right;max-width:150px">${(d.text_ar||'').substring(0,40)}</td>
-      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.text_fr||'—'}</td>
-      <td>×${d.count_recommended||33}</td>
-      <td>${TIME[d.time_of_day]||d.time_of_day||'—'}</td>
-      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.source||'—'}</td>
-      <td class="td-actions">
-        <button class="btn btn-sm btn-edit" onclick="editItem('dhikrs',${d.id})">✏️</button>
-        <button class="btn btn-sm btn-del" onclick="confirmDelete('dhikrs',${d.id},'${(d.text_fr||'').replace(/'/g,"\\'")}')">🗑️</button>
-      </td></tr>`).join('');
-}
-
-// --------------------------------
-g('topbar-date').textContent = new Date().toLocaleDateString('fr',{weekday:'long',day:'numeric',month:'long'});
-
-// ---------------------------------------
-checkAuth();
+g('tb-date').textContent=new Date().toLocaleDateString('fr',{weekday:'long',day:'numeric',month:'long'});
+init();
 </script>
 </body>
 </html>
