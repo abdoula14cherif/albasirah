@@ -236,16 +236,25 @@ textarea.inp{resize:vertical;min-height:72px}
 <!-- ═══ MOBILE BOTTOM NAV ═══ -->
 <div class="mob-bnav">
   <div class="mob-bnav-inner">
-    <button class="mob-bn active" data-mob="dashboard" onclick="goSection('dashboard',null,this)"><span class="mi">📊</span><span class="ml">Bord</span></button>
-    <button class="mob-bn" data-mob="scholars" onclick="goSection('scholars',null,this)"><span class="mi">👨‍🏫</span><span class="ml">Savants</span></button>
-    <button class="mob-bn" data-mob="books" onclick="goSection('books',null,this)"><span class="mi">📚</span><span class="ml">Livres</span></button>
-    <button class="mob-bn" data-mob="audios" onclick="goSection('audios',null,this)"><span class="mi">🎧</span><span class="ml">Audio</span></button>
-    <button class="mob-bn" data-mob="videos" onclick="goSection('videos',null,this)"><span class="mi">🎬</span><span class="ml">Vidéos</span></button>
-    <button class="mob-bn" data-mob="lives" onclick="goSection('lives',null,this)"><span class="mi">📡</span><span class="ml">Live</span></button>
-    <button class="mob-bn" data-mob="categories" onclick="goSection('categories',null,this)"><span class="mi">🏷️</span><span class="ml">Cats</span></button>
-    <button class="mob-bn" data-mob="hadiths" onclick="goSection('hadiths',null,this)"><span class="mi">📿</span><span class="ml">Hadiths</span></button>
-    <button class="mob-bn" data-mob="quizzes" onclick="goSection('quizzes',null,this)"><span class="mi">🎯</span><span class="ml">Quiz</span></button>
-    <button class="mob-bn" data-mob="dhikrs" onclick="goSection('dhikrs',null,this)"><span class="mi">🕌</span><span class="ml">Dhikr</span></button>
+    <button class="mob-bn active" data-mob="dashboard"   onclick="goSection('dashboard',null,this)"><span class="mi">📊</span><span class="ml">Bord</span></button>
+    <button class="mob-bn"        data-mob="scholars"    onclick="goSection('scholars',null,this)"> <span class="mi">👨‍🏫</span><span class="ml">Savants</span></button>
+    <button class="mob-bn"        data-mob="books"       onclick="toggleMobMenu()">    <span class="mi">📚</span><span class="ml">Contenu</span></button>
+    <button class="mob-bn"        data-mob="hadiths"     onclick="goSection('hadiths',null,this)">  <span class="mi">📿</span><span class="ml">Islamique</span></button>
+    <button class="mob-bn"        data-mob="categories"  onclick="goSection('categories',null,this)"><span class="mi">⚙️</span><span class="ml">Config</span></button>
+  </div>
+</div>
+
+<!-- MENU CONTENU ÉTENDU (slide-up) -->
+<div id="mob-content-menu" style="display:none;position:fixed;bottom:64px;left:0;right:0;z-index:700;background:rgba(7,29,42,.97);border-top:1px solid rgba(255,255,255,.1);padding:12px 0;backdrop-filter:blur(20px)">
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 12px">
+    <button onclick="goSection('books',null,null);hideMobMenu()"  style="background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.2);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">📚<br>Livres</button>
+    <button onclick="goSection('audios',null,null);hideMobMenu()" style="background:rgba(42,171,238,.1);border:1px solid rgba(42,171,238,.2);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">🎧<br>Audio</button>
+    <button onclick="goSection('videos',null,null);hideMobMenu()" style="background:rgba(229,57,53,.1);border:1px solid rgba(229,57,53,.2);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">🎬<br>Vidéos</button>
+    <button onclick="goSection('lives',null,null);hideMobMenu()"  style="background:rgba(229,57,53,.08);border:1px solid rgba(229,57,53,.15);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">📡<br>Live</button>
+    <button onclick="goSection('hadiths',null,null);hideMobMenu()" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">📿<br>Hadiths</button>
+    <button onclick="goSection('quizzes',null,null);hideMobMenu()" style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">🎯<br>Quiz</button>
+    <button onclick="goSection('dhikrs',null,null);hideMobMenu()"  style="background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.15);border-radius:10px;padding:10px;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer">🕌<br>Dhikr</button>
+    <button onclick="hideMobMenu()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px;color:rgba(255,255,255,.5);font-size:.7rem;font-weight:700;cursor:pointer">✕<br>Fermer</button>
   </div>
 </div>
 
@@ -624,6 +633,23 @@ async function doLogout(){
   await SB.auth.signOut();
   window.location.href = 'index.html';
 }
+
+// --- MOBILE MENU ---
+function toggleMobMenu(){
+  const m=document.getElementById('mob-content-menu');
+  if(m) m.style.display=m.style.display==='none'?'block':'none';
+}
+function hideMobMenu(){
+  const m=document.getElementById('mob-content-menu');
+  if(m) m.style.display='none';
+}
+document.addEventListener('click',function(e){
+  const menu=document.getElementById('mob-content-menu');
+  if(menu&&menu.style.display!=='none'){
+    const isMenuBtn=e.target.closest('.mob-bn');
+    if(!menu.contains(e.target)&&!isMenuBtn) hideMobMenu();
+  }
+});
 
 // ----------------------------------
 async function loadAll(){
