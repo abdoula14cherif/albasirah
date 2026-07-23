@@ -1,9 +1,12 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Header
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from supabase import create_client, Client
 from typing import Optional, List
 import uuid, os
+
+# Répertoire public (relatif à ce fichier)
+PUBLIC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "public")
 
 # ─── CONFIG ────────────────────────────────────────────────────
 SUPABASE_URL = "https://mutdtyifvcrkiouudwhr.supabase.co"
@@ -41,7 +44,17 @@ async def check_admin(authorization: Optional[str] = None) -> bool:
     except Exception:
         return False
 
-# ─── ROOT ──────────────────────────────────────────────────────
+# ─── PAGES HTML ────────────────────────────────────────────────
+@app.get("/")
+@app.get("/index.html")
+def serve_index():
+    return FileResponse(os.path.join(PUBLIC, "index.html"), media_type="text/html")
+
+@app.get("/admin.html")
+def serve_admin():
+    return FileResponse(os.path.join(PUBLIC, "admin.html"), media_type="text/html")
+
+# ─── ROOT API ───────────────────────────────────────────────────
 @app.get("/api")
 def root():
     return {"message": "Al Basirah API v1.0", "status": "ok"}
