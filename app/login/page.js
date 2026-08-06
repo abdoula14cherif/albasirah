@@ -18,7 +18,7 @@ export default function LoginPage() {
     setMessage("");
 
     if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/auth/confirmed` } });
       if (error) {
         setMessage("Erreur : " + error.message);
       } else {
