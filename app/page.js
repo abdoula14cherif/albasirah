@@ -11,7 +11,7 @@ export default function Home() {
           <a href="#mission">Notre approche</a>
           <a href="#sources">Sources</a>
         </div>
-        <button className="nav-cta">Rejoindre la liste</button>
+        <a href="/login" className="nav-cta" style={{textDecoration:"none", display:"inline-block"}}>Se connecter</a>
       </nav>
 
       <section className="hero">
