@@ -30,7 +30,7 @@ export default function LoginPage() {
       if (error) {
         setMessage("Erreur : " + error.message);
       } else {
-        router.push("/");
+        router.push("/dashboard");
       }
     }
     setLoading(false);
